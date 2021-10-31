@@ -1,14 +1,8 @@
 module Main exposing (..)
 
--- Press buttons to increment and decrement a counter.
---
--- Read how it works:
---   https://guide.elm-lang.org/architecture/buttons.html
---
-
-
 import Browser
 import Html exposing (Html, button, div, text)
+import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 
 
@@ -17,19 +11,33 @@ import Html.Events exposing (onClick)
 
 
 main =
-  Browser.sandbox { init = init, update = update, view = view }
+    Browser.sandbox { init = init, update = update, view = view }
 
 
 
 -- MODEL
 
 
-type alias Model = Int
+type Cell
+    = Rabble
+    | Empty
+
+
+type alias Row =
+    List Cell
+
+
+type alias Board =
+    List Row
+
+
+type alias Model =
+    Board
 
 
 init : Model
 init =
-  0
+    [ [ Rabble, Empty ], [ Rabble, Empty ] ]
 
 
 
@@ -37,28 +45,48 @@ init =
 
 
 type Msg
-  = Increment
-  | Decrement
+    = Tick
 
 
 update : Msg -> Model -> Model
 update msg model =
-  case msg of
-    Increment ->
-      model + 1
+    case msg of
+        Tick ->
+            moveBoard model
 
-    Decrement ->
-      model - 1
+
+moveBoard : Board -> Board
+moveBoard board =
+    board
 
 
 
 -- VIEW
 
 
+viewCell : Cell -> Html Msg
+viewCell cell =
+    case cell of
+        Rabble ->
+            div [] [ text " [-] " ]
+
+        Empty ->
+            div [] [ text " _ " ]
+
+
+viewRow : Row -> Html Msg
+viewRow row =
+    div [ class "border flex flex-row" ] (List.map viewCell row)
+
+
+viewBoard : Board -> Html Msg
+viewBoard board =
+    div [ class "border" ] (List.map viewRow board)
+
+
 view : Model -> Html Msg
 view model =
-  div []
-    [ button [ onClick Decrement ] [ text "-" ]
-    , div [] [ text (String.fromInt model) ]
-    , button [ onClick Increment ] [ text "+" ]
-    ]
+    div []
+        [ viewBoard model
+        , button [ onClick Tick ] [ text "+" ]
+        ]
