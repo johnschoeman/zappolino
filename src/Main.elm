@@ -51,6 +51,10 @@ type alias Board =
     List Row
 
 
+
+-- Card --
+
+
 type Card
     = Place
     | FlankLeft
@@ -84,8 +88,28 @@ cardIsEqual c1 maybeC2 =
             False
 
 
+cardToActionCost : Maybe Card -> Int
+cardToActionCost card =
+    case card of
+        Just Place ->
+            2
+
+        Just FlankLeft ->
+            1
+
+        Just FlankRight ->
+            1
+
+        Just Charge ->
+            1
+
+        Nothing ->
+            0
+
+
 type alias Model =
     { player : Player
+    , actionCount : Int
     , move : Maybe Card
     , bolognaCards : List Card
     , modenaCards : List Card
@@ -100,6 +124,7 @@ init =
             buildBoard 8 8
     in
     { player = Bologna
+    , actionCount = 3
     , move = Nothing
     , bolognaCards = [ Place, FlankLeft, FlankRight, Charge ]
     , modenaCards = [ Place, FlankLeft, FlankRight, Charge ]
@@ -137,20 +162,28 @@ update msg model =
             in
             { model
                 | player = nextPlayer model.player
+                , actionCount = 3
                 , board = nextBoard
             }
 
         SelectCell rowIdx colIdx ->
             let
+                actionCost =
+                    cardToActionCost model.move
+
                 isValid =
-                    isValidMove model rowIdx colIdx
+                    model.actionCount >= actionCost && isValidMove model rowIdx colIdx
 
                 nextBoard =
                     handleMove model rowIdx colIdx
+
+                nextActionCount =
+                    model.actionCount - actionCost
             in
             if isValid then
                 { model
                     | move = Nothing
+                    , actionCount = nextActionCount
                     , board = nextBoard
                 }
 
@@ -459,11 +492,19 @@ isCell rIdx rowIdx cIdx colIdx =
 view : Model -> Html Msg
 view model =
     div [ class "p-8 space-y-4" ]
-        [ viewPlayer model.player
+        [ div [ class "flex flex-row space-x-2" ]
+            [ viewPlayer model.player
+            , viewActionCount model.actionCount
+            ]
         , viewBoard model.board
         , viewCardList model
         , endTurnButton
         ]
+
+
+viewActionCount : Int -> Html Msg
+viewActionCount count =
+    div [ class "text-2xl text-gray-800" ] [ text <| String.fromInt count ]
 
 
 endTurnButton : Html Msg
@@ -508,6 +549,12 @@ cardToButton model card =
 
         activeStyle =
             "border-gray-900"
+
+        costText =
+            String.join "" [ "(", String.fromInt <| cardToActionCost <| Just card, ")" ]
+
+        cardText =
+            String.join " " [ showCard card, costText ]
     in
     button
         [ classList
@@ -516,7 +563,7 @@ cardToButton model card =
             ]
         , onClick <| SelectCard card model.player
         ]
-        [ text <| showCard card ]
+        [ text cardText ]
 
 
 viewPlayer : Player -> Html Msg
