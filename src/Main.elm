@@ -1,26 +1,77 @@
 module Main exposing (..)
 
 import Browser
+import Browser.Navigation as Nav
+import Card
 import Debug
+import Deck exposing (Deck, initialDeck)
 import Html exposing (Html, button, div, text)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
 import List.Extra
+import Random
+import Random.List
+import Url
 
 
 
--- MAIN
+---- MAIN ----
 
 
+main : Program Flags Model Msg
 main =
-    Browser.sandbox { init = init, update = update, view = view }
+    Browser.application
+        { view = view
+        , init = init
+        , update = update
+        , subscriptions = subscriptions
+        , onUrlChange = ChangedUrl
+        , onUrlRequest = ClickedLink
+        }
+
+
+type alias Flags =
+    ()
 
 
 
--- MODEL
+---- MODEL ----
 -- --- Modena (Blue) ---
 -- |                   |
 -- --- Bolonga (Red) ---
+
+
+type alias Model =
+    { player : Player
+    , actionCount : Int
+    , move : Maybe Card.Card
+    , bolognaDeck : Deck
+    , modenaDeck : Deck
+    , board : Board
+    }
+
+
+init : Flags -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+init _ _ _ =
+    let
+        initialBoard =
+            buildBoard 8 8
+
+        initialModel =
+            { player = Bologna
+            , actionCount = 3
+            , move = Nothing
+            , bolognaDeck = initialDeck
+            , modenaDeck = initialDeck
+            , board = initialBoard
+            }
+    in
+    ( initialModel
+    , Cmd.batch
+        [ shuffleDeck (GetShuffledDeckAndDraw Bologna) Bologna initialDeck
+        , shuffleDeck (GetShuffledDeckAndDraw Modena) Modena initialDeck
+        ]
+    )
 
 
 modenaStyle : String
@@ -38,6 +89,26 @@ type Player
     | Modena
 
 
+showPlayer : Player -> String
+showPlayer player =
+    case player of
+        Bologna ->
+            "Bolonga"
+
+        Modena ->
+            "Modena"
+
+
+playerStyle : Player -> String
+playerStyle player =
+    case player of
+        Bologna ->
+            bolognaStyle
+
+        Modena ->
+            modenaStyle
+
+
 type Cell
     = Piece Player
     | Empty
@@ -51,87 +122,6 @@ type alias Board =
     List Row
 
 
-
--- Card --
-
-
-type Card
-    = Place
-    | FlankLeft
-    | FlankRight
-    | Charge
-
-
-showCard : Card -> String
-showCard card =
-    case card of
-        Place ->
-            "Place"
-
-        FlankLeft ->
-            "Flank Left"
-
-        FlankRight ->
-            "Flank Right"
-
-        Charge ->
-            "Charge"
-
-
-cardIsEqual : Card -> Maybe Card -> Bool
-cardIsEqual c1 maybeC2 =
-    case maybeC2 of
-        Just c2 ->
-            c1 == c2
-
-        Nothing ->
-            False
-
-
-cardToActionCost : Maybe Card -> Int
-cardToActionCost card =
-    case card of
-        Just Place ->
-            2
-
-        Just FlankLeft ->
-            1
-
-        Just FlankRight ->
-            1
-
-        Just Charge ->
-            1
-
-        Nothing ->
-            0
-
-
-type alias Model =
-    { player : Player
-    , actionCount : Int
-    , move : Maybe Card
-    , bolognaCards : List Card
-    , modenaCards : List Card
-    , board : Board
-    }
-
-
-init : Model
-init =
-    let
-        initialBoard =
-            buildBoard 8 8
-    in
-    { player = Bologna
-    , actionCount = 3
-    , move = Nothing
-    , bolognaCards = [ Place, FlankLeft, FlankRight, Charge ]
-    , modenaCards = [ Place, FlankLeft, FlankRight, Charge ]
-    , board = initialBoard
-    }
-
-
 buildBoard : Int -> Int -> Board
 buildBoard l h =
     List.repeat h (buildRow l)
@@ -143,33 +133,73 @@ buildRow l =
 
 
 
--- UPDATE
+---- UPDATE ----
 
 
 type Msg
-    = SelectCell Int Int
-    | SelectCard Card Player
+    = ChangedUrl Url.Url
+    | ClickedLink Browser.UrlRequest
+    | SelectCell Int Int
+    | SelectCard Card.Card Player
     | EndTurn
+    | DrawHand Player
+    | ShuffleDeckAndDraw Player
+    | GetShuffledDeckAndDraw Player Deck.Deck
 
 
-update : Msg -> Model -> Model
+updateDeck : Player -> Deck.Deck -> Model -> Model
+updateDeck player deck model =
+    { model
+        | modenaDeck =
+            if player == Modena then
+                deck
+
+            else
+                model.modenaDeck
+        , bolognaDeck =
+            if player == Bologna then
+                deck
+
+            else
+                model.bolognaDeck
+    }
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        ChangedUrl url ->
+            ( model, Cmd.none )
+
+        ClickedLink urlRequest ->
+            ( model, Cmd.none )
+
         EndTurn ->
             let
                 nextBoard =
                     progressBoard model.player model.board
+
+                deck =
+                    getPlayerDeck model.player model
+
+                ( nextDeck, nextCmd ) =
+                    drawHand model.player (Deck.discardHand deck)
+
+                nextModel =
+                    { model
+                        | player = nextPlayer model.player
+                        , actionCount = 3
+                        , board = nextBoard
+                    }
             in
-            { model
-                | player = nextPlayer model.player
-                , actionCount = 3
-                , board = nextBoard
-            }
+            ( updateDeck model.player nextDeck nextModel
+            , nextCmd
+            )
 
         SelectCell rowIdx colIdx ->
             let
                 actionCost =
-                    cardToActionCost model.move
+                    Card.toActionCost model.move
 
                 isValid =
                     model.actionCount >= actionCost && isValidMove model rowIdx colIdx
@@ -181,14 +211,16 @@ update msg model =
                     model.actionCount - actionCost
             in
             if isValid then
-                { model
+                ( { model
                     | move = Nothing
                     , actionCount = nextActionCount
                     , board = nextBoard
-                }
+                  }
+                , Cmd.none
+                )
 
             else
-                model
+                ( model, Cmd.none )
 
         SelectCard card player ->
             let
@@ -199,7 +231,108 @@ update msg model =
                     else
                         Just card
             in
-            { model | move = nextMove }
+            ( { model | move = nextMove }, Cmd.none )
+
+        DrawHand player ->
+            let
+                deck =
+                    case player of
+                        Modena ->
+                            model.modenaDeck
+
+                        Bologna ->
+                            model.bolognaDeck
+
+                ( nextDeck, nextCmd ) =
+                    drawHand player deck
+
+                nextModel =
+                    case player of
+                        Modena ->
+                            { model | modenaDeck = nextDeck }
+
+                        Bologna ->
+                            { model | bolognaDeck = nextDeck }
+            in
+            if List.length deck.hand > 4 then
+                ( model, Cmd.none )
+
+            else
+                ( nextModel, nextCmd )
+
+        GetShuffledDeckAndDraw player sDeck ->
+            let
+                nextDeck =
+                    drawTo 3 sDeck
+
+                nextModel =
+                    case player of
+                        Modena ->
+                            { model | modenaDeck = nextDeck }
+
+                        Bologna ->
+                            { model | bolognaDeck = nextDeck }
+            in
+            ( nextModel, Cmd.none )
+
+        ShuffleDeckAndDraw player ->
+            let
+                deck =
+                    case player of
+                        Modena ->
+                            model.modenaDeck
+
+                        Bologna ->
+                            model.bolognaDeck
+            in
+            ( model, shuffleDeck (GetShuffledDeckAndDraw player) player deck )
+
+
+drawTo : Int -> Deck.Deck -> Deck.Deck
+drawTo handSize deck =
+    let
+        oldHandLength =
+            List.length deck.hand
+
+        unplayedLength =
+            List.length deck.drawPile
+    in
+    if oldHandLength >= handSize || unplayedLength == 0 then
+        deck
+
+    else
+        drawTo handSize (Deck.drawOneCard deck)
+
+
+drawHand : Player -> Deck.Deck -> ( Deck.Deck, Cmd Msg )
+drawHand player deck =
+    let
+        nextDeck =
+            drawTo 3 deck
+
+        handLength =
+            List.length nextDeck.hand
+    in
+    if handLength >= 3 then
+        ( nextDeck, Cmd.none )
+
+    else
+        ( nextDeck, shuffleDeck (GetShuffledDeckAndDraw player) player (Deck.mergeDiscardPile nextDeck) )
+
+
+getPlayerDeck : Player -> Model -> Deck.Deck
+getPlayerDeck player model =
+    case player of
+        Modena ->
+            model.modenaDeck
+
+        Bologna ->
+            model.bolognaDeck
+
+
+shuffleDeck : (Deck.Deck -> Msg) -> Player -> Deck.Deck -> Cmd Msg
+shuffleDeck onShuffle player deck =
+    Random.generate onShuffle (Deck.shuffledDeck deck)
 
 
 
@@ -209,16 +342,16 @@ update msg model =
 isValidMove : Model -> Int -> Int -> Bool
 isValidMove model rowIdx colIdx =
     case model.move of
-        Just Place ->
+        Just Card.Place ->
             isValidPlace model rowIdx colIdx
 
-        Just FlankLeft ->
+        Just Card.FlankLeft ->
             isValidFlankLeft model rowIdx colIdx
 
-        Just FlankRight ->
+        Just Card.FlankRight ->
             isValidFlankRight model rowIdx colIdx
 
-        Just Charge ->
+        Just Card.Charge ->
             isValidCharge model rowIdx colIdx
 
         Nothing ->
@@ -378,16 +511,16 @@ getPieceOnBoard rowIdx colIdx board =
 handleMove : Model -> Int -> Int -> Board
 handleMove model rowIdx colIdx =
     case model.move of
-        Just Place ->
+        Just Card.Place ->
             placePiece model.player rowIdx colIdx model.board
 
-        Just FlankLeft ->
+        Just Card.FlankLeft ->
             flankLeft model.player rowIdx colIdx model.board
 
-        Just FlankRight ->
+        Just Card.FlankRight ->
             flankRight model.player rowIdx colIdx model.board
 
-        Just Charge ->
+        Just Card.Charge ->
             charge model.player rowIdx colIdx model.board
 
         Nothing ->
@@ -486,11 +619,38 @@ isCell rIdx rowIdx cIdx colIdx =
 
 
 
+---- SUBSCRIPTIONS ----
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    case model of
+        _ ->
+            Sub.none
+
+
+
 ---- VIEW ----
 
 
-view : Model -> Html Msg
+view : Model -> Browser.Document Msg
 view model =
+    { title = "Zappalino"
+    , body =
+        [ header
+        , pageContent model
+        , pageFooter
+        ]
+    }
+
+
+header : Html Msg
+header =
+    div [] []
+
+
+pageContent : Model -> Html Msg
+pageContent model =
     div [ class "p-8 space-y-4" ]
         [ div [ class "flex flex-row space-x-2" ]
             [ viewPlayer model.player
@@ -499,7 +659,55 @@ view model =
         , viewBoard model.board
         , viewCardList model
         , endTurnButton
+        , viewDeck model
         ]
+
+
+viewDeck : Model -> Html Msg
+viewDeck model =
+    let
+        deck =
+            getPlayerDeck model.player model
+
+        discard =
+            deck.discard
+
+        drawPile =
+            deck.drawPile
+
+        countUnplayed =
+            List.length drawPile
+
+        countDiscard =
+            List.length discard
+
+        unplayedText =
+            String.join " " [ "(", String.fromInt countUnplayed, ")" ]
+
+        discardCountText =
+            String.join " " [ "(", String.fromInt countDiscard, ")" ]
+    in
+    div []
+        [ div []
+            [ text "DrawPile:"
+            , text unplayedText
+            ]
+        , div []
+            [ text "Discard:"
+            , text discardCountText
+            , div [] (viewDiscardPile discard)
+            ]
+        ]
+
+
+viewDiscardPile : List Card.Card -> List (Html Msg)
+viewDiscardPile =
+    List.map cardToItem
+
+
+cardToItem : Card.Card -> Html Msg
+cardToItem card =
+    div [] [ text <| Card.show card ]
 
 
 viewActionCount : Int -> Html Msg
@@ -518,15 +726,15 @@ viewCardList model =
         cards =
             case model.player of
                 Bologna ->
-                    model.bolognaCards
+                    model.bolognaDeck.hand
 
                 Modena ->
-                    model.modenaCards
+                    model.modenaDeck.hand
     in
     div [ class "flex flex-row space-x-2" ] (cardList model cards)
 
 
-cardList : Model -> List Card -> List (Html Msg)
+cardList : Model -> List Card.Card -> List (Html Msg)
 cardList model cards =
     List.map (cardToButton model) cards
 
@@ -541,7 +749,7 @@ withPlayerStyle player style =
             String.join " " [ modenaStyle, style ]
 
 
-cardToButton : Model -> Card -> Html Msg
+cardToButton : Model -> Card.Card -> Html Msg
 cardToButton model card =
     let
         baseStyle =
@@ -551,14 +759,14 @@ cardToButton model card =
             "border-gray-900"
 
         costText =
-            String.join "" [ "(", String.fromInt <| cardToActionCost <| Just card, ")" ]
+            Card.showCost card
 
         cardText =
-            String.join " " [ showCard card, costText ]
+            String.join " " [ Card.show card, costText ]
     in
     button
         [ classList
-            [ ( activeStyle, cardIsEqual card model.move )
+            [ ( activeStyle, Card.isEqual card model.move )
             , ( baseStyle, True )
             ]
         , onClick <| SelectCard card model.player
@@ -572,24 +780,13 @@ viewPlayer player =
         baseStyle =
             "p-8 max-w-xs font-black text-gray-100"
     in
-    case player of
-        Modena ->
-            div
-                [ classList
-                    [ ( baseStyle, True )
-                    , ( modenaStyle, True )
-                    ]
-                ]
-                [ text "Modena" ]
-
-        Bologna ->
-            div
-                [ classList
-                    [ ( baseStyle, True )
-                    , ( bolognaStyle, True )
-                    ]
-                ]
-                [ text "Bologna" ]
+    div
+        [ classList
+            [ ( baseStyle, True )
+            , ( playerStyle player, True )
+            ]
+        ]
+        [ text <| showPlayer player ]
 
 
 viewBoard : Board -> Html Msg
@@ -646,3 +843,8 @@ viewCell rowIdx colIdx cell =
                 , onClick <| SelectCell rowIdx colIdx
                 ]
                 []
+
+
+pageFooter : Html Msg
+pageFooter =
+    div [] []
