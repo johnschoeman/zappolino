@@ -2,12 +2,14 @@ module Deck exposing (..)
 
 import Card exposing (Card(..))
 import List.Extra
+import Playable exposing (Playable(..))
 import Random
 import Random.List
 
 
 type alias Deck =
-    { hand : List Card
+    { hand : List (Playable Card)
+    , played : List Card
     , drawPile : List Card
     , discard : List Card
     }
@@ -31,6 +33,7 @@ initialCards =
 initialDeck : Deck
 initialDeck =
     { hand = []
+    , played = []
     , drawPile = initialCards
     , discard = []
     }
@@ -47,8 +50,11 @@ discardHand deck =
         oldHand =
             deck.hand
 
+        oldPlayed =
+            deck.played
+
         nextDiscard =
-            List.concat [ oldHand, deck.discard ]
+            List.concat [ oldPlayed, List.map Playable.unwrap oldHand, deck.discard ]
     in
     { deck | hand = [], discard = nextDiscard }
 
@@ -66,7 +72,7 @@ drawOneCard deck =
             List.Extra.splitAt 1 oldUnplayed
 
         nextHand =
-            nextCard ++ oldHand
+            List.map NotSelected nextCard ++ oldHand
     in
     { deck
         | hand = nextHand

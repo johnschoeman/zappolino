@@ -9,6 +9,7 @@ import Html exposing (Html, button, div, text)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
 import List.Extra
+import Playable exposing (Playable(..))
 import Random
 import Random.List
 import Url
@@ -44,7 +45,6 @@ type alias Flags =
 type alias Model =
     { player : Player
     , actionCount : Int
-    , move : Maybe Card.Card
     , bolognaDeck : Deck
     , modenaDeck : Deck
     , board : Board
@@ -60,7 +60,6 @@ init _ _ _ =
         initialModel =
             { player = Bologna
             , actionCount = 3
-            , move = Nothing
             , bolognaDeck = initialDeck
             , modenaDeck = initialDeck
             , board = initialBoard
@@ -140,7 +139,7 @@ type Msg
     = ChangedUrl Url.Url
     | ClickedLink Browser.UrlRequest
     | SelectCell Int Int
-    | SelectCard Card.Card Player
+    | SelectCard Int (Playable Card.Card) Player
     | EndTurn
     | DrawHand Player
     | ShuffleDeckAndDraw Player
@@ -199,7 +198,7 @@ update msg model =
         SelectCell rowIdx colIdx ->
             let
                 actionCost =
-                    Card.toActionCost model.move
+                    Card.toActionCost (selectedMove model)
 
                 isValid =
                     model.actionCount >= actionCost && isValidMove model rowIdx colIdx
@@ -209,29 +208,66 @@ update msg model =
 
                 nextActionCount =
                     model.actionCount - actionCost
+
+                deck =
+                    getPlayerDeck model.player model
+
+                oldHand =
+                    deck.hand
+
+                nextHand =
+                    List.map Playable.exhaustSelected oldHand
+
+                nextDeck =
+                    { deck | hand = nextHand }
             in
             if isValid then
-                ( { model
-                    | move = Nothing
-                    , actionCount = nextActionCount
-                    , board = nextBoard
-                  }
+                ( updateDeck model.player
+                    nextDeck
+                    { model
+                        | actionCount = nextActionCount
+                        , board = nextBoard
+                    }
                 , Cmd.none
                 )
 
             else
                 ( model, Cmd.none )
 
-        SelectCard card player ->
+        SelectCard idx selectableCard player ->
             let
-                nextMove =
-                    if model.move == Just card then
-                        Nothing
+                deck =
+                    getPlayerDeck player model
 
-                    else
-                        Just card
+                hasSelection =
+                    List.any Playable.isSelected deck.hand
+
+                nextHand =
+                    List.indexedMap
+                        (\i card ->
+                            case ( idx == i, hasSelection ) of
+                                ( True, True ) ->
+                                    Playable.deselect card
+
+                                ( True, False ) ->
+                                    if not (Playable.isExhausted card) then
+                                        Playable.select card
+
+                                    else
+                                        card
+
+                                ( False, True ) ->
+                                    card
+
+                                ( False, False ) ->
+                                    card
+                        )
+                        deck.hand
+
+                nextDeck =
+                    { deck | hand = nextHand }
             in
-            ( { model | move = nextMove }, Cmd.none )
+            ( updateDeck player nextDeck model, Cmd.none )
 
         DrawHand player ->
             let
@@ -339,9 +375,24 @@ shuffleDeck onShuffle player deck =
 -- Is Valid Move --
 
 
+selectedMove : Model -> Maybe Card.Card
+selectedMove model =
+    let
+        deck =
+            getPlayerDeck model.player model
+
+        hand =
+            deck.hand
+
+        selectedCard =
+            List.Extra.find Playable.isSelected hand
+    in
+    Maybe.map Playable.unwrap selectedCard
+
+
 isValidMove : Model -> Int -> Int -> Bool
 isValidMove model rowIdx colIdx =
-    case model.move of
+    case selectedMove model of
         Just Card.Place ->
             isValidPlace model rowIdx colIdx
 
@@ -409,10 +460,10 @@ isValidPieceMove :
 isValidPieceMove dirR dirC rowIdx colIdx player board =
     let
         pieceAtEnd =
-            Debug.log "At End" (hasPieceAt rowIdx colIdx player board)
+            hasPieceAt rowIdx colIdx player board
 
         pieceAtStart =
-            Debug.log "At Start" (hasPieceAt (dirR rowIdx) (dirC colIdx) player board)
+            hasPieceAt (dirR rowIdx) (dirC colIdx) player board
     in
     pieceAtStart && not pieceAtEnd
 
@@ -510,7 +561,7 @@ getPieceOnBoard rowIdx colIdx board =
 
 handleMove : Model -> Int -> Int -> Board
 handleMove model rowIdx colIdx =
-    case model.move of
+    case selectedMove model of
         Just Card.Place ->
             placePiece model.player rowIdx colIdx model.board
 
@@ -734,9 +785,9 @@ viewCardList model =
     div [ class "flex flex-row space-x-2" ] (cardList model cards)
 
 
-cardList : Model -> List Card.Card -> List (Html Msg)
+cardList : Model -> List (Playable Card.Card) -> List (Html Msg)
 cardList model cards =
-    List.map (cardToButton model) cards
+    List.indexedMap (cardToButton model) cards
 
 
 withPlayerStyle : Player -> String -> String
@@ -749,27 +800,35 @@ withPlayerStyle player style =
             String.join " " [ modenaStyle, style ]
 
 
-cardToButton : Model -> Card.Card -> Html Msg
-cardToButton model card =
+cardToButton : Model -> Int -> Playable Card.Card -> Html Msg
+cardToButton model idx card =
     let
         baseStyle =
-            withPlayerStyle model.player "btn-primary"
+            "btn-primary"
+
+        unplayedStyle =
+            playerStyle model.player
 
         activeStyle =
-            "border-gray-900"
+            "border-2 border-yellow-500 bg-gray-500"
+
+        exhaustedStyle =
+            "bg-gray-200"
 
         costText =
-            Card.showCost card
+            Card.showCost (Playable.unwrap card)
 
         cardText =
-            String.join " " [ Card.show card, costText ]
+            String.join " " [ Card.show (Playable.unwrap card), costText ]
     in
     button
         [ classList
-            [ ( activeStyle, Card.isEqual card model.move )
-            , ( baseStyle, True )
+            [ ( baseStyle, True )
+            , ( unplayedStyle, Playable.isNotSelected card )
+            , ( activeStyle, Playable.isSelected card )
+            , ( exhaustedStyle, Playable.isExhausted card )
             ]
-        , onClick <| SelectCard card model.player
+        , onClick <| SelectCard idx card model.player
         ]
         [ text cardText ]
 
