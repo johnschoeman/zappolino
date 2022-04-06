@@ -44,11 +44,27 @@ type alias Flags =
 
 type alias Model =
     { player : Player
-    , actionCount : Int
+    , tacticCount : Int
+    , strategyCount : Int
     , bolognaDeck : Deck
     , modenaDeck : Deck
     , board : Board
     }
+
+
+initialStrategyCount : Int
+initialStrategyCount =
+    1
+
+
+initialTacticCount : Int
+initialTacticCount =
+    3
+
+
+handSize : Int
+handSize =
+    3
 
 
 init : Flags -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
@@ -59,7 +75,8 @@ init _ _ _ =
 
         initialModel =
             { player = Bologna
-            , actionCount = 3
+            , tacticCount = initialTacticCount
+            , strategyCount = initialStrategyCount
             , bolognaDeck = initialDeck
             , modenaDeck = initialDeck
             , board = initialBoard
@@ -187,7 +204,8 @@ update msg model =
                 nextModel =
                     { model
                         | player = nextPlayer model.player
-                        , actionCount = 3
+                        , tacticCount = initialTacticCount
+                        , strategyCount = initialStrategyCount
                         , board = nextBoard
                     }
             in
@@ -201,13 +219,13 @@ update msg model =
                     Card.toActionCost (selectedMove model)
 
                 isValid =
-                    model.actionCount >= actionCost && isValidMove model rowIdx colIdx
+                    hasEnoughPoints model actionCost && isValidMove model rowIdx colIdx
 
                 nextBoard =
                     handleMove model rowIdx colIdx
 
-                nextActionCount =
-                    model.actionCount - actionCost
+                ( nextStrategyCount, nextTacticCount ) =
+                    spendPoints model actionCost
 
                 deck =
                     getPlayerDeck model.player model
@@ -225,7 +243,8 @@ update msg model =
                 ( updateDeck model.player
                     nextDeck
                     { model
-                        | actionCount = nextActionCount
+                        | tacticCount = nextTacticCount
+                        , strategyCount = nextStrategyCount
                         , board = nextBoard
                     }
                 , Cmd.none
@@ -299,7 +318,7 @@ update msg model =
         GetShuffledDeckAndDraw player sDeck ->
             let
                 nextDeck =
-                    drawTo 3 sDeck
+                    drawTo handSize sDeck
 
                 nextModel =
                     case player of
@@ -325,7 +344,7 @@ update msg model =
 
 
 drawTo : Int -> Deck.Deck -> Deck.Deck
-drawTo handSize deck =
+drawTo size deck =
     let
         oldHandLength =
             List.length deck.hand
@@ -333,7 +352,7 @@ drawTo handSize deck =
         unplayedLength =
             List.length deck.drawPile
     in
-    if oldHandLength >= handSize || unplayedLength == 0 then
+    if oldHandLength >= size || unplayedLength == 0 then
         deck
 
     else
@@ -344,12 +363,12 @@ drawHand : Player -> Deck.Deck -> ( Deck.Deck, Cmd Msg )
 drawHand player deck =
     let
         nextDeck =
-            drawTo 3 deck
+            drawTo handSize deck
 
         handLength =
             List.length nextDeck.hand
     in
-    if handLength >= 3 then
+    if handLength >= handSize then
         ( nextDeck, Cmd.none )
 
     else
@@ -373,6 +392,16 @@ shuffleDeck onShuffle player deck =
 
 
 -- Is Valid Move --
+
+
+hasEnoughPoints : Model -> Card.Cost -> Bool
+hasEnoughPoints model ( strategyCost, tacticCost ) =
+    model.strategyCount >= strategyCost && model.tacticCount >= tacticCost
+
+
+spendPoints : Model -> Card.Cost -> Card.Cost
+spendPoints model ( strategyCost, tacticCost ) =
+    ( model.strategyCount - strategyCost, model.tacticCount - tacticCost )
 
 
 selectedMove : Model -> Maybe Card.Card
@@ -705,9 +734,9 @@ pageContent model =
     div [ class "p-8 space-y-4" ]
         [ div [ class "flex flex-row space-x-2" ]
             [ viewPlayer model.player
-            , viewActionCount model.actionCount
             ]
         , viewBoard model.board
+        , viewActionCount model
         , viewCardList model
         , endTurnButton
         , viewDeck model
@@ -761,9 +790,18 @@ cardToItem card =
     div [] [ text <| Card.show card ]
 
 
-viewActionCount : Int -> Html Msg
-viewActionCount count =
-    div [ class "text-2xl text-gray-800" ] [ text <| String.fromInt count ]
+viewActionCount : Model -> Html Msg
+viewActionCount model =
+    let
+        actionText =
+            String.join " "
+                [ "Strategy:"
+                , String.fromInt model.strategyCount
+                , "Tactic:"
+                , String.fromInt model.tacticCount
+                ]
+    in
+    div [ class "text-2xl text-gray-800" ] [ text actionText ]
 
 
 endTurnButton : Html Msg
@@ -815,11 +853,14 @@ cardToButton model idx card =
         exhaustedStyle =
             "bg-gray-200"
 
-        costText =
-            Card.showCost (Playable.unwrap card)
+        strategyCostText =
+            String.join "" [ "Strategy: ", Card.showStrategyCost (Playable.unwrap card) ]
+
+        taticCostText =
+            String.join "" [ "Tactic: ", Card.showTacticCost (Playable.unwrap card) ]
 
         cardText =
-            String.join " " [ Card.show (Playable.unwrap card), costText ]
+            Card.show (Playable.unwrap card)
     in
     button
         [ classList
@@ -830,7 +871,12 @@ cardToButton model idx card =
             ]
         , onClick <| SelectCard idx card model.player
         ]
-        [ text cardText ]
+        [ div [ class "flex flex-col items-start" ]
+            [ div [ class "font-bold" ] [ text cardText ]
+            , div [] [ text strategyCostText ]
+            , div [] [ text taticCostText ]
+            ]
+        ]
 
 
 viewPlayer : Player -> Html Msg

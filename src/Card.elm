@@ -8,6 +8,18 @@ type Card
     | Charge
 
 
+type alias StrategyCost =
+    Int
+
+
+type alias TacticCost =
+    Int
+
+
+type alias Cost =
+    ( StrategyCost, TacticCost )
+
+
 show : Card -> String
 show card =
     case card of
@@ -24,9 +36,22 @@ show card =
             "Charge"
 
 
-showCost : Card -> String
-showCost card =
-    String.join "" [ "(", String.fromInt <| toActionCost <| Just card, ")" ]
+showStrategyCost : Card -> String
+showStrategyCost card =
+    let
+        ( strategyCost, _ ) =
+            toActionCost (Just card)
+    in
+    String.fromInt strategyCost
+
+
+showTacticCost : Card -> String
+showTacticCost card =
+    let
+        ( _, tacticCost ) =
+            toActionCost (Just card)
+    in
+    String.fromInt tacticCost
 
 
 isEqual : Card -> Maybe Card -> Bool
@@ -39,20 +64,20 @@ isEqual c1 maybeC2 =
             False
 
 
-toActionCost : Maybe Card -> Int
+toActionCost : Maybe Card -> Cost
 toActionCost card =
     case card of
         Just Place ->
-            2
+            ( 1, 0 )
 
         Just FlankLeft ->
-            1
+            ( 0, 1 )
 
         Just FlankRight ->
-            1
+            ( 0, 1 )
 
         Just Charge ->
-            1
+            ( 0, 1 )
 
         Nothing ->
-            0
+            ( 0, 0 )
