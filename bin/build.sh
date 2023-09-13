@@ -6,4 +6,4 @@ mkdir build
 cp -r public/* build
 
 # Build
-bun build ./src/index.js --outdir ./build/static/js
+bun ./bin/esbuild.js

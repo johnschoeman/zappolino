@@ -1,7 +1,7 @@
-const chokidar = require('chokidar')
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
-const browserSync = require("browser-sync").create();
+const chokidar = require("chokidar")
+const util = require("util")
+const exec = util.promisify(require("child_process").exec)
+const browserSync = require("browser-sync").create()
 const chalk = require("chalk")
 
 const logPrefix = "[" + chalk.blue("Developsync") + "]"
@@ -12,21 +12,20 @@ const dotFilesRegex = /(^|[\/\\])\../
 
 const watcher = chokidar.watch(SOURCE_DIR, {
   ignored: dotFilesRegex,
-  persistent: true
-});
+  persistent: true,
+})
 
-
-const startDevServer = async (log) => {
+const startDevServer = async log => {
   log("Starting Dev Server...")
 
   // Watch and Build
   const buildApp = async () => {
     log("Building app...")
     try {
-      const { stdout, stderr } = await exec('bin/build.sh');
+      const { stdout, stderr } = await exec("bin/build.sh")
       log(stdout)
       if (stderr && stderr.length > 0) {
-        log(stderr);
+        log(stderr)
       }
     } catch (error) {
       const { stderr } = error
@@ -36,7 +35,7 @@ const startDevServer = async (log) => {
 
   await buildApp()
 
-  const allEvents = 'all'
+  const allEvents = "all"
   watcher.on(allEvents, async (event, path) => {
     log(event, path)
     await buildApp()
@@ -56,7 +55,7 @@ const startDevServer = async (log) => {
   browserSync.init({
     open: false,
     server: "./build",
-    snippet: false
+    snippet: false,
   })
 }
 
