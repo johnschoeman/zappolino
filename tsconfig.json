@@ -1,5 +1,10 @@
 {
   "compilerOptions": {
+    "paths": {
+      "@app/*": [
+        "./src/*"
+      ]
+    },
     "strict": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
