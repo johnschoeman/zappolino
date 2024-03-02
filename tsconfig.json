@@ -2,16 +2,17 @@
   "compilerOptions": {
     "target": "es6",
     "baseUrl": "./",
+    "module": "esnext",
     "paths": {
       "@app/*": [
         "src/*"
       ]
     },
+    "types": ["bun-types"],
     "strict": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
     "exactOptionalPropertyTypes": true,
-    "noEmit": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
@@ -24,6 +25,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
     "lib": [

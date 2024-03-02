@@ -14,8 +14,10 @@
     "lint:fix": "eslint ./ --fix",
     "prettier": "prettier -l '**/*.{js,jsx,ts,tsx}'",
     "format": "prettier -w '**/*.{js,jsx,ts,tsx}'",
-    "tsc": "tsc",
-    "tsc:watch": "tsc --watch"
+    "tsc": "npx tsc",
+    "tsc:watch": "npx tsc --watch",
+    "test": "bun test",
+    "test:watch": "bun test --watch"
   },
   "dependencies": {
     "effect": "^2.4.1",
@@ -28,6 +30,7 @@
     "autoprefixer": "^10.4.0",
     "babel-preset-solid": "^1.7.7",
     "browser-sync": "^2.27.9",
+    "bun-types": "^1.0.1",
     "chalk": "2.4.2",
     "esbuild": "^0.19.2",
     "esbuild-plugin-solid": "^0.5.0",
