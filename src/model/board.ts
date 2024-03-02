@@ -1,4 +1,4 @@
-import { A, F, O, S } from "@app/fpts"
+import { pipe, ReadonlyArray } from "effect"
 
 export type Board = Row[]
 
@@ -11,10 +11,10 @@ const emptyRow: Row = ["Empty", "Empty", "Empty", "Empty", "Empty"]
 export const empty: Board = [emptyRow, emptyRow, emptyRow, emptyRow, emptyRow]
 
 export const show = (board: Board): string => {
-  return F.pipe(
+  return pipe(
     board,
-    A.map(A.intercalate(S.Monoid)("-")),
-    A.intercalate(S.Monoid)("|"),
+    ReadonlyArray.map(ReadonlyArray.join("-")),
+    ReadonlyArray.join("|"),
   )
 }
 
@@ -23,15 +23,13 @@ export const update =
   (colIdx: number) =>
   (nextCell: Cell) =>
   (board: Board): Board => {
-    return F.pipe(
+    return pipe(
       board,
-      A.modifyAt(rowIdx, (row): Row => {
-        return F.pipe(
+      ReadonlyArray.modify(rowIdx, (row: Row): Row => {
+        return pipe(
           row,
-          A.modifyAt(colIdx, () => nextCell),
-          O.getOrElse(() => emptyRow),
+          ReadonlyArray.modify(colIdx, () => nextCell),
         )
       }),
-      O.getOrElse(() => empty),
     )
   }
