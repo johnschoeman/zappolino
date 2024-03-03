@@ -1,3 +1,4 @@
+import { deckFactory } from "./deckFactory"
 import { gameFactory } from "./gameFactory"
 
-export { gameFactory }
+export { deckFactory, gameFactory }

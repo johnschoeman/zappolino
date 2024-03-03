@@ -3,17 +3,13 @@ import { pipe, ReadonlyArray } from "effect"
 import * as Board from "./board"
 import { Deck } from "./deck"
 import * as Player from "./player"
+import * as Position from "./position"
 
 export type Game = {
   board: Board.Board<Board.Cell>
   currentPlayer: Player.Player
   deckWhite: Deck.Deck
   deckBlack: Deck.Deck
-}
-
-type Position = { rowIdx: number; colIdx: number }
-const buildPosition = (rowIdx: number, colIdx: number): Position => {
-  return {rowIdx, colIdx}
 }
 
 export const initial: Game = {
@@ -43,7 +39,7 @@ export const addPiece =
       board: nextBoard,
       currentPlayer,
       deckWhite,
-      deckBlack
+      deckBlack,
     }
   }
 
@@ -58,7 +54,7 @@ const isValidPlacement =
     }
   }
 
-type GameAndPositions = [Game, Position[]]
+type GameAndPositions = [Game, Position.Position[]]
 
 export const progress = (game: Game): Game => {
   const nextGame = pipe(
@@ -79,7 +75,7 @@ const getPiecePositionsFor = ([
   _positions,
 ]: GameAndPositions): GameAndPositions => {
   const { board, currentPlayer } = game
-  const nextPositions = Board.reduceWithIndex<Board.Cell, Position[]>(
+  const nextPositions = Board.reduceWithIndex<Board.Cell, Position.Position[]>(
     [],
     (rowIdx, colIdx, acc, cell) => {
       if (Board.cellBelongsTo(currentPlayer)(cell)) {
@@ -98,17 +94,19 @@ const incrementPositionFor = ([
   positions,
 ]: GameAndPositions): GameAndPositions => {
   const { currentPlayer } = game
-  const nextPositions = ReadonlyArray.map((position: Position): Position => {
-    const { rowIdx, colIdx } = position
-    switch (currentPlayer) {
-      case "Black":
-        return buildPosition(rowIdx + 1, colIdx)
-      case "White":
-        return buildPosition(rowIdx - 1, colIdx)
-      default:
-        return buildPosition(rowIdx, colIdx)
-    }
-  })(positions)
+  const nextPositions = ReadonlyArray.map(
+    (position: Position.Position): Position.Position => {
+      const { rowIdx, colIdx } = position
+      switch (currentPlayer) {
+        case "Black":
+          return Position.build(rowIdx + 1, colIdx)
+        case "White":
+          return Position.build(rowIdx - 1, colIdx)
+        default:
+          return Position.build(rowIdx, colIdx)
+      }
+    },
+  )(positions)
 
   return [game, nextPositions]
 }
