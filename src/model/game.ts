@@ -20,7 +20,6 @@ export const initial: Game = {
   // deckBlack: Deck.initial,
 }
 
-
 export const addPiece =
   (rowIdx: number) =>
   (colIdx: number) =>

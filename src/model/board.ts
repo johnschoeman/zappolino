@@ -1,4 +1,4 @@
-import { pipe, ReadonlyArray, Option } from "effect"
+import { pipe, ReadonlyArray, Option, String } from "effect"
 
 import * as Player from "./player"
 
@@ -11,6 +11,15 @@ import * as Player from "./player"
 // 4 | - - - - - | 4
 //     A B C D E
 // ---- White ----
+
+// Short Notation
+// `
+// --p--
+// -----
+// -----
+// -----
+// -P---
+// `
 
 export type Board<T> = Row<T>[]
 
@@ -53,6 +62,40 @@ export const buildPiece = (player: Player.Player): Piece => {
   }
 }
 
+const parseCell = (input: string): Cell => {
+  switch (input) {
+    case "-":
+      return buildCell("Empty")
+    case "p":
+      return buildCell("Black")
+    case "P":
+      return buildCell("White")
+    default:
+      return buildCell("Empty")
+  }
+}
+
+export const parse = (input: string): Board<Cell> => {
+  const result: Board<Cell> = pipe(
+    input,
+    String.trim,
+    String.split("\n"),
+    ReadonlyArray.map(rowStr => {
+      return pipe(rowStr, String.split(""), ReadonlyArray.map(parseCell))
+    }),
+  )
+
+  return result
+}
+
+export const initial: Board<Cell> = [
+  buildRow(["Empty", "Empty", "Empty", "Empty", "Empty"]),
+  buildRow(["Empty", "Empty", "Empty", "Empty", "Empty"]),
+  buildRow(["Empty", "Empty", "Empty", "Empty", "Empty"]),
+  buildRow(["Empty", "Empty", "Empty", "Empty", "Empty"]),
+  buildRow(["Empty", "Empty", "Empty", "Empty", "Empty"]),
+]
+
 export const foldCell =
   <T>(onPiece: (piece: Piece) => T, onEmpty: () => T) =>
   (cell: Cell): T => {
@@ -87,6 +130,10 @@ export const empty: Board<Cell> = [
   emptyRow,
   emptyRow,
 ]
+
+export const showStr = (board: Board<Cell>): string => {
+  return show(showCell)(board)
+}
 
 export const show =
   <T>(showElement: (el: T) => string) =>

@@ -30,11 +30,7 @@ export const discardHand = ([hand, drawPile, disc]: Deck): Deck => {
   return [nextHand, drawPile, nextDisc]
 }
 
-export const shuffleDiscIntoDraw = ([
-  hand,
-  drawPile,
-  discPile,
-]: Deck): Deck => {
+export const shuffleDiscIntoDraw = ([hand, drawPile, discPile]: Deck): Deck => {
   const s = Effect.gen(function* (_) {
     const shuffled = yield* _(Random.shuffle(discPile))
 

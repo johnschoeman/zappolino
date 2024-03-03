@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "effect": "^2.4.1",
+    "fishery": "^2.2.2",
     "react": "^18.2.0",
     "solid-js": "^1.7.11"
   },

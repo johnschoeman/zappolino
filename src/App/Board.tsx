@@ -63,8 +63,7 @@ const CellView = ({ cell, rowIdx, colIdx }: CellViewProps): JSX.Element => {
       class="border w-32 h-32 p-4 flex items-center justify-center"
       onClick={handleOnClickCell}
     >
-      {pipe(cell, Board.showCell) }
-
+      {pipe(cell, Board.showCell)}
     </div>
   )
 }
