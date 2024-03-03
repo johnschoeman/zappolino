@@ -2,10 +2,13 @@ import { pipe, ReadonlyArray } from "effect"
 
 import * as Board from "./board"
 import * as Player from "./player"
+// import * as Deck from "./deck"
 
 export type Game = {
   board: Board.Board<Board.Cell>
   currentPlayer: Player.Player
+  // deckWhite: Deck.Deck
+  // deckBlack: Deck.Deck
 }
 
 type Position = { rowIdx: number; colIdx: number }
@@ -13,7 +16,10 @@ type Position = { rowIdx: number; colIdx: number }
 export const initial: Game = {
   board: Board.empty,
   currentPlayer: "White",
+  // deckWhite: Deck.initial,
+  // deckBlack: Deck.initial,
 }
+
 
 export const addPiece =
   (rowIdx: number) =>
