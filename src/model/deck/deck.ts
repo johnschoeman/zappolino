@@ -1,4 +1,4 @@
-import { pipe, Effect, Random, ReadonlyArray } from "effect"
+import { Effect, pipe, Random, ReadonlyArray } from "effect"
 
 type Card = "Place" | "MoveLeft" | "MoveRight" | "MoveForward"
 
@@ -9,6 +9,8 @@ export type Draw = Pile
 export type Hand = Pile
 
 export type Deck = [Hand, Draw, Disc]
+
+export const initial: Deck = [[], [], []]
 
 export const draw =
   (n: number) =>

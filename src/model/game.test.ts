@@ -1,6 +1,7 @@
 import { expect, test } from "bun:test"
 
 import { gameFactory } from "../../factories"
+
 import * as Board from "./board"
 import * as Game from "./game"
 import * as Player from "./player"
@@ -113,7 +114,7 @@ P--P-
   expectGameToMatch(result3, expected3)
 })
 
-const expectGameToMatch = (gameA: Game.Game, gameB: Game.Game) => {
+const expectGameToMatch = (gameA: Game.Game, gameB: Game.Game): void => {
   const gameAText = Game.show(gameA)
   const gameBText = Game.show(gameB)
 

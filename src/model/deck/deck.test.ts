@@ -1,5 +1,5 @@
-import { pipe, ReadonlyArray, String } from "effect"
 import { expect, test } from "bun:test"
+import { pipe, ReadonlyArray, String } from "effect"
 
 import * as Deck from "./deck"
 
@@ -88,7 +88,7 @@ test("Deck.shuffleDiscIntoDraw - It shuffles the discard into the draw", () => {
   expectPileToHaveSameCards(resultDraw, expectedDraw)
 })
 
-const expectPileToHaveSameCards = (pileA: Deck.Pile, pileB: Deck.Pile) => {
+const expectPileToHaveSameCards = (pileA: Deck.Pile, pileB: Deck.Pile): void => {
   const pileASorted = pipe(pileA, ReadonlyArray.sort(String.Order))
   const pileBSorted = pipe(pileB, ReadonlyArray.sort(String.Order))
 

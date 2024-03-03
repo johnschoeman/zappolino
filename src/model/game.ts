@@ -1,37 +1,40 @@
 import { pipe, ReadonlyArray } from "effect"
 
 import * as Board from "./board"
+import { Deck } from "./deck"
 import * as Player from "./player"
-// import * as Deck from "./deck"
 
 export type Game = {
   board: Board.Board<Board.Cell>
   currentPlayer: Player.Player
-  // deckWhite: Deck.Deck
-  // deckBlack: Deck.Deck
+  deckWhite: Deck.Deck
+  deckBlack: Deck.Deck
 }
 
 type Position = { rowIdx: number; colIdx: number }
+const buildPosition = (rowIdx: number, colIdx: number): Position => {
+  return {rowIdx, colIdx}
+}
 
 export const initial: Game = {
   board: Board.empty,
   currentPlayer: "White",
-  // deckWhite: Deck.initial,
-  // deckBlack: Deck.initial,
+  deckWhite: Deck.initial,
+  deckBlack: Deck.initial,
 }
 
 export const addPiece =
   (rowIdx: number) =>
   (colIdx: number) =>
   (game: Game): Game => {
-    const { board, currentPlayer } = game
+    const { board, currentPlayer, deckWhite, deckBlack } = game
     const piece: Board.Cell = {
       kind: "Piece",
       player: currentPlayer,
     }
 
     if (!isValidPlacement(currentPlayer)(rowIdx)) {
-      return { board, currentPlayer }
+      return { board, currentPlayer, deckWhite, deckBlack }
     }
 
     const nextBoard = Board.modifyAt(rowIdx)(colIdx)(piece)(board)
@@ -39,6 +42,8 @@ export const addPiece =
     return {
       board: nextBoard,
       currentPlayer,
+      deckWhite,
+      deckBlack
     }
   }
 
@@ -63,7 +68,7 @@ export const progress = (game: Game): Game => {
     removePiecesFor,
     addPiecesFor,
     togglePlayer,
-    ([game]) => game,
+    ([game_]) => game_,
   )
 
   return nextGame
@@ -93,13 +98,15 @@ const incrementPositionFor = ([
   positions,
 ]: GameAndPositions): GameAndPositions => {
   const { currentPlayer } = game
-  const nextPositions = ReadonlyArray.map((position: Position) => {
+  const nextPositions = ReadonlyArray.map((position: Position): Position => {
     const { rowIdx, colIdx } = position
     switch (currentPlayer) {
       case "Black":
-        return { rowIdx: rowIdx + 1, colIdx }
+        return buildPosition(rowIdx + 1, colIdx)
       case "White":
-        return { rowIdx: rowIdx - 1, colIdx }
+        return buildPosition(rowIdx - 1, colIdx)
+      default:
+        return buildPosition(rowIdx, colIdx)
     }
   })(positions)
 
@@ -131,7 +138,7 @@ const addPiecesFor = ([
   game,
   positions,
 ]: GameAndPositions): GameAndPositions => {
-  const { board, currentPlayer } = game
+  const { board, currentPlayer, deckWhite, deckBlack } = game
   const nextBoard: Board.Board<Board.Cell> = pipe(
     positions,
     ReadonlyArray.reduce(board, (acc, position) => {
@@ -144,7 +151,7 @@ const addPiecesFor = ([
     }),
   )
 
-  return [{ board: nextBoard, currentPlayer }, []]
+  return [{ board: nextBoard, currentPlayer, deckWhite, deckBlack }, []]
 }
 
 const togglePlayer = ([

@@ -1,4 +1,4 @@
-import { pipe, ReadonlyArray, Option, String } from "effect"
+import { Option, pipe, ReadonlyArray, String } from "effect"
 
 import * as Player from "./player"
 

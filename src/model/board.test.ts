@@ -27,7 +27,7 @@ test("Board.parse - when given a valid string notation, it returns a board", () 
 const expectBoardsToEqual = (
   boardA: Board.Board<Board.Cell>,
   boardB: Board.Board<Board.Cell>,
-) => {
+): void => {
   const boardAStr = Board.showStr(boardA)
   const boardBStr = Board.showStr(boardB)
   expect(boardAStr).toEqual(boardBStr)

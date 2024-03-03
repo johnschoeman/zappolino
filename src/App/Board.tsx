@@ -1,6 +1,6 @@
 import { createSignal, JSX } from "solid-js"
-
 import { pipe, ReadonlyArray } from "effect"
+
 import { Board, Game } from "@app/model"
 
 const [game, setGame] = createSignal<Game.Game>(Game.initial)
