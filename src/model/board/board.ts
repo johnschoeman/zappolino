@@ -1,6 +1,7 @@
-import { Option, pipe, ReadonlyArray, String } from "effect"
+import { Match, Option, pipe, ReadonlyArray, String } from "effect"
 
-import * as Player from "./player"
+import * as Player from "../player"
+import * as Cell from "./cell"
 
 // ---- Black ----
 //     A B C D E
@@ -25,70 +26,28 @@ export type Board<T> = Row<T>[]
 
 export type Row<T> = T[]
 
-export type Piece = { kind: "Piece"; player: Player.Player }
-export type Empty = { kind: "Empty" }
-export type Cell = Piece | Empty
-
-export const cellBelongsTo =
-  (player: Player.Player) =>
-  (cell: Cell): boolean => {
-    return foldCell(
-      ({ player: piecePlayer }) => piecePlayer === player,
-      () => false,
-    )(cell)
-  }
-
-export const buildCell = (kind: "Empty" | "Black" | "White"): Cell => {
-  switch (kind) {
-    case "Empty":
-      return { kind: "Empty" }
-    case "Black":
-      return buildPiece("Black")
-    case "White":
-      return buildPiece("White")
-  }
-}
+export type CellWithPos = { cell: Cell.Cell; rowIdx: number; colIdx: number }
 
 export const buildRow = (
   template: ("Empty" | "Black" | "White")[],
-): Row<Cell> => {
-  return pipe(template, ReadonlyArray.map(buildCell))
+): Row<Cell.Cell> => {
+  return pipe(template, ReadonlyArray.map(Cell.build))
 }
 
-export const buildPiece = (player: Player.Player): Piece => {
-  return {
-    kind: "Piece",
-    player,
-  }
-}
-
-const parseCell = (input: string): Cell => {
-  switch (input) {
-    case "-":
-      return buildCell("Empty")
-    case "p":
-      return buildCell("Black")
-    case "P":
-      return buildCell("White")
-    default:
-      return buildCell("Empty")
-  }
-}
-
-export const parse = (input: string): Board<Cell> => {
-  const result: Board<Cell> = pipe(
+export const parse = (input: string): Board<Cell.Cell> => {
+  const result: Board<Cell.Cell> = pipe(
     input,
     String.trim,
     String.split("\n"),
     ReadonlyArray.map(rowStr => {
-      return pipe(rowStr, String.split(""), ReadonlyArray.map(parseCell))
+      return pipe(rowStr, String.split(""), ReadonlyArray.map(Cell.parse))
     }),
   )
 
   return result
 }
 
-export const initial: Board<Cell> = [
+export const initial: Board<Cell.Cell> = [
   buildRow(["Empty", "Empty", "Empty", "Empty", "Empty"]),
   buildRow(["Empty", "Empty", "Empty", "Empty", "Empty"]),
   buildRow(["Empty", "Empty", "Empty", "Empty", "Empty"]),
@@ -96,34 +55,24 @@ export const initial: Board<Cell> = [
   buildRow(["Empty", "Empty", "Empty", "Empty", "Empty"]),
 ]
 
-export const foldCell =
-  <T>(onPiece: (piece: Piece) => T, onEmpty: () => T) =>
-  (cell: Cell): T => {
-    switch (cell.kind) {
-      case "Piece":
-        return onPiece(cell)
-      case "Empty":
-        return onEmpty()
-    }
-  }
-
-export const isPlayers = (player: Player.Player): ((cell: Cell) => boolean) =>
-  foldCell(
-    ({ player: piecePlayer }) => piecePlayer === player,
-    () => false,
+export const isPlayers = (
+  player: Player.Player,
+): ((cell: Cell.Cell) => boolean) =>
+  Cell.match.pipe(
+    Match.tag("Piece", ({ player: piecePlayer }) => piecePlayer === player),
+    Match.tag("Empty", () => false),
+    Match.exhaustive,
   )
 
-export const emptyCell: Cell = { kind: "Empty" }
-
-const emptyRow: Row<Cell> = [
-  emptyCell,
-  emptyCell,
-  emptyCell,
-  emptyCell,
-  emptyCell,
+const emptyRow: Row<Cell.Cell> = [
+  Cell.empty,
+  Cell.empty,
+  Cell.empty,
+  Cell.empty,
+  Cell.empty,
 ]
 
-export const empty: Board<Cell> = [
+export const empty: Board<Cell.Cell> = [
   emptyRow,
   emptyRow,
   emptyRow,
@@ -131,8 +80,8 @@ export const empty: Board<Cell> = [
   emptyRow,
 ]
 
-export const showStr = (board: Board<Cell>): string => {
-  return show(showCell)(board)
+export const showStr = (board: Board<Cell.Cell>): string => {
+  return show(Cell.show)(board)
 }
 
 export const show =
@@ -147,31 +96,22 @@ export const show =
     )
   }
 
-export const showCell = (cell: Cell): string => {
-  return foldCell(
-    ({ player }) => {
-      return `${Player.show(player)}`
-    },
-    () => "-",
-  )(cell)
-}
-
 export const movePiece =
   (fromRowIdx: number) =>
   (fromColIdx: number) =>
   (toRowIdx: number) =>
   (toColIdx: number) =>
-  (board: Board<Cell>): Board<Cell> => {
-    const piece: Cell = pipe(
+  (board: Board<Cell.Cell>): Board<Cell.Cell> => {
+    const piece: Cell.Cell = pipe(
       board,
       lookup(fromRowIdx)(fromColIdx),
-      Option.getOrElse(() => emptyCell as Cell),
+      Option.getOrElse(() => Cell.empty),
     )
 
     const result = pipe(
       board,
       modifyAt(toRowIdx)(toColIdx)(piece),
-      modifyAt(fromRowIdx)(fromColIdx)(emptyCell),
+      modifyAt(fromRowIdx)(fromColIdx)(Cell.empty),
     )
 
     return result
@@ -239,11 +179,11 @@ export const reduceWithIndex =
 export const modifyAt =
   (rowIdx: number) =>
   (colIdx: number) =>
-  (nextCell: Cell) =>
-  (board: Board<Cell>): Board<Cell> => {
+  (nextCell: Cell.Cell) =>
+  (board: Board<Cell.Cell>): Board<Cell.Cell> => {
     return pipe(
       board,
-      ReadonlyArray.modify(rowIdx, (row): Row<Cell> => {
+      ReadonlyArray.modify(rowIdx, (row): Row<Cell.Cell> => {
         return pipe(
           row,
           ReadonlyArray.modify(colIdx, () => nextCell),

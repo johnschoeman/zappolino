@@ -1,11 +1,13 @@
-export type Player = "Black" | "White"
+export type White = "White"
+export type Black = "Black"
+export type Player = Black | White
 
 export const show = (player: Player): string => {
   switch (player) {
     case "Black":
-      return "B"
+      return "Black"
     case "White":
-      return "W"
+      return "White"
   }
 }
 

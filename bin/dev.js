@@ -55,7 +55,7 @@ const startDevServer = async log => {
   browserSync.init({
     open: false,
     server: "./build",
-    snippet: false,
+    snippet: true,
   })
 }
 

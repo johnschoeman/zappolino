@@ -2,4 +2,6 @@
 bin
 build
 *.config.js
+*.config.ts
 public
+tests-examples

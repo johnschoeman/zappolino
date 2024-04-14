@@ -1,3 +1,4 @@
+import * as Card from "./card"
 import * as Deck from "./deck"
 
-export { Deck }
+export { Card, Deck }
