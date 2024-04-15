@@ -10,11 +10,11 @@ export const gameFactory = Factory.define<Game.Game>(() => {
     selectedCardIdx: Option.none(),
     deckWhite: Deck.initial,
     deckBlack: Deck.initial,
-    turnPoints: {
-      strategyPoints: 1,
-      tacticPoints: 1,
-    },
+    turnPoints: Game.initialTurnPoints,
     supply: Supply.initial,
+    turnCount: 1,
+    hegemonyBlack: 0,
+    hegemonyWhite: 0,
   }
 
   return game

@@ -23,8 +23,6 @@ const StrategyAndTacticCounts = (): JSX.Element => {
 
   return (
     <div>
-      <h1 data-testid="current-player">{GameState.game().currentPlayer}</h1>
-
       <h1>
         Strategy Points:
         <span data-testid="strategy-count">{strategyCount()}</span>

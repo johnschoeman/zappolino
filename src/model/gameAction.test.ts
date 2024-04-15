@@ -95,9 +95,36 @@ test("GameAction.endTurn - It discards, draws a new hand, progress the board and
     turnPoints: {
       strategyPoints: 1,
       tacticPoints: 1,
+      resourcePoints: 0,
     },
     supply: Supply.initial,
+    turnCount: 1,
+    hegemonyBlack: 0,
+    hegemonyWhite: 0,
   }
+
+  expect(result).toEqual(expected)
+})
+
+test("GameAction.endTurn - When the player is black, it increments the turn count", () => {
+  const player = "Black"
+  const nextPlayer = "White"
+
+  const game: Game.Game = gameFactory.build({
+    currentPlayer: player,
+    deckBlack: deckFactory.build(),
+    deckWhite: deckFactory.build(),
+    turnCount: 2,
+  })
+
+  const result = GameAction.endTurn(game)
+
+  const expected: Game.Game = gameFactory.build({
+    currentPlayer: nextPlayer,
+    deckBlack: deckFactory.build(),
+    deckWhite: deckFactory.build(),
+    turnCount: 3,
+  })
 
   expect(result).toEqual(expected)
 })
@@ -161,8 +188,12 @@ P--P-
     turnPoints: {
       tacticPoints: 1,
       strategyPoints: 0,
+      resourcePoints: 0,
     },
     supply: Supply.initial,
+    turnCount: 1,
+    hegemonyWhite: 0,
+    hegemonyBlack: 0,
   }
 
   expect(result).toEqual(expected)
@@ -207,6 +238,7 @@ test("GameAction.selectSupplyPile - It consumes a strategy point and adds a card
     turnPoints: {
       tacticPoints: 1,
       strategyPoints: 0,
+      resourcePoints: 0,
     },
     supply: expectedSupply,
   })
@@ -247,6 +279,7 @@ test("GameAction.selectSupplyPile - If the supply count is 0, it does nothing", 
     turnPoints: {
       tacticPoints: 1,
       strategyPoints: 1,
+      resourcePoints: 0,
     },
     supply: expectedSupply,
   })
@@ -270,6 +303,7 @@ test("GameAction.selectSupplyPile - If the player has no strategy points, it doe
     turnPoints: {
       tacticPoints: 1,
       strategyPoints: 0,
+      resourcePoints: 0,
     },
     deckWhite,
     supply,
@@ -291,6 +325,7 @@ test("GameAction.selectSupplyPile - If the player has no strategy points, it doe
     turnPoints: {
       tacticPoints: 1,
       strategyPoints: 0,
+      resourcePoints: 0,
     },
     supply: expectedSupply,
   })

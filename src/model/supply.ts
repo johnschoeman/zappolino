@@ -18,7 +18,4 @@ const buildPile = (card: Card.Card): SupplyPile => {
   }
 }
 
-export const initial: Supply = pipe(
-  Card.all,
-  ReadonlyArray.map(buildPile)
-)
+export const initial: Supply = pipe(Card.all, ReadonlyArray.map(buildPile))

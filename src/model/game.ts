@@ -1,7 +1,7 @@
 import { Option, pipe, ReadonlyArray } from "effect"
 
 import { Board, Cell } from "./board"
-import { Deck } from "./deck"
+import { Card, Deck } from "./deck"
 import * as Player from "./player"
 import * as Position from "./position"
 import * as Supply from "./supply"
@@ -14,26 +14,34 @@ export type Game = {
   deckWhite: Deck.Deck
   deckBlack: Deck.Deck
   supply: Supply.Supply
+  turnCount: number
+  hegemonyWhite: number
+  hegemonyBlack: number
 }
 
 type TurnPoints = {
   strategyPoints: number
   tacticPoints: number
+  resourcePoints: number
 }
 
-const initalTurnPoints: TurnPoints = {
+export const initialTurnPoints: TurnPoints = {
   strategyPoints: 1,
   tacticPoints: 1,
+  resourcePoints: 0,
 }
 
 export const initial: Game = {
   board: Board.empty,
   currentPlayer: "White",
   selectedCardIdx: Option.none(),
-  turnPoints: initalTurnPoints,
+  turnPoints: initialTurnPoints,
   deckWhite: Deck.initial,
   deckBlack: Deck.initial,
   supply: Supply.initial,
+  turnCount: 1,
+  hegemonyBlack: 0,
+  hegemonyWhite: 0,
 }
 
 export const show = (game: Game): string => {
@@ -64,6 +72,16 @@ export const deckFor =
 
 // ---- Update Game State
 
+export const incrementTurnCount = (game: Game): Game => {
+  const currentPlayer = game.currentPlayer
+
+  if (currentPlayer === "Black") {
+    return { ...game, turnCount: game.turnCount + 1 }
+  } else {
+    return game
+  }
+}
+
 export const unselectHandCard = (game: Game): Game => {
   return {
     ...game,
@@ -92,13 +110,14 @@ export const consumeStrategyPoint = (game: Game): Game => {
   }
 }
 
-export const increaseStrategyPoints =
-  (count: number) =>
+export const increaseTurnPoints =
+  ([strategyPoints, tacticPoints, resourcePoints]: Card.PlayValue) =>
   (game: Game): Game => {
     const turnPoints = game.turnPoints
     const nextTurnPoints = {
-      ...turnPoints,
-      strategyPoints: turnPoints.strategyPoints + count,
+      strategyPoints: turnPoints.strategyPoints + strategyPoints,
+      tacticPoints: turnPoints.tacticPoints + tacticPoints,
+      resourcePoints: turnPoints.resourcePoints + resourcePoints,
     }
     return {
       ...game,
@@ -117,20 +136,6 @@ export const consumeTacticPoint = (game: Game): Game => {
     turnPoints: nextTurnPoints,
   }
 }
-
-export const increaseTacticPoints =
-  (count: number) =>
-  (game: Game): Game => {
-    const turnPoints = game.turnPoints
-    const nextTurnPoints = {
-      ...turnPoints,
-      tacticPoints: turnPoints.tacticPoints + count,
-    }
-    return {
-      ...game,
-      turnPoints: nextTurnPoints,
-    }
-  }
 
 export const consumeSelectedCard = (game: Game): Game => {
   const player = game.currentPlayer
@@ -165,7 +170,7 @@ export const updateDeckFor =
 export const resetTurnPoints = (game: Game): Game => {
   return {
     ...game,
-    turnPoints: initalTurnPoints,
+    turnPoints: initialTurnPoints,
   }
 }
 
@@ -308,9 +313,39 @@ const addPiecesFor = ([
     }),
   )
 
+  let countHegemonyWhite = 0
+  if (currentPlayer === "White") {
+    countHegemonyWhite = pipe(
+      positions,
+      ReadonlyArray.reduce(0, (acc: number, pos: Position.Position) => {
+        if (pos.rowIdx < 0) {
+          return acc + 1
+        } else {
+          return acc
+        }
+      }),
+    )
+  }
+
+  let countHegemonyBlack = 0
+  if (currentPlayer === "Black") {
+    countHegemonyBlack = pipe(
+      positions,
+      ReadonlyArray.reduce(0, (acc: number, pos: Position.Position) => {
+        if (pos.rowIdx > 4) {
+          return acc + 1
+        } else {
+          return acc
+        }
+      }),
+    )
+  }
+
   const nextGame = {
     ...game,
     board: nextBoard,
+    hegemonyWhite: game.hegemonyWhite + countHegemonyWhite,
+    hegemonyBlack: game.hegemonyBlack + countHegemonyBlack,
   }
   return [nextGame, []]
 }

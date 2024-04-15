@@ -36,6 +36,10 @@ const SupplyPile = ({ supplyPile, idx }: SupplyPileProps): JSX.Element => {
   const testId = `supply-pile-${idx}`
   const title = Card.toTitle(supplyPile.card)
   const style = "btn-card btn-gray-200 flex flex-col"
+  const acquireCost = Card.toAcquireCost(supplyPile.card)
+  const [strategyValue, tacticValue, resourceValue] = Card.toPlayValue(
+    supplyPile.card,
+  )
 
   return (
     <div
@@ -43,10 +47,18 @@ const SupplyPile = ({ supplyPile, idx }: SupplyPileProps): JSX.Element => {
       onClick={handleOnClickSupplyPile(idx)}
       class={style}
     >
-      <div data-testid={`${testId}-count`} class="w-full text-right">
-        {supplyPile.count}
+      <div class="w-full flex flex-row">
+        <div data-testid={`${testId}-count`} class="w-full text-right">
+          {supplyPile.count}
+        </div>
+        <div>{acquireCost}</div>
       </div>
       <div>{title}</div>
+      <div class="w-full flex flex-row">
+        <div>{strategyValue}</div>
+        <div>{tacticValue}</div>
+        <div>{resourceValue}</div>
+      </div>
     </div>
   )
 }

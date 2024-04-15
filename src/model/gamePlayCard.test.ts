@@ -308,7 +308,8 @@ PPP--
   const resultOntoOtherPiece = GamePlayCard.playCharge(posOntoOtherPiece)(game)
   const resultOntoOwnPiece = GamePlayCard.playCharge(posOntoOwnPiece)(game)
   const resultNoPiece = GamePlayCard.playCharge(posNoPiece)(game)
-  const resulOtherPlayerPiece = GamePlayCard.playCharge(posOtherPlayerPiece)(game)
+  const resulOtherPlayerPiece =
+    GamePlayCard.playCharge(posOtherPlayerPiece)(game)
   const resultOffOfBoard = GamePlayCard.playCharge(posEdgeOfBoard)(game)
 
   expect(resultOntoNoPiece).toEqual(Either.right(expectedOntoNoPiece))
@@ -316,9 +317,7 @@ PPP--
   expect(resultOffOfBoard).toEqual(Either.right(expectedOffBoard))
   expect(resultNoPiece).toEqual(Either.left("InvalidPieceSelection"))
   expect(resulOtherPlayerPiece).toEqual(Either.left("InvalidPieceSelection"))
-  expect(resultOntoOwnPiece).toEqual(
-    Either.left("InvalidChargeOntoOwnPiece"),
-  )
+  expect(resultOntoOwnPiece).toEqual(Either.left("InvalidChargeOntoOwnPiece"))
 })
 
 test("GamePlayCard.flankLeft - it flanks the selected piece to the left", () => {
@@ -385,10 +384,12 @@ PPP--
   })
 
   const resultOntoNoPiece = GamePlayCard.playFlankLeft(posOntoNoPiece)(game)
-  const resultOntoOtherPiece = GamePlayCard.playFlankLeft(posOntoOtherPiece)(game)
+  const resultOntoOtherPiece =
+    GamePlayCard.playFlankLeft(posOntoOtherPiece)(game)
   const resultOntoOwnPiece = GamePlayCard.playFlankLeft(posOntoOwnPiece)(game)
   const resultNoPiece = GamePlayCard.playFlankLeft(posNoPiece)(game)
-  const resulOtherPlayerPiece = GamePlayCard.playFlankLeft(posOtherPlayerPiece)(game)
+  const resulOtherPlayerPiece =
+    GamePlayCard.playFlankLeft(posOtherPlayerPiece)(game)
   const resultOffOfBoard = GamePlayCard.playFlankLeft(posEdgeOfBoard)(game)
 
   expect(resultOntoNoPiece).toEqual(Either.right(expectedOntoNoPiece))

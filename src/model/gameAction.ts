@@ -128,6 +128,7 @@ export const endTurn = (game: Game.Game): Game.Game => {
     Game.updateDeckFor(player)(nextDeck),
     Game.progressBoard,
     Game.unselectHandCard,
+    Game.incrementTurnCount,
     Game.togglePlayer,
     Game.resetTurnPoints,
   )

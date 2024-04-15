@@ -12,7 +12,7 @@ type CardCostError = "NotEnoughStrategyPoints" | "NotEnoughTacticPoints"
 export const validateHasCardCost =
   (card: Card.Card) =>
   (game: Game.Game): Either.Either<Game.Game, CardCostError> => {
-    const [strategyCost, tacticCost] = Card.toCost(card)
+    const [strategyCost, tacticCost] = Card.toPlayCost(card)
     const { strategyPoints, tacticPoints } = game.turnPoints
 
     if (strategyCost > strategyPoints) {
@@ -110,18 +110,24 @@ const isValidRowForPlayer =
 
 // --- Play Card Functions
 
-
-
 const playMilitaryReforms = (
   game: Game.Game,
 ): Either.Either<Game.Game, PlayCardError> => {
-  return pipe(game, Game.increaseTacticPoints(3), Either.right)
+  return pipe(
+    game,
+    Game.increaseTurnPoints(Card.toPlayValue("MilitaryReforms")),
+    Either.right,
+  )
 }
 
 const playPoliticalReforms = (
   game: Game.Game,
 ): Either.Either<Game.Game, PlayCardError> => {
-  return pipe(game, Game.increaseStrategyPoints(2), Either.right)
+  return pipe(
+    game,
+    Game.increaseTurnPoints(Card.toPlayValue("PoliticalReforms")),
+    Either.right,
+  )
 }
 
 const playOracle = (
@@ -241,7 +247,7 @@ export const playManeuverDirection =
 
 export const playCharge =
   (from: Position.Position) =>
-  ( game: Game.Game,): Either.Either<Game.Game, PlayCardError> => {
+  (game: Game.Game): Either.Either<Game.Game, PlayCardError> => {
     const player = game.currentPlayer
     const { rowIdx, colIdx } = from
     const optionCell = Board.lookup(rowIdx)(colIdx)(game.board)
@@ -278,7 +284,7 @@ export const playCharge =
       Game.consumeTacticPoint,
       Either.right,
     )
-}
+  }
 
 export const playFlankLeft =
   (from: Position.Position) =>
