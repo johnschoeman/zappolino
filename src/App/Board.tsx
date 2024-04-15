@@ -2,7 +2,7 @@ import { JSX } from "solid-js"
 import cn from "classnames"
 import { pipe, ReadonlyArray, Match } from "effect"
 
-import { Board, Cell, Game, Position } from "@app/model"
+import { Board, Cell, GameAction, Position } from "@app/model"
 import { GameState } from "@app/state"
 
 const BoardView = (): JSX.Element => {
@@ -44,7 +44,7 @@ const CellView = ({ cell, rowIdx, colIdx }: CellViewProps): JSX.Element => {
   const handleOnClickCell = (): void => {
     pipe(
       GameState.game(),
-      Game.selectCell({ rowIdx, colIdx }),
+      GameAction.selectCell({ rowIdx, colIdx }),
       GameState.setGame,
     )
   }

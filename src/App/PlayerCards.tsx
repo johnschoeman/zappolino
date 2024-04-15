@@ -2,33 +2,28 @@ import { JSX } from "solid-js"
 import cn from "classnames"
 import { Option, pipe, ReadonlyArray } from "effect"
 
-import { Card, Deck, Game } from "@app/model"
+import { Card, Deck, GameAction } from "@app/model"
 import { GameState } from "@app/state"
 
 const PlayerCards = (): JSX.Element => {
   const playedCards = (): Deck.Played => {
-    return pipe(
-      GameState.game(),
-      Game.currentPlayerDeck,
-      deck => deck.playedCards,
-    )
+    return pipe(GameState.currentPlayerDeck(), deck => deck.playedCards)
   }
 
   const hand = (): Deck.Hand => {
-    return pipe(GameState.game(), Game.currentPlayerDeck, deck => deck.hand)
+    return pipe(GameState.currentPlayerDeck(), deck => deck.hand)
   }
 
   const disc = (): Deck.Disc => {
-    return pipe(GameState.game(), Game.currentPlayerDeck, deck => deck.disc)
+    return pipe(GameState.currentPlayerDeck(), deck => deck.disc)
   }
 
   const draw = (): Deck.Draw => {
-    return pipe(GameState.game(), Game.currentPlayerDeck, deck => deck.draw)
+    return pipe(GameState.currentPlayerDeck(), deck => deck.draw)
   }
 
   const handleOnClickPlayMat = (): void => {
-    console.log("Clicked PlayMat")
-    pipe(GameState.game(), Game.selectPlayMat, GameState.setGame)
+    pipe(GameState.game(), GameAction.selectPlayMat, GameState.setGame)
   }
 
   const playMatStyle = "h-48 p-2 border rounded"
@@ -37,7 +32,11 @@ const PlayerCards = (): JSX.Element => {
 
   return (
     <div data-testid="player-cards" class="flex flex-col space-y-2">
-      <div data-testid="player-playmat" class={playMatStyle} onClick={handleOnClickPlayMat}>
+      <div
+        data-testid="player-playmat"
+        class={playMatStyle}
+        onClick={handleOnClickPlayMat}
+      >
         <h2>Play Mat</h2>
         <div class="space-x-1">
           {pipe(
@@ -104,7 +103,7 @@ const CardView = (props: CardViewProps): JSX.Element => {
   const testId = `unplayed-card-${idx}`
 
   const handleOnClickCard = (): void => {
-    pipe(GameState.game(), Game.selectHandCard(idx), GameState.setGame)
+    pipe(GameState.game(), GameAction.selectHandCard(idx), GameState.setGame)
   }
 
   const style = (): string => {

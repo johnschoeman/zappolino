@@ -24,9 +24,9 @@ export const show = (deck: Deck): string => {
 const initialDraw: Draw = [
   "DeployHoplite",
   "DeployHoplite",
-  "MoveLeft",
-  "MoveRight",
-  "MoveForward",
+  "ManeuverLeft",
+  "ManeuverRight",
+  "ManeuverForward",
 ]
 
 export const initial: Deck = {

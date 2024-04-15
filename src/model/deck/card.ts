@@ -1,7 +1,7 @@
 export type DeployHoplite = "DeployHoplite"
-export type MoveLeft = "MoveLeft"
-export type MoveRight = "MoveRight"
-export type MoveForward = "MoveForward"
+export type ManeuverLeft = "ManeuverLeft"
+export type ManeuverRight = "ManeuverRight"
+export type ManeuverForward = "ManeuverForward"
 export type Charge = "Charge"
 export type Flank = "Flank"
 export type Retreat = "Retreat"
@@ -9,11 +9,19 @@ export type MilitaryReforms = "MilitaryReforms"
 export type PoliticalReforms = "PoliticalReforms"
 export type Oracle = "Oracle"
 
+// Sortie
+// Push
+// Withdraw
+// Rush
+// Sally
+// Strike
+// Raid
+
 export type Card =
   | DeployHoplite
-  | MoveLeft
-  | MoveRight
-  | MoveForward
+  | ManeuverLeft
+  | ManeuverRight
+  | ManeuverForward
   | Charge
   | Flank
   | Retreat
@@ -28,12 +36,12 @@ export const toTitle = (card: Card): string => {
   switch (card) {
     case "DeployHoplite":
       return "Deploy Hoplite"
-    case "MoveLeft":
-      return "Move Left"
-    case "MoveRight":
-      return "Move Right"
-    case "MoveForward":
-      return "Move Forward"
+    case "ManeuverLeft":
+      return "Maneuver Left"
+    case "ManeuverRight":
+      return "Maneuver Right"
+    case "ManeuverForward":
+      return "Maneuver Forward"
     case "Charge":
       return "Charge"
     case "Flank":
@@ -56,10 +64,10 @@ export const toCost = (card: Card): [StrategyCost, TacticCost] => {
     case "PoliticalReforms":
     case "Oracle":
       return [1, 0]
-    case "MoveLeft":
-    case "MoveRight":
+    case "ManeuverLeft":
+    case "ManeuverRight":
     case "Charge":
-    case "MoveForward":
+    case "ManeuverForward":
     case "Flank":
     case "Retreat":
       return [0, 1]

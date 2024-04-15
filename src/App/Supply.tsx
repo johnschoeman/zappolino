@@ -2,10 +2,14 @@ import { JSX } from "solid-js"
 
 import { GameState } from "@app/state"
 import { pipe, ReadonlyArray } from "effect"
-import { Card, Game, Supply } from "@app/model"
+import { Card, GameAction, Supply } from "@app/model"
 
 const handleOnClickSupplyPile = (pileIdx: number) => (): void => {
-  pipe(GameState.game(), Game.selectSupplyPile(pileIdx), GameState.setGame)
+  pipe(
+    GameState.game(),
+    GameAction.selectSupplyPile(pileIdx),
+    GameState.setGame,
+  )
 }
 
 const SupplyView = (): JSX.Element => {

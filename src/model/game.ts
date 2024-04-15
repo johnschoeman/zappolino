@@ -1,7 +1,7 @@
-import { Either, Option, pipe, ReadonlyArray } from "effect"
+import { Option, pipe, ReadonlyArray } from "effect"
 
 import { Board, Cell } from "./board"
-import { Card, Deck } from "./deck"
+import { Deck } from "./deck"
 import * as Player from "./player"
 import * as Position from "./position"
 import * as Supply from "./supply"
@@ -41,141 +41,9 @@ export const show = (game: Game): string => {
   return `${Board.show(Cell.show)(board)} | player: ${currentPlayer}`
 }
 
-// ---- User Actions ----
-
-export const selectSupplyPile =
-  (supplyPileIdx: number) =>
-  (game: Game): Game => {
-    const currentPlayer = game.currentPlayer
-    const supply = game.supply
-    const optionSupplyPile = pipe(supply, ReadonlyArray.get(supplyPileIdx))
-
-    if (Option.isNone(optionSupplyPile)) {
-      return game
-    }
-
-    const supplyPile = optionSupplyPile.value
-    const { card, count } = supplyPile
-
-    if (count === 0) {
-      return game
-    }
-
-    const strategyPoints = game.turnPoints.strategyPoints
-
-    if (strategyPoints < 1) {
-      return game
-    }
-
-    const deck = deckFor(currentPlayer)(game)
-
-    const nextDeck = Deck.addCardToDiscard(card)(deck)
-
-    const nextSupplyPile: Supply.SupplyPile = {
-      ...supplyPile,
-      count: supplyPile.count - 1,
-    }
-
-    const nextSupply: Supply.Supply = [...supply]
-    nextSupply[supplyPileIdx] = nextSupplyPile
-
-    return pipe(
-      game,
-      updateDeckFor(currentPlayer)(nextDeck),
-      consumeStrategyPoint,
-      updateSupply(nextSupply),
-    )
-  }
-
-export const selectHandCard =
-  (cardIdx: number) =>
-  (game: Game): Game => {
-    return {
-      ...game,
-      selectedCardIdx: Option.some(cardIdx),
-    }
-  }
-
-export const selectPlayMat = (game: Game): Game => {
-  const deck = currentPlayerDeck(game)
-  const card = pipe(
-    game.selectedCardIdx,
-    Option.andThen(cardIdx => {
-      return Deck.getCardAt(cardIdx)(deck)
-    }),
-  )
-
-  if (Option.isNone(card)) {
-    return game
-  }
-
-  return pipe(
-    game,
-    validateHasCardCost(card.value),
-    Either.andThen(playSelectMatCard(card.value)),
-    Either.map(consumeSelectedCard),
-    Either.match({
-      onLeft: () => game,
-      onRight: nextGame => nextGame,
-    }),
-  )
-}
-
-export const selectCell =
-  ({ rowIdx, colIdx }: Position.Position) =>
-  (game: Game): Game => {
-    const deck = currentPlayerDeck(game)
-    const card = pipe(
-      game.selectedCardIdx,
-      Option.andThen(cardIdx => {
-        return Deck.getCardAt(cardIdx)(deck)
-      }),
-    )
-
-    if (Option.isNone(card)) {
-      return game
-    }
-
-    return pipe(
-      game,
-      validateHasCardCost(card.value),
-      Either.andThen(playSelectPieceCard({ rowIdx, colIdx })(card.value)),
-      Either.map(consumeSelectedCard),
-      Either.match({
-        onLeft: () => game,
-        onRight: nextGame => nextGame,
-      }),
-    )
-  }
-
-export const endTurn = (game: Game): Game => {
-  const player = game.currentPlayer
-  const playerDeck = currentPlayerDeck(game)
-  const nextDeck = pipe(
-    playerDeck,
-    Deck.discardPlayed,
-    Deck.discardHand,
-    Deck.draw(5),
-  )
-
-  const result = pipe(
-    game,
-    updateDeckFor(player)(nextDeck),
-    progressBoard,
-    unselectHandCard,
-    togglePlayer,
-    resetTurnPoints,
-  )
-
-  return result
-}
-
-const unselectHandCard = (game: Game): Game => {
-  return {
-    ...game,
-    selectedCardIdx: Option.none(),
-  }
-}
+// Select -> User clicks a selectable game component
+// Consume -> User uses up a consumable game component, such as a card or point
+// Play -> Peforming the action that a card allows
 
 // ---- Getters ----
 
@@ -183,7 +51,7 @@ export const currentPlayerDeck = (game: Game): Deck.Deck => {
   return deckFor(game.currentPlayer)(game)
 }
 
-const deckFor =
+export const deckFor =
   (player: Player.Player) =>
   (game: Game): Deck.Deck => {
     switch (player) {
@@ -194,240 +62,16 @@ const deckFor =
     }
   }
 
-// ---- Validation Logic ----
-
-type CardCostError = "NotEnoughStrategyPoints" | "NotEnoughTacticPoints"
-
-export const validateHasCardCost =
-  (card: Card.Card) =>
-  (game: Game): Either.Either<Game, CardCostError> => {
-    const [strategyCost, tacticCost] = Card.toCost(card)
-    const { strategyPoints, tacticPoints } = game.turnPoints
-
-    if (strategyCost > strategyPoints) {
-      return Either.left("NotEnoughStrategyPoints")
-    }
-    if (tacticCost > tacticPoints) {
-      return Either.left("NotEnoughTacticPoints")
-    }
-    return Either.right(game)
-  }
-
-// ---- Playing Cards ----
-
-type PlayCardError =
-  | "InvalidCell"
-  | "InvalidPlacement"
-  | "InvalidPieceSelection"
-  | "InvalidPlayMatSelection"
-  | "InvalidDestination"
-
-const playSelectPieceCard =
-  (pos: Position.Position) =>
-  (card: Card.Card) =>
-  (game: Game): Either.Either<Game, PlayCardError> => {
-    switch (card) {
-      case "DeployHoplite":
-        return playDeployHoplitePieceCard(pos)(game)
-      case "MoveForward":
-        return playMoveForwardCard(pos)(game)
-      case "MoveRight":
-        return playMoveRightCard(pos)(game)
-      case "MoveLeft":
-        return playMoveLeftCard(pos)(game)
-      case "Flank":
-        return playFlank(pos)("Left")(game)
-      case "Charge":
-        return playCharge(game)
-      case "Retreat":
-        return playRetreat(game)
-      case "MilitaryReforms":
-      case "PoliticalReforms":
-      case "Oracle":
-        return Either.left("InvalidPieceSelection")
-    }
-  }
-
-const playSelectMatCard =
-  (card: Card.Card) =>
-  (game: Game): Either.Either<Game, PlayCardError> => {
-    switch (card) {
-      case "MilitaryReforms":
-        return playMilitaryReforms(game)
-      case "PoliticalReforms":
-        return playPoliticalReforms(game)
-      case "Oracle":
-        return playOracle(game)
-      case "DeployHoplite":
-      case "MoveForward":
-      case "MoveRight":
-      case "MoveLeft":
-      case "Flank":
-      case "Charge":
-      case "Retreat":
-        return Either.left("InvalidPlayMatSelection")
-    }
-  }
-
-const isValidRowForPlayer =
-  (player: Player.Player) =>
-  (rowIdx: number): boolean => {
-    switch (player) {
-      case "Black":
-        return rowIdx === 0
-      case "White":
-        return rowIdx === 4
-    }
-  }
-
-// --- Play Card Functions
-
-const playFlank =
-  (_from: Position.Position) =>
-  (_direction: "Left" | "Right") =>
-  (game: Game): Either.Either<Game, PlayCardError> => {
-    return pipe(game, Either.right)
-  }
-
-const playCharge = (game: Game): Either.Either<Game, PlayCardError> => {
-  return pipe(game, Either.right)
-}
-
-const playRetreat = (game: Game): Either.Either<Game, PlayCardError> => {
-  return pipe(game, Either.right)
-}
-
-const playMilitaryReforms = (
-  game: Game,
-): Either.Either<Game, PlayCardError> => {
-  return pipe(game, increaseTacticPoints(3), Either.right)
-}
-
-const playPoliticalReforms = (
-  game: Game,
-): Either.Either<Game, PlayCardError> => {
-  return pipe(game, increaseStrategyPoints(2), Either.right)
-}
-
-const playOracle = (game: Game): Either.Either<Game, PlayCardError> => {
-  return pipe(game, Either.right)
-}
-
-type MoveToFn = (
-  player: Player.Player,
-  from: Position.Position,
-) => Position.Position
-export const playMoveDirection =
-  (buildMoveTo: MoveToFn) =>
-  (from: Position.Position) =>
-  (game: Game): Either.Either<Game, PlayCardError> => {
-    const player = game.currentPlayer
-    const { rowIdx, colIdx } = from
-    const optionCell = Board.lookup(rowIdx)(colIdx)(game.board)
-
-    if (Option.isNone(optionCell)) {
-      return Either.left("InvalidCell")
-    }
-
-    const cell = optionCell.value
-
-    const isPiecePresent = Board.isPlayers(player)(cell)
-    const isValid = isPiecePresent
-
-    if (!isValid) {
-      return Either.left("InvalidPieceSelection")
-    }
-
-    const to = buildMoveTo(player, from)
-
-    const optionToCell = Board.lookup(to.rowIdx)(to.colIdx)(game.board)
-    const isOffBoard = Option.isNone(optionToCell)
-    const isOwnPiece = pipe(
-      optionToCell,
-      Option.map(Board.isPlayers(player)),
-      Option.getOrElse(() => false),
-    )
-    if (isOffBoard || isOwnPiece) {
-      return Either.left("InvalidDestination")
-    }
-
-    return pipe(game, movePiece(from)(to), consumeTacticPoint, Either.right)
-  }
-
-const moveLeft = (
-  player: Player.Player,
-  from: Position.Position,
-): Position.Position => {
-  const { rowIdx, colIdx } = from
-  switch (player) {
-    case "Black":
-      return { rowIdx, colIdx: colIdx + 1 }
-    case "White":
-      return { rowIdx, colIdx: colIdx - 1 }
-  }
-}
-
-const moveRight = (
-  player: Player.Player,
-  from: Position.Position,
-): Position.Position => {
-  const { rowIdx, colIdx } = from
-  switch (player) {
-    case "Black":
-      return { rowIdx: rowIdx, colIdx: colIdx - 1 }
-    case "White":
-      return { rowIdx: rowIdx, colIdx: colIdx + 1 }
-  }
-}
-
-const moveForward = (
-  player: Player.Player,
-  from: Position.Position,
-): Position.Position => {
-  const { rowIdx, colIdx } = from
-  switch (player) {
-    case "Black":
-      return { rowIdx: rowIdx + 1, colIdx }
-    case "White":
-      return { rowIdx: rowIdx - 1, colIdx }
-  }
-}
-
-export const playMoveForwardCard = playMoveDirection(moveForward)
-export const playMoveLeftCard = playMoveDirection(moveLeft)
-export const playMoveRightCard = playMoveDirection(moveRight)
-
-export const playDeployHoplitePieceCard =
-  ({ rowIdx, colIdx }: Position.Position) =>
-  (game: Game): Either.Either<Game, PlayCardError> => {
-    const player = game.currentPlayer
-    const optionCell = Board.lookup(rowIdx)(colIdx)(game.board)
-
-    if (Option.isNone(optionCell)) {
-      return Either.left("InvalidCell")
-    }
-
-    const cell = optionCell.value
-
-    const isValidRow = isValidRowForPlayer(player)(rowIdx)
-    const isNoPiecePresent = Cell.isEmpty(cell)
-    const isValid = isValidRow && isNoPiecePresent
-
-    if (!isValid) {
-      return Either.left("InvalidPlacement")
-    }
-
-    return pipe(
-      game,
-      addPiece(rowIdx)(colIdx),
-      consumeStrategyPoint,
-      Either.right,
-    )
-  }
-
 // ---- Update Game State
 
-const updateSupply =
+export const unselectHandCard = (game: Game): Game => {
+  return {
+    ...game,
+    selectedCardIdx: Option.none(),
+  }
+}
+
+export const updateSupply =
   (supply: Supply.Supply) =>
   (game: Game): Game => {
     return {
@@ -436,7 +80,7 @@ const updateSupply =
     }
   }
 
-const consumeStrategyPoint = (game: Game): Game => {
+export const consumeStrategyPoint = (game: Game): Game => {
   const turnPoints = game.turnPoints
   const nextTurnPoints = {
     ...turnPoints,
@@ -448,7 +92,7 @@ const consumeStrategyPoint = (game: Game): Game => {
   }
 }
 
-const increaseStrategyPoints =
+export const increaseStrategyPoints =
   (count: number) =>
   (game: Game): Game => {
     const turnPoints = game.turnPoints
@@ -462,7 +106,7 @@ const increaseStrategyPoints =
     }
   }
 
-const consumeTacticPoint = (game: Game): Game => {
+export const consumeTacticPoint = (game: Game): Game => {
   const turnPoints = game.turnPoints
   const nextTurnPoints = {
     ...turnPoints,
@@ -474,7 +118,7 @@ const consumeTacticPoint = (game: Game): Game => {
   }
 }
 
-const increaseTacticPoints =
+export const increaseTacticPoints =
   (count: number) =>
   (game: Game): Game => {
     const turnPoints = game.turnPoints
@@ -500,7 +144,7 @@ export const consumeSelectedCard = (game: Game): Game => {
   return nextGame
 }
 
-const updateDeckFor =
+export const updateDeckFor =
   (player: Player.Player) =>
   (deck: Deck.Deck) =>
   (game: Game): Game => {
@@ -518,7 +162,7 @@ const updateDeckFor =
     }
   }
 
-const resetTurnPoints = (game: Game): Game => {
+export const resetTurnPoints = (game: Game): Game => {
   return {
     ...game,
     turnPoints: initalTurnPoints,
@@ -671,7 +315,7 @@ const addPiecesFor = ([
   return [nextGame, []]
 }
 
-const togglePlayer = (game: Game): Game => {
+export const togglePlayer = (game: Game): Game => {
   const { currentPlayer } = game
   return {
     ...game,

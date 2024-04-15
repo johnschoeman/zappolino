@@ -18,9 +18,9 @@ const buildPile = (card: Card.Card): SupplyPile => {
 
 export const initial: Supply = [
   buildPile("DeployHoplite"),
-  buildPile("MoveLeft"),
-  buildPile("MoveRight"),
-  buildPile("MoveForward"),
+  buildPile("ManeuverLeft"),
+  buildPile("ManeuverRight"),
+  buildPile("ManeuverForward"),
   buildPile("Charge"),
   buildPile("Flank"),
   buildPile("MilitaryReforms"),

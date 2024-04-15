@@ -1,7 +1,7 @@
 import { JSX } from "solid-js"
 import { pipe } from "effect"
 
-import { Game } from "@app/model"
+import { GameAction } from "@app/model"
 import { GameState } from "@app/state"
 
 const TurnDisplay = (): JSX.Element => {
@@ -40,7 +40,7 @@ const StrategyAndTacticCounts = (): JSX.Element => {
 
 const EndTurnButton = (): JSX.Element => {
   const handleOnClickEndTurn = (): void => {
-    pipe(GameState.game(), Game.endTurn, GameState.setGame)
+    pipe(GameState.game(), GameAction.endTurn, GameState.setGame)
   }
 
   return (
