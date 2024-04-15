@@ -1,3 +1,5 @@
+import { pipe, ReadonlyArray } from "effect"
+
 import { Card } from "./deck"
 
 const SUPPLY_SIZE = 8
@@ -16,13 +18,7 @@ const buildPile = (card: Card.Card): SupplyPile => {
   }
 }
 
-export const initial: Supply = [
-  buildPile("DeployHoplite"),
-  buildPile("ManeuverLeft"),
-  buildPile("ManeuverRight"),
-  buildPile("ManeuverForward"),
-  buildPile("Charge"),
-  buildPile("Flank"),
-  buildPile("MilitaryReforms"),
-  buildPile("PoliticalReforms"),
-]
+export const initial: Supply = pipe(
+  Card.all,
+  ReadonlyArray.map(buildPile)
+)

@@ -9,7 +9,8 @@ export const supplyFactory = Factory.define<Supply.Supply>(() => {
     { card: "ManeuverRight", count: 8 },
     { card: "ManeuverForward", count: 8 },
     { card: "Charge", count: 8 },
-    { card: "Flank", count: 8 },
+    { card: "FlankLeft", count: 8 },
+    { card: "FlankRight", count: 8 },
     { card: "MilitaryReforms", count: 8 },
     { card: "PoliticalReforms", count: 8 },
   ]

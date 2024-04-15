@@ -5,7 +5,6 @@ import { Board, Cell } from "./board"
 import * as Player from "./player"
 import * as Position from "./position"
 import { Card } from "./deck"
-
 // ---- Validation Logic ----
 
 type CardCostError = "NotEnoughStrategyPoints" | "NotEnoughTacticPoints"
@@ -32,8 +31,15 @@ type PlayCardError =
   | "InvalidPlacement"
   | "InvalidPieceSelection"
   | "InvalidPlayMatSelection"
-  | "InvalidAssaultDestination"
-  | "InvalidManeuverDestination"
+  | "InvalidAssaultNotOntoOtherPiece"
+  | "InvalidManeuverOntoOtherPiece"
+  | "InvalidManeuverOntoOwnPiece"
+  | "InvalidManeuverOffBoard"
+  | "InvalidChargeOntoOwnPiece"
+  | "InvalidFlankLeftOntoOwnPiece"
+  | "InvalidFlankLeftOffBoard"
+  | "InvalidFlankRightOntoOwnPiece"
+  | "InvalidFlankRightOffBoard"
 
 export const playSelectPieceCard =
   (pos: Position.Position) =>
@@ -41,19 +47,25 @@ export const playSelectPieceCard =
   (game: Game.Game): Either.Either<Game.Game, PlayCardError> => {
     switch (card) {
       case "DeployHoplite":
-        return playDeployHoplitePieceCard(pos)(game)
+        return playDeployHoplitePiece(pos)(game)
       case "ManeuverForward":
-        return playManeuverForwardCard(pos)(game)
+        return playManeuverForward(pos)(game)
       case "ManeuverRight":
-        return playManeuverRightCard(pos)(game)
+        return playManeuverRight(pos)(game)
       case "ManeuverLeft":
-        return playManeuverLeftCard(pos)(game)
-      case "Flank":
-        return playFlank(pos)("Left")(game)
+        return playManeuverLeft(pos)(game)
+      case "AssaultForward":
+        return playAssaultForward(pos)(game)
+      case "AssaultLeft":
+        return playAssaultLeft(pos)(game)
+      case "AssaultRight":
+        return playAssaultRight(pos)(game)
       case "Charge":
-        return playCharge(game)
-      case "Retreat":
-        return playRetreat(game)
+        return playCharge(pos)(game)
+      case "FlankLeft":
+        return playFlankLeft(pos)(game)
+      case "FlankRight":
+        return playFlankRight(pos)(game)
       case "MilitaryReforms":
       case "PoliticalReforms":
       case "Oracle":
@@ -75,9 +87,12 @@ export const playSelectMatCard =
       case "ManeuverForward":
       case "ManeuverRight":
       case "ManeuverLeft":
-      case "Flank":
+      case "AssaultForward":
+      case "AssaultLeft":
+      case "AssaultRight":
+      case "FlankLeft":
+      case "FlankRight":
       case "Charge":
-      case "Retreat":
         return Either.left("InvalidPlayMatSelection")
     }
   }
@@ -95,24 +110,7 @@ const isValidRowForPlayer =
 
 // --- Play Card Functions
 
-const playFlank =
-  (_from: Position.Position) =>
-  (_direction: "Left" | "Right") =>
-  (game: Game.Game): Either.Either<Game.Game, PlayCardError> => {
-    return pipe(game, Either.right)
-  }
 
-const playCharge = (
-  game: Game.Game,
-): Either.Either<Game.Game, PlayCardError> => {
-  return pipe(game, Either.right)
-}
-
-const playRetreat = (
-  game: Game.Game,
-): Either.Either<Game.Game, PlayCardError> => {
-  return pipe(game, Either.right)
-}
 
 const playMilitaryReforms = (
   game: Game.Game,
@@ -167,14 +165,14 @@ export const playAssaultDirection =
     const to = buildMoveTo(player, from)
 
     const optionToCell = Board.lookup(to.rowIdx)(to.colIdx)(game.board)
-    const isOffBoard = Option.isNone(optionToCell)
-    const isOwnPiece = pipe(
+
+    const isOtherPiece = pipe(
       optionToCell,
-      Option.map(Board.isPlayers(player)),
+      Option.map(Board.isPlayers(Player.toggle(player))),
       Option.getOrElse(() => false),
     )
-    if (isOffBoard || isOwnPiece) {
-      return Either.left("InvalidAssaultDestination")
+    if (!isOtherPiece) {
+      return Either.left("InvalidAssaultNotOntoOtherPiece")
     }
 
     return pipe(
@@ -209,14 +207,161 @@ export const playManeuverDirection =
     const to = buildMoveTo(player, from)
 
     const optionToCell = Board.lookup(to.rowIdx)(to.colIdx)(game.board)
+
     const isOffBoard = Option.isNone(optionToCell)
+    if (isOffBoard) {
+      return Either.left("InvalidManeuverOffBoard")
+    }
+
     const isOwnPiece = pipe(
       optionToCell,
       Option.map(Board.isPlayers(player)),
       Option.getOrElse(() => false),
     )
-    if (isOffBoard || isOwnPiece) {
-      return Either.left("InvalidManeuverDestination")
+    if (isOwnPiece) {
+      return Either.left("InvalidManeuverOntoOwnPiece")
+    }
+
+    const isOtherPiece = pipe(
+      optionToCell,
+      Option.map(Board.isPlayers(Player.toggle(player))),
+      Option.getOrElse(() => false),
+    )
+    if (isOtherPiece) {
+      return Either.left("InvalidManeuverOntoOtherPiece")
+    }
+
+    return pipe(
+      game,
+      Game.movePiece(from)(to),
+      Game.consumeTacticPoint,
+      Either.right,
+    )
+  }
+
+export const playCharge =
+  (from: Position.Position) =>
+  ( game: Game.Game,): Either.Either<Game.Game, PlayCardError> => {
+    const player = game.currentPlayer
+    const { rowIdx, colIdx } = from
+    const optionCell = Board.lookup(rowIdx)(colIdx)(game.board)
+
+    if (Option.isNone(optionCell)) {
+      return Either.left("InvalidCell")
+    }
+
+    const cell = optionCell.value
+
+    const isPiecePresent = Board.isPlayers(player)(cell)
+    const isValid = isPiecePresent
+
+    if (!isValid) {
+      return Either.left("InvalidPieceSelection")
+    }
+
+    const to = moveForward(player, from)
+
+    const optionToCell = Board.lookup(to.rowIdx)(to.colIdx)(game.board)
+
+    const isOwnPiece = pipe(
+      optionToCell,
+      Option.map(Board.isPlayers(player)),
+      Option.getOrElse(() => false),
+    )
+    if (isOwnPiece) {
+      return Either.left("InvalidChargeOntoOwnPiece")
+    }
+
+    return pipe(
+      game,
+      Game.movePiece(from)(to),
+      Game.consumeTacticPoint,
+      Either.right,
+    )
+}
+
+export const playFlankLeft =
+  (from: Position.Position) =>
+  (game: Game.Game): Either.Either<Game.Game, PlayCardError> => {
+    const player = game.currentPlayer
+    const { rowIdx, colIdx } = from
+    const optionCell = Board.lookup(rowIdx)(colIdx)(game.board)
+
+    if (Option.isNone(optionCell)) {
+      return Either.left("InvalidCell")
+    }
+
+    const cell = optionCell.value
+
+    const isPiecePresent = Board.isPlayers(player)(cell)
+    const isValid = isPiecePresent
+
+    if (!isValid) {
+      return Either.left("InvalidPieceSelection")
+    }
+
+    const to = moveLeft(player, from)
+
+    const optionToCell = Board.lookup(to.rowIdx)(to.colIdx)(game.board)
+
+    const isOffBoard = Option.isNone(optionToCell)
+    if (isOffBoard) {
+      return Either.left("InvalidFlankLeftOffBoard")
+    }
+
+    const isOwnPiece = pipe(
+      optionToCell,
+      Option.map(Board.isPlayers(player)),
+      Option.getOrElse(() => false),
+    )
+    if (isOwnPiece) {
+      return Either.left("InvalidFlankLeftOntoOwnPiece")
+    }
+
+    return pipe(
+      game,
+      Game.movePiece(from)(to),
+      Game.consumeTacticPoint,
+      Either.right,
+    )
+  }
+
+export const playFlankRight =
+  (from: Position.Position) =>
+  (game: Game.Game): Either.Either<Game.Game, PlayCardError> => {
+    const player = game.currentPlayer
+    const { rowIdx, colIdx } = from
+    const optionCell = Board.lookup(rowIdx)(colIdx)(game.board)
+
+    if (Option.isNone(optionCell)) {
+      return Either.left("InvalidCell")
+    }
+
+    const cell = optionCell.value
+
+    const isPiecePresent = Board.isPlayers(player)(cell)
+    const isValid = isPiecePresent
+
+    if (!isValid) {
+      return Either.left("InvalidPieceSelection")
+    }
+
+    const to = moveRight(player, from)
+
+    const optionToCell = Board.lookup(to.rowIdx)(to.colIdx)(game.board)
+
+    const isOffBoard = Option.isNone(optionToCell)
+    if (isOffBoard) {
+      return Either.left("InvalidFlankRightOffBoard")
+    }
+
+    const isOwnPiece = pipe(
+      optionToCell,
+      Option.map(Board.isPlayers(player)),
+      Option.getOrElse(() => false),
+    )
+    if (isOwnPiece) {
+      return Either.left("InvalidFlankRightOntoOwnPiece")
     }
 
     return pipe(
@@ -266,11 +411,15 @@ const moveForward = (
   }
 }
 
-export const playManeuverForwardCard = playManeuverDirection(moveForward)
-export const playManeuverLeftCard = playManeuverDirection(moveLeft)
-export const playManeuverRightCard = playManeuverDirection(moveRight)
+export const playManeuverForward = playManeuverDirection(moveForward)
+export const playManeuverLeft = playManeuverDirection(moveLeft)
+export const playManeuverRight = playManeuverDirection(moveRight)
 
-export const playDeployHoplitePieceCard =
+export const playAssaultForward = playAssaultDirection(moveForward)
+export const playAssaultLeft = playAssaultDirection(moveLeft)
+export const playAssaultRight = playAssaultDirection(moveRight)
+
+export const playDeployHoplitePiece =
   ({ rowIdx, colIdx }: Position.Position) =>
   (game: Game.Game): Either.Either<Game.Game, PlayCardError> => {
     const player = game.currentPlayer
