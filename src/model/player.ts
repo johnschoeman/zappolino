@@ -11,6 +11,15 @@ export const show = (player: Player): string => {
   }
 }
 
+export const toLabel = (player: Player): string => {
+  switch (player) {
+    case "Black":
+      return "Athens"
+    case "White":
+      return "Sparta"
+  }
+}
+
 export const toggle = (player: Player): Player => {
   switch (player) {
     case "Black":

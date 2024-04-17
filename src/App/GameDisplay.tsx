@@ -1,10 +1,13 @@
 import { JSX } from "solid-js"
+import { pipe } from "effect"
+
+import { Player } from "@app/model"
 
 import { GameState } from "@app/state"
 
 const GameDisplay = (): JSX.Element => {
   const currentPlayer = (): string => {
-    return GameState.game().currentPlayer
+    return pipe(GameState.game().currentPlayer, Player.toLabel)
   }
   const turnCount = (): number => {
     return GameState.game().turnCount

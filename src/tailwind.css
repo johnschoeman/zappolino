@@ -3,18 +3,10 @@
 @tailwind utilities;
 
 @layer components {
-  .card {
-    @apply min-w-24 max-w-24 min-h-36 max-h-36 p-4 border rounded border-black justify-center items-center font-semibold inline-flex bg-gray-200;
-  }
-
   /* Buttons */
 
   .btn-base {
     @apply inline-flex items-center justify-center font-semibold;
-  }
-
-  .btn-card {
-    @apply card btn-base border;
   }
 
   .btn-wide {

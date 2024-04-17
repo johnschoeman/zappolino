@@ -47,6 +47,8 @@ export type PlayValue = [StrategyValue, TacticValue, ResourceValue]
 
 type AcquireCost = ResourceCost
 
+type Kind = "Tactic" | "Strategy"
+
 export const all: Card[] = [
   "DeployHoplite",
   "ManeuverLeft",
@@ -62,6 +64,26 @@ export const all: Card[] = [
   "PoliticalReforms",
   "Oracle",
 ]
+
+export const toKind = (card: Card): string => {
+  switch (card) {
+    case "ManeuverLeft":
+    case "ManeuverRight":
+    case "ManeuverForward":
+    case "AssaultForward":
+    case "AssaultLeft":
+    case "AssaultRight":
+    case "Charge":
+    case "FlankLeft":
+    case "FlankRight":
+      return "Tactic"
+    case "DeployHoplite":
+    case "MilitaryReforms":
+    case "PoliticalReforms":
+    case "Oracle":
+      return "Strategy"
+  }
+}
 
 export const toTitle = (card: Card): string => {
   switch (card) {
@@ -91,6 +113,37 @@ export const toTitle = (card: Card): string => {
       return "Political Reforms"
     case "Oracle":
       return "Oracle"
+  }
+}
+
+export const toDescription = (card: Card): string => {
+  switch (card) {
+    case "DeployHoplite":
+      return "Deploy a hoplite to the field on your home row"
+    case "ManeuverLeft":
+      return "Maneuver a hoplite to the left"
+    case "ManeuverRight":
+      return "Maneuver a hoplite to the right"
+    case "ManeuverForward":
+      return "Maneuver maneuver a hoplite forward"
+    case "AssaultForward":
+      return "Take a piece directly in front of a hoplite"
+    case "AssaultLeft":
+      return "Take a piece directly to the left of a hoplite"
+    case "AssaultRight":
+      return "Take a piece directly to the right of a hoplite"
+    case "Charge":
+      return "Move a hoplite forward, taking any opponent piece"
+    case "FlankLeft":
+      return "Move a hoplite left, taking any opponent piece"
+    case "FlankRight":
+      return "Move a hoplite right, taking any opponent piece"
+    case "MilitaryReforms":
+      return ""
+    case "PoliticalReforms":
+      return ""
+    case "Oracle":
+      return ""
   }
 }
 

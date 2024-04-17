@@ -5,6 +5,8 @@ import { Option, pipe, ReadonlyArray } from "effect"
 import { Card, Deck, GameAction } from "@app/model"
 import { GameState } from "@app/state"
 
+import CardView from "./Card"
+
 const PlayerCards = (): JSX.Element => {
   const playedCards = (): Deck.Played => {
     return pipe(GameState.currentPlayerDeck(), deck => deck.playedCards)
@@ -26,9 +28,11 @@ const PlayerCards = (): JSX.Element => {
     pipe(GameState.game(), GameAction.selectPlayMat, GameState.setGame)
   }
 
-  const playMatStyle = "h-48 p-2 border rounded"
-  const handStyle = "h-48 p-2 border rounded"
-  const discardStyle = "h-48 p-2 border rounded flex flex-row space-x-2"
+  const playMatStyle = "h-96 p-2 border rounded"
+  const handStyle = "h-96 p-2 border rounded"
+  const discardStyle = "h-96 p-2 border rounded flex flex-row space-x-2"
+  const cardStyle =
+    "w-48 h-64 border rounded border-black bg-gray-200 justify-center items-center text-center"
 
   return (
     <div data-testid="player-cards" class="flex flex-col space-y-2">
@@ -54,7 +58,7 @@ const PlayerCards = (): JSX.Element => {
           {pipe(
             hand(),
             ReadonlyArray.map((card, idx) => {
-              return <CardView card={card} idx={idx} />
+              return <CardContainer card={card} idx={idx} />
             }),
           )}
         </div>
@@ -63,14 +67,14 @@ const PlayerCards = (): JSX.Element => {
       <div class={discardStyle}>
         <div data-testid="discard-pile">
           <h2>Draw Pile</h2>
-          <div data-testid="draw-pile-count" class="card">
+          <div data-testid="draw-pile-count" class={cardStyle}>
             {pipe(draw(), ReadonlyArray.length)}
           </div>
         </div>
 
         <div data-testid="discard-pile">
           <h2>Discard Pile</h2>
-          <div data-testid="discard-pile-count" class="card">
+          <div data-testid="discard-pile-count" class={cardStyle}>
             {pipe(disc(), ReadonlyArray.length)}
           </div>
         </div>
@@ -79,14 +83,13 @@ const PlayerCards = (): JSX.Element => {
   )
 }
 
-type CardViewProps = {
+type CardContainerProps = {
   card: Card.Card
   idx: number
 }
-const CardView = (props: CardViewProps): JSX.Element => {
+const CardContainer = (props: CardContainerProps): JSX.Element => {
   const card = props.card
   const idx = props.idx
-  const title = Card.toTitle(card)
 
   const selectedCardIdx = (): Option.Option<number> => {
     return pipe(GameState.game(), game => game.selectedCardIdx)
@@ -106,17 +109,14 @@ const CardView = (props: CardViewProps): JSX.Element => {
     pipe(GameState.game(), GameAction.selectHandCard(idx), GameState.setGame)
   }
 
-  const style = (): string => {
-    return cn("btn-card btn-gray-200 card w-48", {
-      "selected border-green-400": isSelected(),
-    })
-  }
-
   return (
-    <button data-testid={testId} class={style()} onClick={handleOnClickCard}>
-      <div>
-        <h1>{title}</h1>
-      </div>
+    <button data-testid={testId} onClick={handleOnClickCard}>
+      <CardView card={card} />
+      {isSelected() && (
+        <div class="h-8 flex justify-center items-center">
+          <div class="w-4 h-4 rounded-full bg-gray-900"></div>
+        </div>
+      )}
     </button>
   )
 }

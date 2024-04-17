@@ -20,17 +20,22 @@ const StrategyAndTacticCounts = (): JSX.Element => {
   const tacticCount = (): number => {
     return pipe(GameState.game(), game => game.turnPoints.tacticPoints)
   }
+  const resourceCount = (): number => {
+    return pipe(GameState.game(), game => game.turnPoints.resourcePoints)
+  }
 
   return (
     <div>
       <h1>
-        Strategy Points:
-        <span data-testid="strategy-count">{strategyCount()}</span>
+        Strategy Points: <span data-testid="strategy-count">{strategyCount()}</span>
       </h1>
 
       <h1>
-        Tactic Points:
-        <span data-testid="tactic-count">{tacticCount()}</span>
+        Tactic Points: <span data-testid="tactic-count">{tacticCount()}</span>
+      </h1>
+
+      <h1>
+        Resources: <span data-testid="resource-count">{resourceCount()}</span>
       </h1>
     </div>
   )

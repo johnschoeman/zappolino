@@ -2,7 +2,9 @@ import { JSX } from "solid-js"
 
 import { GameState } from "@app/state"
 import { pipe, ReadonlyArray } from "effect"
-import { Card, GameAction, Supply } from "@app/model"
+import { GameAction, Supply } from "@app/model"
+
+import CardView from "./Card"
 
 const handleOnClickSupplyPile = (pileIdx: number) => (): void => {
   pipe(
@@ -34,30 +36,18 @@ type SupplyPileProps = {
 }
 const SupplyPile = ({ supplyPile, idx }: SupplyPileProps): JSX.Element => {
   const testId = `supply-pile-${idx}`
-  const title = Card.toTitle(supplyPile.card)
-  const style = "btn-card btn-gray-200 flex flex-col"
-  const acquireCost = Card.toAcquireCost(supplyPile.card)
-  const [strategyValue, tacticValue, resourceValue] = Card.toPlayValue(
-    supplyPile.card,
-  )
+  const card = supplyPile.card
 
   return (
     <div
       data-testid={testId}
       onClick={handleOnClickSupplyPile(idx)}
-      class={style}
+      class="border w-48 flex flex-col items-center"
     >
-      <div class="w-full flex flex-row">
-        <div data-testid={`${testId}-count`} class="w-full text-right">
-          {supplyPile.count}
-        </div>
-        <div>{acquireCost}</div>
-      </div>
-      <div>{title}</div>
-      <div class="w-full flex flex-row">
-        <div>{strategyValue}</div>
-        <div>{tacticValue}</div>
-        <div>{resourceValue}</div>
+      <CardView card={card} />
+
+      <div data-testid={`${testId}-count`} class="w-full text-center">
+        {supplyPile.count}
       </div>
     </div>
   )
