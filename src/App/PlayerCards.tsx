@@ -26,13 +26,18 @@ const PlayerCards = (): JSX.Element => {
     return pipe(GameState.game(), Game.currentPlayerDeck, deck => deck.draw)
   }
 
+  const handleOnClickPlayMat = (): void => {
+    console.log("Clicked PlayMat")
+    pipe(GameState.game(), Game.selectPlayMat, GameState.setGame)
+  }
+
   const playMatStyle = "h-48 p-2 border rounded"
   const handStyle = "h-48 p-2 border rounded"
   const discardStyle = "h-48 p-2 border rounded flex flex-row space-x-2"
 
   return (
     <div data-testid="player-cards" class="flex flex-col space-y-2">
-      <div data-testid="player-playmat" class={playMatStyle}>
+      <div data-testid="player-playmat" class={playMatStyle} onClick={handleOnClickPlayMat}>
         <h2>Play Mat</h2>
         <div class="space-x-1">
           {pipe(

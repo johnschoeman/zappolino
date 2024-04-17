@@ -1,4 +1,4 @@
-export type Place = "Place"
+export type DeployHoplite = "DeployHoplite"
 export type MoveLeft = "MoveLeft"
 export type MoveRight = "MoveRight"
 export type MoveForward = "MoveForward"
@@ -10,7 +10,7 @@ export type PoliticalReforms = "PoliticalReforms"
 export type Oracle = "Oracle"
 
 export type Card =
-  | Place
+  | DeployHoplite
   | MoveLeft
   | MoveRight
   | MoveForward
@@ -26,8 +26,8 @@ type TacticCost = number
 
 export const toTitle = (card: Card): string => {
   switch (card) {
-    case "Place":
-      return "Place Piece"
+    case "DeployHoplite":
+      return "Deploy Hoplite"
     case "MoveLeft":
       return "Move Left"
     case "MoveRight":
@@ -51,7 +51,7 @@ export const toTitle = (card: Card): string => {
 
 export const toCost = (card: Card): [StrategyCost, TacticCost] => {
   switch (card) {
-    case "Place":
+    case "DeployHoplite":
     case "MilitaryReforms":
     case "PoliticalReforms":
     case "Oracle":

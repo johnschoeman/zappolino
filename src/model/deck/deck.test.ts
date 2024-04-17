@@ -8,12 +8,12 @@ import * as Deck from "./deck"
 test("Deck.draw - when the draw pile is empty, it reshuffles the discard and then draws", () => {
   const hand: Deck.Hand = []
   const draw: Deck.Draw = []
-  const disc: Deck.Disc = ["Place", "MoveLeft", "MoveRight", "MoveForward"]
+  const disc: Deck.Disc = ["DeployHoplite", "MoveLeft", "MoveRight", "MoveForward"]
   const deck: Deck.Deck = deckFactory.build({ hand, draw, disc })
 
   const result = Deck.draw(1)(deck)
 
-  const expectedHand: Deck.Hand = ["Place"]
+  const expectedHand: Deck.Hand = ["DeployHoplite"]
   const expectedDraw: Deck.Draw = ["MoveLeft", "MoveRight", "MoveForward"]
   const expectedDisc: Deck.Disc = []
   const expected: Deck.Deck = {
@@ -28,13 +28,13 @@ test("Deck.draw - when the draw pile is empty, it reshuffles the discard and the
 
 test("Deck.draw - when given a count of 1, it draws a card and put it into the players hand", () => {
   const hand: Deck.Hand = []
-  const draw: Deck.Draw = ["Place", "MoveLeft", "MoveRight", "MoveForward"]
+  const draw: Deck.Draw = ["DeployHoplite", "MoveLeft", "MoveRight", "MoveForward"]
   const disc: Deck.Disc = []
   const deck: Deck.Deck = deckFactory.build({ hand, draw, disc })
 
   const result = Deck.draw(1)(deck)
 
-  const expectedHand: Deck.Hand = ["Place"]
+  const expectedHand: Deck.Hand = ["DeployHoplite"]
   const expectedDraw: Deck.Draw = ["MoveLeft", "MoveRight", "MoveForward"]
   const expectedDisc: Deck.Disc = []
   const expected: Deck.Deck = {
@@ -49,13 +49,13 @@ test("Deck.draw - when given a count of 1, it draws a card and put it into the p
 
 test("Deck.draw - when given a count of 3, it draws the 3 cards and puts them into the players hand", () => {
   const hand: Deck.Hand = []
-  const draw: Deck.Draw = ["Place", "MoveLeft", "MoveRight", "MoveForward"]
+  const draw: Deck.Draw = ["DeployHoplite", "MoveLeft", "MoveRight", "MoveForward"]
   const disc: Deck.Disc = []
   const deck: Deck.Deck = deckFactory.build({ hand, draw, disc })
 
   const result = Deck.draw(3)(deck)
 
-  const expectedHand: Deck.Hand = ["Place", "MoveLeft", "MoveRight"]
+  const expectedHand: Deck.Hand = ["DeployHoplite", "MoveLeft", "MoveRight"]
   const expectedDraw: Deck.Draw = ["MoveForward"]
   const expectedDisc: Deck.Disc = []
   const expected: Deck.Deck = {
@@ -69,14 +69,14 @@ test("Deck.draw - when given a count of 3, it draws the 3 cards and puts them in
 })
 
 test("Deck.draw - when the draw pile is empty, it does nothing", () => {
-  const hand: Deck.Hand = ["Place", "Place"]
+  const hand: Deck.Hand = ["DeployHoplite", "DeployHoplite"]
   const draw: Deck.Draw = []
   const disc: Deck.Disc = []
   const deck: Deck.Deck = deckFactory.build({ hand, draw, disc })
 
   const result = Deck.draw(1)(deck)
 
-  const expectedHand: Deck.Hand = ["Place", "Place"]
+  const expectedHand: Deck.Hand = ["DeployHoplite", "DeployHoplite"]
   const expectedDraw: Deck.Draw = []
   const expectedDisc: Deck.Disc = []
   const expected: Deck.Deck = {
@@ -90,7 +90,7 @@ test("Deck.draw - when the draw pile is empty, it does nothing", () => {
 })
 
 // test("Deck.playCard - it moves the currently selected card into the played cards list", () => {
-//   const hand: Deck.Hand = ["Place", "MoveLeft", "Place"]
+//   const hand: Deck.Hand = ["DeployHoplite", "MoveLeft", "DeployHoplite"]
 //   const playedCards: Deck.Played = []
 //   const deck: Deck.Deck = deckFactory.build({
 //     hand,
@@ -99,7 +99,7 @@ test("Deck.draw - when the draw pile is empty, it does nothing", () => {
 //
 //   const result = Deck.playCard(deck)
 //
-//   const expectedHand: Deck.Hand = ["Place", "Place"]
+//   const expectedHand: Deck.Hand = ["DeployHoplite", "DeployHoplite"]
 //   const expectedPlayedCards: Deck.Played = ["MoveLeft"]
 //   const expected: Deck.Deck = {
 //     hand: expectedHand,
@@ -112,7 +112,7 @@ test("Deck.draw - when the draw pile is empty, it does nothing", () => {
 // })
 
 test("Deck.discardHand - it moves the hand into the discard pile", () => {
-  const hand: Deck.Hand = ["Place", "MoveLeft", "Place"]
+  const hand: Deck.Hand = ["DeployHoplite", "MoveLeft", "DeployHoplite"]
   const draw: Deck.Draw = []
   const disc: Deck.Disc = ["MoveRight"]
   const deck: Deck.Deck = deckFactory.build({ hand, draw, disc })
@@ -121,7 +121,7 @@ test("Deck.discardHand - it moves the hand into the discard pile", () => {
 
   const expectedHand: Deck.Hand = []
   const expectedDraw: Deck.Draw = []
-  const expectedDisc: Deck.Disc = ["Place", "MoveLeft", "Place", "MoveRight"]
+  const expectedDisc: Deck.Disc = ["DeployHoplite", "MoveLeft", "DeployHoplite", "MoveRight"]
   const expected: Deck.Deck = {
     hand: expectedHand,
     draw: expectedDraw,
@@ -133,10 +133,10 @@ test("Deck.discardHand - it moves the hand into the discard pile", () => {
 })
 
 test("Deck.shuffleDraw - It shuffles the draw pile", () => {
-  const draw: Deck.Draw = ["MoveRight", "MoveLeft", "Place"]
+  const draw: Deck.Draw = ["MoveRight", "MoveLeft", "DeployHoplite"]
   const deck: Deck.Deck = deckFactory.build({ draw })
 
-  const expectedDraw: Deck.Draw = ["MoveRight", "Place", "MoveLeft"]
+  const expectedDraw: Deck.Draw = ["MoveRight", "DeployHoplite", "MoveLeft"]
 
   const { draw: resultDraw } = Deck.shuffleDraw(deck)
 

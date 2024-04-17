@@ -22,17 +22,11 @@ export const show = (deck: Deck): string => {
 }
 
 const initialDraw: Draw = [
-  "Place",
-  "Place",
+  "DeployHoplite",
+  "DeployHoplite",
   "MoveLeft",
   "MoveRight",
   "MoveForward",
-  "Place",
-  "Place",
-  "MoveLeft",
-  "MoveRight",
-  "MoveForward",
-  "Place",
 ]
 
 export const initial: Deck = {
@@ -58,7 +52,7 @@ export const getCardAt =
     return pipe(deck.hand[cardIdx], Option.fromNullable)
   }
 
-export const playCard =
+export const consumeCard =
   (cardIdx: number) =>
   (deck: Deck): Deck => {
     const optionCard = pipe(deck.hand, ReadonlyArray.get(cardIdx))
@@ -175,7 +169,3 @@ export const shuffleDraw = (deck: Deck): Deck => {
 
   return result
 }
-
-// Tactic
-// Strategy
-// Supply

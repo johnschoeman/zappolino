@@ -96,6 +96,31 @@ export const selectHandCard =
     }
   }
 
+export const selectPlayMat = (game: Game): Game => {
+  const deck = currentPlayerDeck(game)
+  const card = pipe(
+    game.selectedCardIdx,
+    Option.andThen(cardIdx => {
+      return Deck.getCardAt(cardIdx)(deck)
+    }),
+  )
+
+  if (Option.isNone(card)) {
+    return game
+  }
+
+  return pipe(
+    game,
+    validateHasCardCost(card.value),
+    Either.andThen(playSelectMatCard(card.value)),
+    Either.map(consumeSelectedCard),
+    Either.match({
+      onLeft: () => game,
+      onRight: nextGame => nextGame,
+    }),
+  )
+}
+
 export const selectCell =
   ({ rowIdx, colIdx }: Position.Position) =>
   (game: Game): Game => {
@@ -114,8 +139,8 @@ export const selectCell =
     return pipe(
       game,
       validateHasCardCost(card.value),
-      Either.andThen(playCard({ rowIdx, colIdx })(card.value)),
-      Either.map(playSelectedCard),
+      Either.andThen(playSelectPieceCard({ rowIdx, colIdx })(card.value)),
+      Either.map(consumeSelectedCard),
       Either.match({
         onLeft: () => game,
         onRight: nextGame => nextGame,
@@ -169,17 +194,6 @@ const deckFor =
     }
   }
 
-// ---- Setters ----
-
-const updateSupply =
-  (supply: Supply.Supply) =>
-  (game: Game): Game => {
-    return {
-      ...game,
-      supply,
-    }
-  }
-
 // ---- Validation Logic ----
 
 type CardCostError = "NotEnoughStrategyPoints" | "NotEnoughTacticPoints"
@@ -205,28 +219,53 @@ type PlayCardError =
   | "InvalidCell"
   | "InvalidPlacement"
   | "InvalidPieceSelection"
+  | "InvalidPlayMatSelection"
   | "InvalidDestination"
 
-const playCard =
+const playSelectPieceCard =
   (pos: Position.Position) =>
   (card: Card.Card) =>
   (game: Game): Either.Either<Game, PlayCardError> => {
     switch (card) {
-      case "Place":
-        return playPlacePieceCard(pos)(game)
+      case "DeployHoplite":
+        return playDeployHoplitePieceCard(pos)(game)
       case "MoveForward":
         return playMoveForwardCard(pos)(game)
       case "MoveRight":
         return playMoveRightCard(pos)(game)
       case "MoveLeft":
         return playMoveLeftCard(pos)(game)
+      case "Flank":
+        return playFlank(pos)("Left")(game)
+      case "Charge":
+        return playCharge(game)
+      case "Retreat":
+        return playRetreat(game)
+      case "MilitaryReforms":
+      case "PoliticalReforms":
       case "Oracle":
+        return Either.left("InvalidPieceSelection")
+    }
+  }
+
+const playSelectMatCard =
+  (card: Card.Card) =>
+  (game: Game): Either.Either<Game, PlayCardError> => {
+    switch (card) {
+      case "MilitaryReforms":
+        return playMilitaryReforms(game)
+      case "PoliticalReforms":
+        return playPoliticalReforms(game)
+      case "Oracle":
+        return playOracle(game)
+      case "DeployHoplite":
+      case "MoveForward":
+      case "MoveRight":
+      case "MoveLeft":
       case "Flank":
       case "Charge":
       case "Retreat":
-      case "MilitaryReforms":
-      case "PoliticalReforms":
-        return playPlacePieceCard(pos)(game)
+        return Either.left("InvalidPlayMatSelection")
     }
   }
 
@@ -240,6 +279,39 @@ const isValidRowForPlayer =
         return rowIdx === 4
     }
   }
+
+// --- Play Card Functions
+
+const playFlank =
+  (_from: Position.Position) =>
+  (_direction: "Left" | "Right") =>
+  (game: Game): Either.Either<Game, PlayCardError> => {
+    return pipe(game, Either.right)
+  }
+
+const playCharge = (game: Game): Either.Either<Game, PlayCardError> => {
+  return pipe(game, Either.right)
+}
+
+const playRetreat = (game: Game): Either.Either<Game, PlayCardError> => {
+  return pipe(game, Either.right)
+}
+
+const playMilitaryReforms = (
+  game: Game,
+): Either.Either<Game, PlayCardError> => {
+  return pipe(game, increaseTacticPoints(3), Either.right)
+}
+
+const playPoliticalReforms = (
+  game: Game,
+): Either.Either<Game, PlayCardError> => {
+  return pipe(game, increaseStrategyPoints(2), Either.right)
+}
+
+const playOracle = (game: Game): Either.Either<Game, PlayCardError> => {
+  return pipe(game, Either.right)
+}
 
 type MoveToFn = (
   player: Player.Player,
@@ -325,7 +397,7 @@ export const playMoveForwardCard = playMoveDirection(moveForward)
 export const playMoveLeftCard = playMoveDirection(moveLeft)
 export const playMoveRightCard = playMoveDirection(moveRight)
 
-export const playPlacePieceCard =
+export const playDeployHoplitePieceCard =
   ({ rowIdx, colIdx }: Position.Position) =>
   (game: Game): Either.Either<Game, PlayCardError> => {
     const player = game.currentPlayer
@@ -353,6 +425,17 @@ export const playPlacePieceCard =
     )
   }
 
+// ---- Update Game State
+
+const updateSupply =
+  (supply: Supply.Supply) =>
+  (game: Game): Game => {
+    return {
+      ...game,
+      supply,
+    }
+  }
+
 const consumeStrategyPoint = (game: Game): Game => {
   const turnPoints = game.turnPoints
   const nextTurnPoints = {
@@ -364,6 +447,20 @@ const consumeStrategyPoint = (game: Game): Game => {
     turnPoints: nextTurnPoints,
   }
 }
+
+const increaseStrategyPoints =
+  (count: number) =>
+  (game: Game): Game => {
+    const turnPoints = game.turnPoints
+    const nextTurnPoints = {
+      ...turnPoints,
+      strategyPoints: turnPoints.strategyPoints + count,
+    }
+    return {
+      ...game,
+      turnPoints: nextTurnPoints,
+    }
+  }
 
 const consumeTacticPoint = (game: Game): Game => {
   const turnPoints = game.turnPoints
@@ -377,12 +474,26 @@ const consumeTacticPoint = (game: Game): Game => {
   }
 }
 
-export const playSelectedCard = (game: Game): Game => {
+const increaseTacticPoints =
+  (count: number) =>
+  (game: Game): Game => {
+    const turnPoints = game.turnPoints
+    const nextTurnPoints = {
+      ...turnPoints,
+      tacticPoints: turnPoints.tacticPoints + count,
+    }
+    return {
+      ...game,
+      turnPoints: nextTurnPoints,
+    }
+  }
+
+export const consumeSelectedCard = (game: Game): Game => {
   const player = game.currentPlayer
   const deck = currentPlayerDeck(game)
   const nextDeck = pipe(
     game.selectedCardIdx,
-    Option.map(cardIdx => Deck.playCard(cardIdx)(deck)),
+    Option.map(cardIdx => Deck.consumeCard(cardIdx)(deck)),
     Option.getOrElse(() => deck),
   )
   const nextGame = pipe(game, updateDeckFor(player)(nextDeck), unselectHandCard)

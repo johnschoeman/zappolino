@@ -22,7 +22,7 @@ test("Game.endTurn - It discards, draws a new hand, progress the board and switc
   const board = Board.parse(boardStr)
   const player = "White"
   const deckWhite = deckFactory.build({
-    hand: ["Place", "Place", "Place", "Place", "Place"],
+    hand: ["DeployHoplite", "DeployHoplite", "DeployHoplite", "DeployHoplite", "DeployHoplite"],
     draw: [
       "MoveForward",
       "MoveForward",
@@ -69,7 +69,7 @@ test("Game.endTurn - It discards, draws a new hand, progress the board and switc
       "MoveForward",
     ],
     draw: [],
-    disc: ["Place", "Place", "Place", "Place", "Place", "MoveRight"],
+    disc: ["DeployHoplite", "DeployHoplite", "DeployHoplite", "DeployHoplite", "DeployHoplite", "MoveRight"],
     playedCards: [],
   }
 
@@ -103,8 +103,8 @@ test("Game.selectCell - when making a valid move, it plays the selected card", (
   const player = "White"
   const deckWhite = deckFactory.build({
     playedCards: ["MoveRight"],
-    hand: ["Place", "MoveLeft"],
-    draw: ["Place", "MoveForward"],
+    hand: ["DeployHoplite", "MoveLeft"],
+    draw: ["DeployHoplite", "MoveForward"],
     disc: [],
   })
   const deckBlack = deckFactory.build({
@@ -133,9 +133,9 @@ P--P-
 `
   const expectedBoard = Board.parse(expectedBoardStr)
   const expectedDeckWhite: Deck.Deck = {
-    playedCards: ["MoveRight", "Place"],
+    playedCards: ["MoveRight", "DeployHoplite"],
     hand: ["MoveLeft"],
-    draw: ["Place", "MoveForward"],
+    draw: ["DeployHoplite", "MoveForward"],
     disc: [],
   }
 
@@ -165,12 +165,12 @@ test("Game.selectSupplyPile - It consumes a strategy point and adds a card to th
   const player = "White"
   const deckWhite = deckFactory.build({
     playedCards: [],
-    hand: ["Place", "MoveLeft"],
-    draw: ["Place", "MoveForward"],
+    hand: ["DeployHoplite", "MoveLeft"],
+    draw: ["DeployHoplite", "MoveForward"],
     disc: [],
   })
 
-  const supply: Supply.Supply = [{ card: "Place", count: 1 }]
+  const supply: Supply.Supply = [{ card: "DeployHoplite", count: 1 }]
 
   const game: Game.Game = gameFactory.build({
     currentPlayer: player,
@@ -182,11 +182,11 @@ test("Game.selectSupplyPile - It consumes a strategy point and adds a card to th
 
   const expectedDeckWhite: Deck.Deck = {
     playedCards: [],
-    hand: ["Place", "MoveLeft"],
-    draw: ["Place", "MoveForward"],
-    disc: ["Place"],
+    hand: ["DeployHoplite", "MoveLeft"],
+    draw: ["DeployHoplite", "MoveForward"],
+    disc: ["DeployHoplite"],
   }
-  const expectedSupply: Supply.Supply = [{ card: "Place", count: 0 }]
+  const expectedSupply: Supply.Supply = [{ card: "DeployHoplite", count: 0 }]
 
   const expected: Game.Game = gameFactory.build({
     currentPlayer: "White",
@@ -205,12 +205,12 @@ test("Game.selectSupplyPile - If the supply count is 0, it does nothing", () => 
   const player = "White"
   const deckWhite = deckFactory.build({
     playedCards: [],
-    hand: ["Place", "MoveLeft"],
-    draw: ["Place", "MoveForward"],
+    hand: ["DeployHoplite", "MoveLeft"],
+    draw: ["DeployHoplite", "MoveForward"],
     disc: [],
   })
 
-  const supply: Supply.Supply = [{ card: "Place", count: 0 }]
+  const supply: Supply.Supply = [{ card: "DeployHoplite", count: 0 }]
 
   const game: Game.Game = gameFactory.build({
     currentPlayer: player,
@@ -222,11 +222,11 @@ test("Game.selectSupplyPile - If the supply count is 0, it does nothing", () => 
 
   const expectedDeckWhite: Deck.Deck = {
     playedCards: [],
-    hand: ["Place", "MoveLeft"],
-    draw: ["Place", "MoveForward"],
+    hand: ["DeployHoplite", "MoveLeft"],
+    draw: ["DeployHoplite", "MoveForward"],
     disc: [],
   }
-  const expectedSupply: Supply.Supply = [{ card: "Place", count: 0 }]
+  const expectedSupply: Supply.Supply = [{ card: "DeployHoplite", count: 0 }]
 
   const expected: Game.Game = gameFactory.build({
     currentPlayer: "White",
@@ -245,12 +245,12 @@ test("Game.selectSupplyPile - If the player has no strategy points, it does noth
   const player = "White"
   const deckWhite = deckFactory.build({
     playedCards: [],
-    hand: ["Place", "MoveLeft"],
-    draw: ["Place", "MoveForward"],
+    hand: ["DeployHoplite", "MoveLeft"],
+    draw: ["DeployHoplite", "MoveForward"],
     disc: [],
   })
 
-  const supply: Supply.Supply = [{ card: "Place", count: 1 }]
+  const supply: Supply.Supply = [{ card: "DeployHoplite", count: 1 }]
 
   const game: Game.Game = gameFactory.build({
     currentPlayer: player,
@@ -266,11 +266,11 @@ test("Game.selectSupplyPile - If the player has no strategy points, it does noth
 
   const expectedDeckWhite: Deck.Deck = {
     playedCards: [],
-    hand: ["Place", "MoveLeft"],
-    draw: ["Place", "MoveForward"],
+    hand: ["DeployHoplite", "MoveLeft"],
+    draw: ["DeployHoplite", "MoveForward"],
     disc: [],
   }
-  const expectedSupply: Supply.Supply = [{ card: "Place", count: 1 }]
+  const expectedSupply: Supply.Supply = [{ card: "DeployHoplite", count: 1 }]
 
   const expected: Game.Game = gameFactory.build({
     currentPlayer: "White",
@@ -393,7 +393,7 @@ test("Game.movePiece - it moves a piece", () => {
 })
 
 test("Game.validateHasCardCost - if the player has the points, it returns the game, and error if not", () => {
-  const strategyCard: Card.Card = "Place"
+  const strategyCard: Card.Card = "DeployHoplite"
   const tacticCard: Card.Card = "MoveLeft"
 
   const game1 = gameFactory.build({
@@ -421,7 +421,7 @@ test("Game.validateHasCardCost - if the player has the points, it returns the ga
   expect(result4).toEqual(Either.left("NotEnoughTacticPoints"))
 })
 
-test("Game.playPlacePieceCard - it only allows valid placement", () => {
+test("Game.playDeployHoplitePieceCard - it only allows valid placement", () => {
   const player = "White"
   const board = Board.parse(
     `
@@ -463,9 +463,9 @@ P--P-
     },
   })
 
-  const result1 = Game.playPlacePieceCard(posValid)(game)
-  const result2 = Game.playPlacePieceCard(posNotOnHomeRow)(game)
-  const result3 = Game.playPlacePieceCard(posOnExistingPiece)(game)
+  const result1 = Game.playDeployHoplitePieceCard(posValid)(game)
+  const result2 = Game.playDeployHoplitePieceCard(posNotOnHomeRow)(game)
+  const result3 = Game.playDeployHoplitePieceCard(posOnExistingPiece)(game)
 
   expect(result1).toEqual(Either.right(expected1))
   expect(result2).toEqual(Either.left("InvalidPlacement"))

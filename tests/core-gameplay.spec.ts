@@ -1,24 +1,6 @@
-import { expect, test, Page } from "@playwright/test"
+import { expect, test } from "@playwright/test"
 
-import { Cell, Player } from "../src/model"
-
-const expectCellToHavePiece =
-  (page: Page) =>
-  (cellId: string) =>
-  async (player: Player.Player): Promise<void> => {
-    await expect(page.getByTestId(cellId)).toHaveAttribute(
-      "data-cell",
-      Cell.show({ _tag: "Piece", player }),
-    )
-  }
-
-const expectCurrentPlayerToBe =
-  (page: Page) =>
-  async (player: Player.Player): Promise<void> => {
-    await expect(page.getByTestId("current-player")).toHaveText(
-      Player.show(player),
-    )
-  }
+import { expectCurrentPlayerToBe, expectCellToHavePiece } from "./expectations"
 
 test("game play - single turn, place piece", async ({ page }) => {
   await page.goto("http://localhost:3000")
