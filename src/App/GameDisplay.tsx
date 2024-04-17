@@ -13,10 +13,10 @@ const GameDisplay = (): JSX.Element => {
     return GameState.game().turnCount
   }
   const hegemonyBlack = (): number => {
-    return GameState.game().hegemonyBlack
+    return GameState.game().hegemony.hegemonyBlack
   }
   const hegemonyWhite = (): number => {
-    return GameState.game().hegemonyWhite
+    return GameState.game().hegemony.hegemonyWhite
   }
 
   return (

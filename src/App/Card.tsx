@@ -40,16 +40,20 @@ const CardView = (props: CardViewProps): JSX.Element => {
         <div class="text-center">{description}</div>
 
         <div class="w-full flex flex-col text-center">
-          <div>{showStrategyValue && <div>+ {strategyValue} Strategy</div>}</div>
+          <div>
+            {showStrategyValue && <div>+ {strategyValue} Strategy</div>}
+          </div>
           <div>{showTacticValue && <div>+ {tacticValue} Tactics</div>}</div>
-          <div>{showResourceValue && <div>+ {resourceValue} Resources</div>}</div>
+          <div>
+            {showResourceValue && <div>+ {resourceValue} Resources</div>}
+          </div>
         </div>
       </div>
 
-        <div class="p-4 w-full flex flex-row justify-between">
-          <div>Cost: {acquireCost}</div>
-          <div>Resource: {resourceGain}</div>
-        </div>
+      <div class="p-4 w-full flex flex-row justify-between">
+        <div>Cost: {acquireCost}</div>
+        <div>Resource: {resourceGain}</div>
+      </div>
     </div>
   )
 }

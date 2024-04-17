@@ -1,10 +1,10 @@
 import { createSignal } from "solid-js"
 import { pipe } from "effect"
 
-import { Deck, Game, GameAction } from "@app/model"
+import { Deck, Game } from "@app/model"
 
 const setupGame = (): void => {
-  pipe(game(), GameAction.endTurn, GameAction.endTurn, setGame)
+  pipe(game(), setGame)
 }
 
 export const [game, setGame] = createSignal<Game.Game>(Game.initial)

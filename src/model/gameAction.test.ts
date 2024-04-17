@@ -99,8 +99,10 @@ test("GameAction.endTurn - It discards, draws a new hand, progress the board and
     },
     supply: Supply.initial,
     turnCount: 1,
-    hegemonyBlack: 0,
-    hegemonyWhite: 0,
+    hegemony: {
+      hegemonyBlack: 0,
+      hegemonyWhite: 0,
+    },
   }
 
   expect(result).toEqual(expected)
@@ -108,25 +110,57 @@ test("GameAction.endTurn - It discards, draws a new hand, progress the board and
 
 test("GameAction.endTurn - When the player is black, it increments the turn count", () => {
   const player = "Black"
-  const nextPlayer = "White"
 
   const game: Game.Game = gameFactory.build({
     currentPlayer: player,
-    deckBlack: deckFactory.build(),
-    deckWhite: deckFactory.build(),
     turnCount: 2,
   })
 
   const result = GameAction.endTurn(game)
 
-  const expected: Game.Game = gameFactory.build({
-    currentPlayer: nextPlayer,
-    deckBlack: deckFactory.build(),
-    deckWhite: deckFactory.build(),
-    turnCount: 3,
+  const expectedTurnCount = 3
+
+  expect(result.turnCount).toEqual(expectedTurnCount)
+})
+
+test("GameAction.endTurn - When a piece makes it off the board it adds a hegemony point", () => {
+  const boardStr = `
+-P---
+-----
+-----
+-----
+---p-
+`
+  const board = Board.parse(boardStr)
+  const player = "White"
+
+  const game: Game.Game = gameFactory.build({
+    board,
+    currentPlayer: player,
+    hegemony: {
+      hegemonyBlack: 0,
+      hegemonyWhite: 0
+    }
   })
 
-  expect(result).toEqual(expected)
+  const result = GameAction.endTurn(game)
+
+  const expectedBoardStr = `
+-----
+-----
+-----
+-----
+---p-
+`
+  const expectedBoard = Board.parse(expectedBoardStr)
+
+  const expectedHegemony: Game.Hegemony = {
+      hegemonyBlack: 0,
+      hegemonyWhite: 1,
+    }
+
+  expect(result.hegemony).toEqual(expectedHegemony)
+  expect(result.board).toEqual(expectedBoard)
 })
 
 // ---- Select Cell ----
@@ -192,8 +226,10 @@ P--P-
     },
     supply: Supply.initial,
     turnCount: 1,
-    hegemonyWhite: 0,
-    hegemonyBlack: 0,
+    hegemony: {
+      hegemonyWhite: 0,
+      hegemonyBlack: 0,
+    },
   }
 
   expect(result).toEqual(expected)

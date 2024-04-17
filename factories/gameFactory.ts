@@ -13,8 +13,7 @@ export const gameFactory = Factory.define<Game.Game>(() => {
     turnPoints: Game.initialTurnPoints,
     supply: Supply.initial,
     turnCount: 1,
-    hegemonyBlack: 0,
-    hegemonyWhite: 0,
+    hegemony: Game.initialHegemony,
   }
 
   return game

@@ -1,7 +1,7 @@
 type Rank = "0" | "1" | "2" | "3" | "4"
 type File = "A" | "B" | "C" | "D" | "E"
 
-type RankFile =
+export type RankFile =
   | "A0"
   | "A1"
   | "A2"

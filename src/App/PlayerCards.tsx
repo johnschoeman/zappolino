@@ -109,9 +109,12 @@ const CardContainer = (props: CardContainerProps): JSX.Element => {
     pipe(GameState.game(), GameAction.selectHandCard(idx), GameState.setGame)
   }
 
+  const style = cn({ selected: isSelected() })
+
   return (
-    <button data-testid={testId} onClick={handleOnClickCard}>
+    <button data-testid={testId} onClick={handleOnClickCard} class={style}>
       <CardView card={card} />
+
       {isSelected() && (
         <div class="h-8 flex justify-center items-center">
           <div class="w-4 h-4 rounded-full bg-gray-900"></div>
@@ -128,13 +131,12 @@ type PlayedCardViewProps = {
 const PlayedCardView = (props: PlayedCardViewProps): JSX.Element => {
   const card = props.card
   const idx = props.idx
-  const title = Card.toTitle(card)
 
-  const testId = `played-card-${idx}`
+  const testId = `consumed-card-${idx}`
 
   return (
     <div data-testid={testId} class="card">
-      {title}
+      <CardView card={card} />
     </div>
   )
 }

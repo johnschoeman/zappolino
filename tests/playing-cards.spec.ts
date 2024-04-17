@@ -29,19 +29,3 @@ test("Select Piece Card", async ({ page }) => {
 
   // expect card was played correctly and board was updated correctly
 })
-
-test("Select Piece and Direction Card", async ({ page }) => {
-  await page.goto("http://localhost:3000")
-
-  // Start game
-  await page.getByTestId("start-game-button").click()
-  await expect(page.getByTestId("game-board")).toBeVisible()
-
-  // get and select card that requires selecting a piece and a direction
-
-  // select piece
-
-  // select direction
-
-  // expect card was played correctly and board was updated correctly
-})

@@ -8,6 +8,8 @@ export const empty: Cell = { _tag: "Empty" }
 
 export type Cell = Piece | Empty
 
+export type CellId = string
+
 export const match = Match.type<Cell>()
 
 export const build = (kind: "Empty" | "Black" | "White"): Cell => {

@@ -65,7 +65,7 @@ export const all: Card[] = [
   "Oracle",
 ]
 
-export const toKind = (card: Card): string => {
+export const toKind = (card: Card): Kind => {
   switch (card) {
     case "ManeuverLeft":
     case "ManeuverRight":

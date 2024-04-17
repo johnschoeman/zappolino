@@ -15,11 +15,15 @@ export type Game = {
   deckBlack: Deck.Deck
   supply: Supply.Supply
   turnCount: number
-  hegemonyWhite: number
-  hegemonyBlack: number
+  hegemony: Hegemony
 }
 
-type TurnPoints = {
+export type Hegemony = {
+  hegemonyBlack: number
+  hegemonyWhite: number
+}
+
+export type TurnPoints = {
   strategyPoints: number
   tacticPoints: number
   resourcePoints: number
@@ -31,6 +35,11 @@ export const initialTurnPoints: TurnPoints = {
   resourcePoints: 0,
 }
 
+export const initialHegemony: Hegemony = {
+  hegemonyWhite: 0,
+  hegemonyBlack: 0,
+}
+
 export const initial: Game = {
   board: Board.empty,
   currentPlayer: "White",
@@ -40,8 +49,7 @@ export const initial: Game = {
   deckBlack: Deck.initial,
   supply: Supply.initial,
   turnCount: 1,
-  hegemonyBlack: 0,
-  hegemonyWhite: 0,
+  hegemony: initialHegemony,
 }
 
 export const show = (game: Game): string => {
@@ -313,39 +321,51 @@ const addPiecesFor = ([
     }),
   )
 
-  let countHegemonyWhite = 0
-  if (currentPlayer === "White") {
-    countHegemonyWhite = pipe(
-      positions,
-      ReadonlyArray.reduce(0, (acc: number, pos: Position.Position) => {
+  const currentHegemony = game.hegemony
+
+  const nextHegemonyWhite = pipe(
+    positions,
+    ReadonlyArray.reduce(
+      currentHegemony.hegemonyWhite,
+      (acc: number, pos: Position.Position) => {
+        if (currentPlayer === "Black") {
+          return acc
+        }
         if (pos.rowIdx < 0) {
           return acc + 1
         } else {
           return acc
         }
-      }),
-    )
-  }
+      },
+    ),
+  )
 
-  let countHegemonyBlack = 0
-  if (currentPlayer === "Black") {
-    countHegemonyBlack = pipe(
-      positions,
-      ReadonlyArray.reduce(0, (acc: number, pos: Position.Position) => {
-        if (pos.rowIdx > 4) {
+  const nextHegemonyBlack = pipe(
+    positions,
+    ReadonlyArray.reduce(
+      currentHegemony.hegemonyBlack,
+      (acc: number, pos: Position.Position) => {
+        if (currentPlayer === "White") {
+          return acc
+        }
+        if (pos.rowIdx < 0) {
           return acc + 1
         } else {
           return acc
         }
-      }),
-    )
+      },
+    ),
+  )
+
+  const nextHegemony = {
+    hegemonyWhite: nextHegemonyWhite,
+    hegemonyBlack: nextHegemonyBlack,
   }
 
   const nextGame = {
     ...game,
     board: nextBoard,
-    hegemonyWhite: game.hegemonyWhite + countHegemonyWhite,
-    hegemonyBlack: game.hegemonyBlack + countHegemonyBlack,
+    hegemony: nextHegemony,
   }
   return [nextGame, []]
 }

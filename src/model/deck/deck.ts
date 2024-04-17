@@ -21,6 +21,14 @@ export const show = (deck: Deck): string => {
   return `hand: ${hand}, draw: ${draw}, disc: ${disc}, playedCards: ${playedCards}`
 }
 
+const initialHand: Hand = [
+  "DeployHoplite",
+  "DeployHoplite",
+  "ManeuverLeft",
+  "ManeuverRight",
+  "ManeuverForward",
+]
+
 const initialDraw: Draw = [
   "DeployHoplite",
   "DeployHoplite",
@@ -30,7 +38,7 @@ const initialDraw: Draw = [
 ]
 
 export const initial: Deck = {
-  hand: [],
+  hand: initialHand,
   draw: initialDraw,
   disc: [],
   playedCards: [],
