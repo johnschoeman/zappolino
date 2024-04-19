@@ -15,7 +15,7 @@ const LandingPage = (): JSX.Element => {
   return (
     <div class="w-full h-full p-8 flex justify-start items-center flex-col">
       <div class="flex">
-        <h1 class="text-4xl font-bold">Zappalino</h1>
+        <h1 class="text-4xl font-bold">Phalanx</h1>
       </div>
 
       <div class="flex-grow flex justify-center items-center w-full">

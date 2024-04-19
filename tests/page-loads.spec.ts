@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test"
 test("page loads", async ({ page }) => {
   await page.goto("http://localhost:3000")
 
-  await expect(page).toHaveTitle(/Zappalino/)
+  await expect(page).toHaveTitle(/Phalanx/)
 })
 
 test("start game", async ({ page }) => {
