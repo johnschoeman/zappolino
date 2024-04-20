@@ -1,15 +1,25 @@
 import { JSX } from "solid-js"
-import { GameState } from "@app/state"
-import { Deck, Card, GameAction } from "@app/model"
 import { pipe, ReadonlyArray } from "effect"
 
+import { Card, Deck, GameAction } from "@app/model"
+import { GameState } from "@app/state"
+
 import CardView from "../Card"
+import PlaceHolderCardView from "../PlaceholderCard"
 
 const PlayMat = (): JSX.Element => {
-  const playMatStyle = "h-96 p-2 border rounded"
+  const playMatStyle = "p-2 border rounded"
 
   const playedCards = (): Deck.Played => {
     return pipe(GameState.playedCards())
+  }
+
+  const countPlayed = (): number => {
+    return pipe(playedCards(), ReadonlyArray.length)
+  }
+
+  const isNoPlayedCard = (): boolean => {
+    return pipe(playedCards(), ReadonlyArray.isEmptyArray)
   }
 
   const handleOnClickPlayMat = (): void => {
@@ -22,10 +32,16 @@ const PlayMat = (): JSX.Element => {
       class={playMatStyle}
       onClick={handleOnClickPlayMat}
     >
-      <h2>Play Mat</h2>
-      <div class="space-x-1">
+      <h2>
+        Play Mat <span>{countPlayed()}</span>
+      </h2>
+
+      {isNoPlayedCard() && <PlaceHolderCardView />}
+
+      <div>
         {pipe(
           playedCards(),
+          ReadonlyArray.take(1),
           ReadonlyArray.map((card, idx) => {
             return <PlayedCardView card={card} idx={idx} />
           }),

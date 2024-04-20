@@ -45,8 +45,6 @@ type TacticValue = number
 type ResourceValue = number
 export type PlayValue = [StrategyValue, TacticValue, ResourceValue]
 
-type AcquireCost = ResourceCost
-
 type Kind = "Tactic" | "Strategy"
 
 export const all: Card[] = [
@@ -189,21 +187,21 @@ export const toPlayValue = (card: Card): PlayValue => {
   }
 }
 
-export const toAcquireCost = (card: Card): AcquireCost => {
+export const toResourceCost = (card: Card): ResourceCost => {
   switch (card) {
     case "DeployHoplite":
     case "ManeuverLeft":
     case "ManeuverRight":
     case "ManeuverForward":
-      return 0
+      return 1
     case "AssaultLeft":
     case "AssaultRight":
     case "AssaultForward":
-      return 1
+      return 2
     case "Charge":
     case "FlankLeft":
     case "FlankRight":
-      return 2
+      return 3
     case "MilitaryReforms":
     case "PoliticalReforms":
     case "Oracle":

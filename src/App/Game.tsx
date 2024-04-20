@@ -1,10 +1,10 @@
 import { JSX } from "solid-js"
 
 import Board from "./Board"
-import PlayerCards from "./PlayerCards"
-import TurnDisplay from "./TurnDisplay"
 import GameDisplay from "./GameDisplay"
+import PlayerCards from "./PlayerCards"
 import Supply from "./Supply"
+import TurnDisplay from "./TurnDisplay"
 
 const GameView = (): JSX.Element => {
   return (
@@ -12,15 +12,17 @@ const GameView = (): JSX.Element => {
       <div class="">
         <GameDisplay />
       </div>
-      <div class="">
-        <Board />
+
+      <div class="flex flex-row">
+        <div>
+          <Board />
+        </div>
+        <div class="flex flex-col">
+          <TurnDisplay />
+          <PlayerCards />
+        </div>
       </div>
-      <div>
-        <TurnDisplay />
-      </div>
-      <div class="">
-        <PlayerCards />
-      </div>
+
       <div class="">
         <Supply />
       </div>

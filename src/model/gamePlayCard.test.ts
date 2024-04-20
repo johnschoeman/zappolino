@@ -1,12 +1,12 @@
 import { expect, test } from "bun:test"
-
 import { Either } from "effect"
 
-import { Card } from "./deck"
 import { gameFactory } from "../../factories"
+
+import { Board } from "./board"
+import { Card } from "./deck"
 import * as Game from "./game"
 import * as GamePlayCard from "./gamePlayCard"
-import { Board } from "./board"
 
 test("GamePlayCard.validateHasCardCost - if the player has the points, it returns the game, and error if not", () => {
   const strategyCard: Card.Card = "DeployHoplite"

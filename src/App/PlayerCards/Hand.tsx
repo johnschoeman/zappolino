@@ -12,7 +12,7 @@ const HandView = (): JSX.Element => {
     return pipe(GameState.currentPlayerDeck(), deck => deck.hand)
   }
 
-  const handStyle = "h-96 p-2 border rounded"
+  const handStyle = "p-2 border rounded"
   return (
     <div data-testid="player-hand-list" class={handStyle}>
       <h2>Hand</h2>

@@ -1,10 +1,10 @@
-import { ReadonlyArray, Either, Option, pipe } from "effect"
+import { Either, Option, pipe, ReadonlyArray } from "effect"
 
-import * as Position from "./position"
-import * as Supply from "./supply"
+import { Card, Deck } from "./deck"
 import * as Game from "./game"
 import * as GamePlayCard from "./gamePlayCard"
-import { Deck } from "./deck"
+import * as Position from "./position"
+import * as Supply from "./supply"
 
 export const selectSupplyPile =
   (supplyPileIdx: number) =>
@@ -24,9 +24,10 @@ export const selectSupplyPile =
       return game
     }
 
-    const strategyPoints = game.turnPoints.strategyPoints
+    const resourcePoints = game.turnPoints.resourcePoints
+    const resourceCost = Card.toResourceCost(card)
 
-    if (strategyPoints < 1) {
+    if (resourcePoints < resourceCost) {
       return game
     }
 
@@ -45,7 +46,7 @@ export const selectSupplyPile =
     return pipe(
       game,
       Game.updateDeckFor(currentPlayer)(nextDeck),
-      Game.consumeStrategyPoint,
+      Game.decreaseTurnPoints([0, 0, resourceCost]),
       Game.updateSupply(nextSupply),
     )
   }
@@ -58,6 +59,10 @@ export const selectHandCard =
       selectedCardIdx: Option.some(cardIdx),
     }
   }
+
+export const selectCommitResourceMat = (game: Game.Game): Game.Game => {
+  return Game.commitSelectedCard(game)
+}
 
 export const selectPlayMat = (game: Game.Game): Game.Game => {
   const deck = Game.currentPlayerDeck(game)

@@ -1,10 +1,46 @@
 import { expect, test } from "bun:test"
+import { Option } from "effect"
 
-import { gameFactory } from "../../factories"
+import { deckFactory, gameFactory } from "../../factories"
 
 import { Board } from "./board"
 import * as Game from "./game"
 import * as Player from "./player"
+
+test("Game.commitSelectedCard", () => {
+  const deck = deckFactory.build({
+    hand: ["DeployHoplite"],
+    commitedCards: [],
+  })
+  const game: Game.Game = gameFactory.build({
+    currentPlayer: "White",
+    deckWhite: deck,
+    selectedCardIdx: Option.some(0),
+    turnPoints: {
+      resourcePoints: 0,
+      strategyPoints: 0,
+      tacticPoints: 0,
+    },
+  })
+
+  const result = Game.commitSelectedCard(game)
+
+  const expectedDeck = deckFactory.build({
+    hand: [],
+    commitedCards: ["DeployHoplite"],
+  })
+  const expected = gameFactory.build({
+    currentPlayer: "White",
+    deckWhite: expectedDeck,
+    turnPoints: {
+      resourcePoints: 1,
+      strategyPoints: 0,
+      tacticPoints: 0,
+    },
+  })
+
+  expect(result).toEqual(expected)
+})
 
 // ---- Board ----
 
@@ -54,6 +90,56 @@ test("Game.progressBoard - It progress the correct pieces forward", () => {
 
   expectGameBoardToMatch(resultWhite, expectedWhite)
   expectGameBoardToMatch(resultBlack, expectedBlack)
+})
+
+test("Game.progressBoard - When the piece crosses the board, it increments the score", () => {
+  const gameWhite: Game.Game = buildGame("White")(
+    `
+-P---
+-----
+-----
+-----
+---p-
+`,
+  )
+
+  const gameBlack: Game.Game = buildGame("Black")(
+    `
+-P---
+-----
+-----
+-----
+---p-
+`,
+  )
+
+  const expectedWhite: Game.Game = buildGame("White")(
+    `
+-----
+-----
+-----
+-----
+---p-
+`,
+  )
+
+  const expectedBlack: Game.Game = buildGame("Black")(
+    `
+-P---
+-----
+-----
+-----
+-----
+`,
+  )
+
+  const resultWhite = Game.progressBoard(gameWhite)
+  const resultBlack = Game.progressBoard(gameBlack)
+
+  expectGameBoardToMatch(resultWhite, expectedWhite)
+  expect(resultWhite.hegemony.hegemonyWhite).toBe(1)
+  expectGameBoardToMatch(resultBlack, expectedBlack)
+  expect(resultBlack.hegemony.hegemonyBlack).toBe(1)
 })
 
 test("Game.addPiece - adds a piece", () => {

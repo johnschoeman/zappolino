@@ -118,6 +118,21 @@ export const consumeStrategyPoint = (game: Game): Game => {
   }
 }
 
+export const decreaseTurnPoints =
+  ([strategyPoints, tacticPoints, resourcePoints]: Card.PlayValue) =>
+  (game: Game): Game => {
+    const turnPoints = game.turnPoints
+    const nextTurnPoints = {
+      strategyPoints: turnPoints.strategyPoints - strategyPoints,
+      tacticPoints: turnPoints.tacticPoints - tacticPoints,
+      resourcePoints: turnPoints.resourcePoints - resourcePoints,
+    }
+    return {
+      ...game,
+      turnPoints: nextTurnPoints,
+    }
+  }
+
 export const increaseTurnPoints =
   ([strategyPoints, tacticPoints, resourcePoints]: Card.PlayValue) =>
   (game: Game): Game => {
@@ -154,6 +169,35 @@ export const consumeSelectedCard = (game: Game): Game => {
     Option.getOrElse(() => deck),
   )
   const nextGame = pipe(game, updateDeckFor(player)(nextDeck), unselectHandCard)
+  return nextGame
+}
+
+export const commitSelectedCard = (game: Game): Game => {
+  const player = game.currentPlayer
+  const deck = currentPlayerDeck(game)
+  const card = pipe(
+    game.selectedCardIdx,
+    Option.andThen(cardIdx => {
+      return Deck.getCardAt(cardIdx)(deck)
+    }),
+  )
+  if (Option.isNone(card)) {
+    return game
+  }
+
+  const resourceValue = Card.toResourceValue(card.value)
+
+  const nextDeck = pipe(
+    game.selectedCardIdx,
+    Option.map(cardIdx => Deck.commitCard(cardIdx)(deck)),
+    Option.getOrElse(() => deck),
+  )
+  const nextGame = pipe(
+    game,
+    increaseTurnPoints([0, 0, resourceValue]),
+    updateDeckFor(player)(nextDeck),
+    unselectHandCard,
+  )
   return nextGame
 }
 
@@ -348,7 +392,7 @@ const addPiecesFor = ([
         if (currentPlayer === "White") {
           return acc
         }
-        if (pos.rowIdx < 0) {
+        if (pos.rowIdx > 4) {
           return acc + 1
         } else {
           return acc

@@ -1,6 +1,6 @@
 import { JSX } from "solid-js"
 import cn from "classnames"
-import { pipe, ReadonlyArray, Match } from "effect"
+import { Match, pipe, ReadonlyArray } from "effect"
 
 import { Board, Cell, GameAction, Position } from "@app/model"
 import { GameState } from "@app/state"

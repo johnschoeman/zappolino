@@ -6,7 +6,7 @@ import { GameState } from "@app/state"
 
 const TurnDisplay = (): JSX.Element => {
   return (
-    <div class="w-full border rounded flex flex-row justify-between p-2">
+    <div class="w-full border rounded p-2 flex flex-row justify-between">
       <StrategyAndTacticCounts />
       <EndTurnButton />
     </div>
@@ -25,19 +25,19 @@ const StrategyAndTacticCounts = (): JSX.Element => {
   }
 
   return (
-    <div>
-      <h1>
-        Strategy Points:{" "}
+    <div class="flex flex-row justify-around items-center">
+      <div>
+        Strategy Points:
         <span data-testid="strategy-count">{strategyCount()}</span>
-      </h1>
+      </div>
 
-      <h1>
+      <div>
         Tactic Points: <span data-testid="tactic-count">{tacticCount()}</span>
-      </h1>
+      </div>
 
-      <h1>
+      <div>
         Resources: <span data-testid="resource-count">{resourceCount()}</span>
-      </h1>
+      </div>
     </div>
   )
 }
@@ -50,7 +50,7 @@ const EndTurnButton = (): JSX.Element => {
   return (
     <button
       data-testid="end-turn-button"
-      class="px-4 py-2 bg-green-300 rounded"
+      class="px-4 py-2 bg-green-300 rounded w-64"
       onClick={handleOnClickEndTurn}
     >
       End Turn

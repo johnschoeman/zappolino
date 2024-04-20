@@ -2,7 +2,7 @@ import { pipe, ReadonlyArray } from "effect"
 
 import { Card } from "./deck"
 
-const SUPPLY_SIZE = 8
+export const SUPPLY_SIZE = 8
 
 export type Supply = SupplyPile[]
 

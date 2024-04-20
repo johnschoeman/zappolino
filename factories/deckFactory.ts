@@ -8,6 +8,7 @@ export const deckFactory = Factory.define<Deck.Deck>(() => {
     draw: [],
     disc: [],
     playedCards: [],
+    commitedCards: [],
   }
 
   return deck

@@ -30,6 +30,7 @@ test("Deck.draw - when the draw pile is empty, it reshuffles the discard and the
     draw: expectedDraw,
     disc: expectedDisc,
     playedCards: [],
+    commitedCards: [],
   }
 
   expect(result).toEqual(expected)
@@ -60,6 +61,7 @@ test("Deck.draw - when given a count of 1, it draws a card and put it into the p
     draw: expectedDraw,
     disc: expectedDisc,
     playedCards: [],
+    commitedCards: [],
   }
 
   expect(result).toEqual(expected)
@@ -90,6 +92,7 @@ test("Deck.draw - when given a count of 3, it draws the 3 cards and puts them in
     draw: expectedDraw,
     disc: expectedDisc,
     playedCards: [],
+    commitedCards: [],
   }
 
   expect(result).toEqual(expected)
@@ -111,6 +114,7 @@ test("Deck.draw - when the draw pile is empty, it does nothing", () => {
     draw: expectedDraw,
     disc: expectedDisc,
     playedCards: [],
+    commitedCards: [],
   }
 
   expect(result).toEqual(expected)
@@ -159,6 +163,7 @@ test("Deck.discardHand - it moves the hand into the discard pile", () => {
     draw: expectedDraw,
     disc: expectedDisc,
     playedCards: [],
+    commitedCards: [],
   }
 
   expect(result).toEqual(expected)

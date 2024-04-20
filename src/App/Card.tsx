@@ -13,7 +13,7 @@ const CardView = (props: CardViewProps): JSX.Element => {
   const kind = Card.toKind(card)
   const description = Card.toDescription(card)
 
-  const acquireCost = Card.toAcquireCost(card)
+  const acquireCost = Card.toResourceCost(card)
   const resourceGain = Card.toResourceValue(card)
   const [strategyValue, tacticValue, resourceValue] = Card.toPlayValue(card)
 

@@ -1,8 +1,8 @@
 import { JSX } from "solid-js"
-
-import { GameState } from "@app/state"
 import { pipe, ReadonlyArray } from "effect"
+
 import { GameAction, Supply } from "@app/model"
+import { GameState } from "@app/state"
 
 import CardView from "./Card"
 

@@ -1,6 +1,6 @@
 import * as Board from "./board/board"
-import * as Card from "./deck/card"
 import * as Cell from "./board/cell"
+import * as Card from "./deck/card"
 import * as Deck from "./deck/deck"
 import * as Game from "./game"
 import * as GameAction from "./gameAction"

@@ -1,6 +1,6 @@
 import { expect, Page } from "@playwright/test"
 
-import { Cell, Player, Position, Game } from "@app/model"
+import { Cell, Game, Player, Position } from "@app/model"
 
 // ---- Workflows
 
@@ -27,6 +27,10 @@ export const selectNthCard =
 
 export const selectPlayMat = async (page: Page): Promise<void> => {
   await page.getByTestId("play-mat").click()
+}
+
+export const selectCommitResourceMat = async (page: Page): Promise<void> => {
+  await page.getByTestId("commit-resource-mat").click()
 }
 
 export const selectCell =

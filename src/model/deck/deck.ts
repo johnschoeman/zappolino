@@ -8,12 +8,14 @@ export type Disc = Pile
 export type Draw = Pile
 export type Hand = Pile
 export type Played = Pile
+export type Commited = Pile
 
 export type Deck = {
   hand: Hand
   draw: Draw
   disc: Disc
   playedCards: Played
+  commitedCards: Commited
 }
 
 export const show = (deck: Deck): string => {
@@ -29,19 +31,14 @@ const initialHand: Hand = [
   "ManeuverForward",
 ]
 
-const initialDraw: Draw = [
-  "DeployHoplite",
-  "DeployHoplite",
-  "ManeuverLeft",
-  "ManeuverRight",
-  "ManeuverForward",
-]
+const initialDraw: Draw = []
 
 export const initial: Deck = {
   hand: initialHand,
   draw: initialDraw,
   disc: [],
   playedCards: [],
+  commitedCards: [],
 }
 
 export const addCardToDiscard =
@@ -69,7 +66,7 @@ export const consumeCard =
       optionCard,
       Option.match({
         onNone: () => deck.playedCards,
-        onSome: card => pipe(deck.playedCards, ReadonlyArray.append(card)),
+        onSome: card => pipe(deck.playedCards, ReadonlyArray.prepend(card)),
       }),
     )
 
@@ -77,6 +74,26 @@ export const consumeCard =
       ...deck,
       hand: nextHand,
       playedCards: nextPlayedCards,
+    }
+  }
+
+export const commitCard =
+  (cardIdx: number) =>
+  (deck: Deck): Deck => {
+    const optionCard = pipe(deck.hand, ReadonlyArray.get(cardIdx))
+    const nextHand = pipe(deck.hand, ReadonlyArray.remove(cardIdx))
+    const nextCommitedCards = pipe(
+      optionCard,
+      Option.match({
+        onNone: () => deck.commitedCards,
+        onSome: card => pipe(deck.commitedCards, ReadonlyArray.prepend(card)),
+      }),
+    )
+
+    return {
+      ...deck,
+      hand: nextHand,
+      commitedCards: nextCommitedCards,
     }
   }
 
@@ -105,7 +122,7 @@ export const draw =
   }
 
 const drawWithoutRefill = (deck: Deck): Deck => {
-  const { hand, draw: drawPile, disc, playedCards } = deck
+  const { hand, draw: drawPile, disc, playedCards, commitedCards } = deck
   const nextHand = pipe(
     drawPile,
     ReadonlyArray.take(1),
@@ -118,24 +135,25 @@ const drawWithoutRefill = (deck: Deck): Deck => {
     draw: nextDrawPile,
     disc,
     playedCards,
+    commitedCards,
   }
 }
 
 export const discardPlayed = (deck: Deck): Deck => {
-  const { hand, draw: drawPile, disc, playedCards } = deck
-  const nextPlayedCards: Played = []
-  const nextDisc: Disc = pipe(playedCards, ReadonlyArray.appendAll(disc))
+  const { hand, draw: drawPile, disc, playedCards, commitedCards } = deck
+  const nextDisc: Disc = [...commitedCards, ...playedCards, ...disc]
 
   return {
     hand,
     draw: drawPile,
     disc: nextDisc,
-    playedCards: nextPlayedCards,
+    playedCards: [],
+    commitedCards: [],
   }
 }
 
 export const discardHand = (deck: Deck): Deck => {
-  const { hand, draw: drawPile, disc, playedCards } = deck
+  const { hand, draw: drawPile, disc, playedCards, commitedCards } = deck
   const nextHand: Hand = []
   const nextDisc: Disc = pipe(hand, ReadonlyArray.appendAll(disc))
 
@@ -144,6 +162,7 @@ export const discardHand = (deck: Deck): Deck => {
     draw: drawPile,
     disc: nextDisc,
     playedCards,
+    commitedCards,
   }
 }
 
@@ -157,7 +176,7 @@ const refillDrawPile = (deck: Deck): Deck => {
 
 export const shuffleDraw = (deck: Deck): Deck => {
   const s = Effect.gen(function* (_) {
-    const { hand, draw: drawPile, disc, playedCards } = deck
+    const { hand, draw: drawPile, disc, playedCards, commitedCards } = deck
 
     const shuffled = yield* _(Random.shuffle(drawPile))
 
@@ -168,6 +187,7 @@ export const shuffleDraw = (deck: Deck): Deck => {
       draw: nextDraw,
       disc,
       playedCards,
+      commitedCards,
     }
 
     return nextDeck

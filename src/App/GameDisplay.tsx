@@ -2,7 +2,6 @@ import { JSX } from "solid-js"
 import { pipe } from "effect"
 
 import { Player } from "@app/model"
-
 import { GameState } from "@app/state"
 
 const GameDisplay = (): JSX.Element => {

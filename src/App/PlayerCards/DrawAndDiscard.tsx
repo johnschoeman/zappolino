@@ -1,6 +1,6 @@
 import { JSX } from "solid-js"
-
 import { pipe, ReadonlyArray } from "effect"
+
 import { Deck } from "@app/model"
 import { GameState } from "@app/state"
 
@@ -13,9 +13,9 @@ const DrawAndDiscard = (): JSX.Element => {
     return pipe(GameState.currentPlayerDeck(), deck => deck.draw)
   }
 
-  const discardStyle = "h-96 p-2 border rounded flex flex-row space-x-2"
+  const discardStyle = "p-2 border rounded flex flex-row space-x-2"
   const cardStyle =
-    "w-48 h-64 border rounded border-black bg-gray-200 justify-center items-center text-center"
+    "border rounded border-black bg-gray-200 justify-center items-center text-center"
 
   return (
     <div class={discardStyle}>

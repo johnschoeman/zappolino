@@ -3,17 +3,15 @@ import { test } from "@playwright/test"
 import {
   endTurn,
   expectCellToHavePiece,
-  expectTurnCountToBe,
   expectCurrentPlayerToBe,
   expectDiscardCountToBe,
-  expectNthSupplyToHaveCount,
+  expectHegemonyToBe,
   expectPlayedCardSize,
   expectToHaveHandSize,
+  expectTurnCountToBe,
   expectTurnPointsToBe,
-  expectHegemonyToBe,
   selectCell,
   selectNthCard,
-  selectNthSupply,
   startGame,
 } from "./testHelpers"
 
@@ -47,35 +45,6 @@ test("single turn - place a piece", async ({ page }) => {
   await endTurn(page)
 
   await expectCellToHavePiece("A3")("White")(page)
-  await expectCurrentPlayerToBe("Black")(page)
-})
-
-test("single turn - buy card from supply", async ({ page }) => {
-  await page.goto("http://localhost:3000")
-
-  await startGame(page)
-
-  await expectCurrentPlayerToBe("White")(page)
-  await expectDiscardCountToBe(0)(page)
-  await expectTurnPointsToBe({
-    strategyPoints: 1,
-    tacticPoints: 1,
-    resourcePoints: 0,
-  })(page)
-
-  await expectNthSupplyToHaveCount(0)(8)(page)
-  await selectNthSupply(0)(page)
-
-  await expectNthSupplyToHaveCount(0)(7)(page)
-  await expectDiscardCountToBe(1)(page)
-  await expectTurnPointsToBe({
-    strategyPoints: 0,
-    tacticPoints: 1,
-    resourcePoints: 0,
-  })(page)
-
-  await endTurn(page)
-
   await expectCurrentPlayerToBe("Black")(page)
 })
 

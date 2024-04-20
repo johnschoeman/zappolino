@@ -1,10 +1,10 @@
 import { Either, Option, pipe } from "effect"
 
-import * as Game from "./game"
 import { Board, Cell } from "./board"
+import { Card } from "./deck"
+import * as Game from "./game"
 import * as Player from "./player"
 import * as Position from "./position"
-import { Card } from "./deck"
 // ---- Validation Logic ----
 
 type CardCostError = "NotEnoughStrategyPoints" | "NotEnoughTacticPoints"

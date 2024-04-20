@@ -14,6 +14,7 @@
     "lint:fix": "eslint ./ --fix",
     "prettier": "prettier -l '**/*.{js,jsx,ts,tsx}'",
     "format": "prettier -w '**/*.{js,jsx,ts,tsx}'",
+    "prep": "npm run format && npm run lint:fix",
     "tsc": "npx tsc",
     "tsc:watch": "npx tsc --watch",
     "test:unit": "bun test src",
