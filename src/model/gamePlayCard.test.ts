@@ -37,6 +37,8 @@ test("GamePlayCard.validateHasCardCost - if the player has the points, it return
   expect(result4).toEqual(Either.left("NotEnoughTacticPoints"))
 })
 
+// ---- DeployHoplite
+
 test("GamePlayCard.playDeployHopliteCard - it only allows valid placement", () => {
   const player = "White"
   const board = Board.parse(
@@ -87,6 +89,8 @@ P--P-
   expect(result2).toEqual(Either.left("InvalidPlacement"))
   expect(result3).toEqual(Either.left("InvalidPlacement"))
 })
+
+// ---- ManeuverForward
 
 test("GamePlayCard.playManeuverForwardCard - it moves the select piece forward", () => {
   const player = "White"
@@ -153,6 +157,8 @@ PPp--
     Either.left("InvalidManeuverOntoOtherPiece"),
   )
 })
+
+// ---- AssualtForward
 
 test("GamePlayCard.playAssaultForward - it assaults the select piece forward", () => {
   const player = "White"
@@ -222,6 +228,8 @@ PP---
     Either.left("InvalidAssaultNotOntoOtherPiece"),
   )
 })
+
+// ---- Charge
 
 test("GamePlayCard.playCharge - it charges the selected piece forward", () => {
   const player = "White"
@@ -320,6 +328,8 @@ PPP--
   expect(resultOntoOwnPiece).toEqual(Either.left("InvalidChargeOntoOwnPiece"))
 })
 
+// FlankLeft
+
 test("GamePlayCard.flankLeft - it flanks the selected piece to the left", () => {
   const player = "White"
   const board = Board.parse(
@@ -400,4 +410,42 @@ PPP--
   expect(resultOntoOwnPiece).toEqual(
     Either.left("InvalidFlankLeftOntoOwnPiece"),
   )
+})
+
+// ---- Oracle
+
+test("GamePlayCard.playOracle - it gains the correct points", () => {
+  const player = "White"
+  const board = Board.parse(
+    `
+-p---
+-----
+-----
+-----
+---P-
+`,
+  )
+  const game: Game.Game = gameFactory.build({
+    board,
+    currentPlayer: player,
+    turnPoints: {
+      strategyPoints: 1,
+      tacticPoints: 1,
+      resourcePoints: 0,
+    },
+  })
+
+  const result1 = GamePlayCard.playOracle(game)
+
+  const expected1: Game.Game = gameFactory.build({
+    board,
+    currentPlayer: player,
+    turnPoints: {
+      strategyPoints: 2,
+      tacticPoints: 3,
+      resourcePoints: 0,
+    },
+  })
+
+  expect(result1).toEqual(Either.right(expected1))
 })

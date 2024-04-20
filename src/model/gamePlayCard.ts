@@ -130,10 +130,14 @@ const playPoliticalReforms = (
   )
 }
 
-const playOracle = (
+export const playOracle = (
   game: Game.Game,
 ): Either.Either<Game.Game, PlayCardError> => {
-  return pipe(game, Either.right)
+  return pipe(
+    game,
+    Game.increaseTurnPoints(Card.toPlayValue("Oracle")),
+    Either.right,
+  )
 }
 
 // Move - Move from one position to another, without validation
