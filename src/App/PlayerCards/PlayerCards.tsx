@@ -5,11 +5,16 @@ import { Option, pipe, ReadonlyArray } from "effect"
 import { Card, Deck, GameAction } from "@app/model"
 import { GameState } from "@app/state"
 
-import CardView from "./Card"
+import CardView from "../Card"
 
 const PlayerCards = (): JSX.Element => {
+
   const playedCards = (): Deck.Played => {
-    return pipe(GameState.currentPlayerDeck(), deck => deck.playedCards)
+    return pipe(GameState.playedCards())
+  }
+
+  const resourceCommitedCards = (): Deck.Played => {
+    return pipe(GameState.commitedResourceCards())
   }
 
   const hand = (): Deck.Hand => {
@@ -28,6 +33,10 @@ const PlayerCards = (): JSX.Element => {
     pipe(GameState.game(), GameAction.selectPlayMat, GameState.setGame)
   }
 
+  const handleOnClickCommitResourceMat = (): void => {
+    pipe(GameState.game(), GameAction.selectCommitResourceMat, GameState.setGame)
+  }
+
   const playMatStyle = "h-96 p-2 border rounded"
   const handStyle = "h-96 p-2 border rounded"
   const discardStyle = "h-96 p-2 border rounded flex flex-row space-x-2"
@@ -37,7 +46,7 @@ const PlayerCards = (): JSX.Element => {
   return (
     <div data-testid="player-cards" class="flex flex-col space-y-2">
       <div
-        data-testid="player-playmat"
+        data-testid="play-mat"
         class={playMatStyle}
         onClick={handleOnClickPlayMat}
       >
@@ -45,6 +54,22 @@ const PlayerCards = (): JSX.Element => {
         <div class="space-x-1">
           {pipe(
             playedCards(),
+            ReadonlyArray.map((card, idx) => {
+              return <PlayedCardView card={card} idx={idx} />
+            }),
+          )}
+        </div>
+      </div>
+
+      <div
+        data-testid="commit-resource-mat"
+        class={playMatStyle}
+        onClick={handleOnClickCommitResourceMat}
+      >
+        <h2>Commit Resource Mat</h2>
+        <div class="space-x-1">
+          {pipe(
+            resourceCommitedCards(),
             ReadonlyArray.map((card, idx) => {
               return <PlayedCardView card={card} idx={idx} />
             }),
