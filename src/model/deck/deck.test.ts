@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test"
-import { pipe, ReadonlyArray, String } from "effect"
+import { Array, pipe, String } from "effect"
 
 import { deckFactory } from "../../../factories"
 
@@ -188,8 +188,8 @@ const expectPileToHaveSameCards = (
   pileA: Deck.Pile,
   pileB: Deck.Pile,
 ): void => {
-  const pileASorted = pipe(pileA, ReadonlyArray.sort(String.Order))
-  const pileBSorted = pipe(pileB, ReadonlyArray.sort(String.Order))
+  const pileASorted = pipe(pileA, Array.sort(String.Order))
+  const pileBSorted = pipe(pileB, Array.sort(String.Order))
 
   expect(pileASorted).toEqual(pileBSorted)
 }

@@ -1,5 +1,5 @@
 import { JSX } from "solid-js"
-import { pipe, ReadonlyArray } from "effect"
+import { Array, pipe } from "effect"
 
 import { Deck } from "@app/model"
 import { GameState } from "@app/state"
@@ -22,14 +22,14 @@ const DrawAndDiscard = (): JSX.Element => {
       <div data-testid="draw-pile">
         <h2>Draw Pile</h2>
         <div data-testid="draw-pile-count" class={cardStyle}>
-          {pipe(draw(), ReadonlyArray.length)}
+          {pipe(draw(), Array.length)}
         </div>
       </div>
 
       <div data-testid="discard-pile">
         <h2>Discard Pile</h2>
         <div data-testid="discard-pile-count" class={cardStyle}>
-          {pipe(disc(), ReadonlyArray.length)}
+          {pipe(disc(), Array.length)}
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { JSX } from "solid-js"
-import { pipe, ReadonlyArray } from "effect"
+import { Array, pipe } from "effect"
 
 import { Card, Deck, GameAction } from "@app/model"
 import { GameState } from "@app/state"
@@ -15,11 +15,11 @@ const CommitResourceMat = (): JSX.Element => {
   }
 
   const countCommited = (): number => {
-    return pipe(resourceCommitedCards(), ReadonlyArray.length)
+    return pipe(resourceCommitedCards(), Array.length)
   }
 
   const isNoCommittedCards = (): boolean => {
-    return pipe(resourceCommitedCards(), ReadonlyArray.isEmptyArray)
+    return pipe(resourceCommitedCards(), Array.isEmptyArray)
   }
 
   const handleOnClickCommitResourceMat = (): void => {
@@ -45,8 +45,8 @@ const CommitResourceMat = (): JSX.Element => {
       <div class="space-x-1">
         {pipe(
           resourceCommitedCards(),
-          ReadonlyArray.take(1),
-          ReadonlyArray.map((card, idx) => {
+          Array.take(1),
+          Array.map((card, idx) => {
             return <PlayedCardView card={card} idx={idx} />
           }),
         )}

@@ -1,4 +1,4 @@
-import { pipe, ReadonlyArray } from "effect"
+import { Array, pipe } from "effect"
 
 import { Card } from "./deck"
 
@@ -18,4 +18,4 @@ const buildPile = (card: Card.Card): SupplyPile => {
   }
 }
 
-export const initial: Supply = pipe(Card.all, ReadonlyArray.map(buildPile))
+export const initial: Supply = pipe(Card.all, Array.map(buildPile))

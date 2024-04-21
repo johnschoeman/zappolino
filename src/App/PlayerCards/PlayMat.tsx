@@ -1,5 +1,5 @@
 import { JSX } from "solid-js"
-import { pipe, ReadonlyArray } from "effect"
+import { Array, pipe } from "effect"
 
 import { Card, Deck, GameAction } from "@app/model"
 import { GameState } from "@app/state"
@@ -15,11 +15,11 @@ const PlayMat = (): JSX.Element => {
   }
 
   const countPlayed = (): number => {
-    return pipe(playedCards(), ReadonlyArray.length)
+    return pipe(playedCards(), Array.length)
   }
 
   const isNoPlayedCard = (): boolean => {
-    return pipe(playedCards(), ReadonlyArray.isEmptyArray)
+    return pipe(playedCards(), Array.isEmptyArray)
   }
 
   const handleOnClickPlayMat = (): void => {
@@ -41,8 +41,8 @@ const PlayMat = (): JSX.Element => {
       <div>
         {pipe(
           playedCards(),
-          ReadonlyArray.take(1),
-          ReadonlyArray.map((card, idx) => {
+          Array.take(1),
+          Array.map((card, idx) => {
             return <PlayedCardView card={card} idx={idx} />
           }),
         )}

@@ -1,4 +1,4 @@
-import { Effect, Option, pipe, Random, ReadonlyArray } from "effect"
+import { Array, Effect, Option, pipe, Random } from "effect"
 
 import * as Card from "./card"
 
@@ -44,7 +44,7 @@ export const initial: Deck = {
 export const addCardToDiscard =
   (card: Card.Card) =>
   (deck: Deck): Deck => {
-    const nextDiscard: Disc = pipe(deck.disc, ReadonlyArray.append(card))
+    const nextDiscard: Disc = pipe(deck.disc, Array.append(card))
     return {
       ...deck,
       disc: nextDiscard,
@@ -60,13 +60,13 @@ export const getCardAt =
 export const consumeCard =
   (cardIdx: number) =>
   (deck: Deck): Deck => {
-    const optionCard = pipe(deck.hand, ReadonlyArray.get(cardIdx))
-    const nextHand = pipe(deck.hand, ReadonlyArray.remove(cardIdx))
+    const optionCard = pipe(deck.hand, Array.get(cardIdx))
+    const nextHand = pipe(deck.hand, Array.remove(cardIdx))
     const nextPlayedCards = pipe(
       optionCard,
       Option.match({
         onNone: () => deck.playedCards,
-        onSome: card => pipe(deck.playedCards, ReadonlyArray.prepend(card)),
+        onSome: card => pipe(deck.playedCards, Array.prepend(card)),
       }),
     )
 
@@ -80,13 +80,13 @@ export const consumeCard =
 export const commitCard =
   (cardIdx: number) =>
   (deck: Deck): Deck => {
-    const optionCard = pipe(deck.hand, ReadonlyArray.get(cardIdx))
-    const nextHand = pipe(deck.hand, ReadonlyArray.remove(cardIdx))
+    const optionCard = pipe(deck.hand, Array.get(cardIdx))
+    const nextHand = pipe(deck.hand, Array.remove(cardIdx))
     const nextCommitedCards = pipe(
       optionCard,
       Option.match({
         onNone: () => deck.commitedCards,
-        onSome: card => pipe(deck.commitedCards, ReadonlyArray.prepend(card)),
+        onSome: card => pipe(deck.commitedCards, Array.prepend(card)),
       }),
     )
 
@@ -105,10 +105,7 @@ export const draw =
     }
     return pipe(
       deck,
-      (deck_): [Deck, boolean] => [
-        deck,
-        ReadonlyArray.isEmptyArray(deck_.draw),
-      ],
+      (deck_): [Deck, boolean] => [deck, Array.isEmptyArray(deck_.draw)],
       ([deck_, isDrawPileEmpty]) => {
         if (isDrawPileEmpty) {
           return refillDrawPile(deck_)
@@ -123,12 +120,8 @@ export const draw =
 
 const drawWithoutRefill = (deck: Deck): Deck => {
   const { hand, draw: drawPile, disc, playedCards, commitedCards } = deck
-  const nextHand = pipe(
-    drawPile,
-    ReadonlyArray.take(1),
-    ReadonlyArray.prependAll(hand),
-  )
-  const nextDrawPile = pipe(drawPile, ReadonlyArray.drop(1))
+  const nextHand = pipe(drawPile, Array.take(1), Array.prependAll(hand))
+  const nextDrawPile = pipe(drawPile, Array.drop(1))
 
   return {
     hand: nextHand,
@@ -155,7 +148,7 @@ export const discardPlayed = (deck: Deck): Deck => {
 export const discardHand = (deck: Deck): Deck => {
   const { hand, draw: drawPile, disc, playedCards, commitedCards } = deck
   const nextHand: Hand = []
-  const nextDisc: Disc = pipe(hand, ReadonlyArray.appendAll(disc))
+  const nextDisc: Disc = pipe(hand, Array.appendAll(disc))
 
   return {
     hand: nextHand,
@@ -180,7 +173,7 @@ export const shuffleDraw = (deck: Deck): Deck => {
 
     const shuffled = yield* _(Random.shuffle(drawPile))
 
-    const nextDraw = pipe([], ReadonlyArray.appendAll(shuffled))
+    const nextDraw = pipe([], Array.appendAll(shuffled))
 
     const nextDeck: Deck = {
       hand,

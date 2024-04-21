@@ -1,6 +1,6 @@
 import { JSX } from "solid-js"
 import cn from "classnames"
-import { Option, pipe, ReadonlyArray } from "effect"
+import { Array, Option, pipe } from "effect"
 
 import { Card, Deck, GameAction } from "@app/model"
 import { GameState } from "@app/state"
@@ -19,7 +19,7 @@ const HandView = (): JSX.Element => {
       <div class="flex flex-row space-x-2 overflow-x-auto pr-16">
         {pipe(
           hand(),
-          ReadonlyArray.map((card, idx) => {
+          Array.map((card, idx) => {
             return <CardContainer card={card} idx={idx} />
           }),
         )}

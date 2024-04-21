@@ -1,6 +1,6 @@
 import { JSX } from "solid-js"
 import cn from "classnames"
-import { Match, pipe, ReadonlyArray } from "effect"
+import { Array, Match, pipe } from "effect"
 
 import { Board, Cell, GameAction, Position } from "@app/model"
 import { GameState } from "@app/state"
@@ -11,7 +11,7 @@ const BoardView = (): JSX.Element => {
       <div class="flex flex-col">
         {pipe(
           GameState.game().board,
-          ReadonlyArray.map((row, idx) => <RowView row={row} rowIdx={idx} />),
+          Array.map((row, idx) => <RowView row={row} rowIdx={idx} />),
         )}
       </div>
     </div>
@@ -35,7 +35,7 @@ const RowView = ({ row, rowIdx }: RowViewProps): JSX.Element => {
     <div class={style}>
       {pipe(
         row,
-        ReadonlyArray.map((cell, idx) => (
+        Array.map((cell, idx) => (
           <CellView cell={cell} rowIdx={rowIdx} colIdx={idx} />
         )),
       )}

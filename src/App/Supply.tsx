@@ -1,5 +1,5 @@
 import { JSX } from "solid-js"
-import { pipe, ReadonlyArray } from "effect"
+import { Array, pipe } from "effect"
 
 import { GameAction, Supply } from "@app/model"
 import { GameState } from "@app/state"
@@ -21,7 +21,7 @@ const SupplyView = (): JSX.Element => {
       <div class="w-full h-full grid grid-cols-3 gap-2">
         {pipe(
           GameState.game().supply,
-          ReadonlyArray.map((supplyPile, idx) => {
+          Array.map((supplyPile, idx) => {
             return <SupplyPile supplyPile={supplyPile} idx={idx} />
           }),
         )}

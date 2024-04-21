@@ -1,4 +1,4 @@
-import { Match, Option, pipe, ReadonlyArray, String } from "effect"
+import { Array, Match, Option, pipe, String } from "effect"
 
 import * as Player from "../player"
 
@@ -39,7 +39,7 @@ export type CellWithPos = { cell: Cell.Cell; rowIdx: number; colIdx: number }
 export const buildRow = (
   template: ("Empty" | "Black" | "White")[],
 ): Row<Cell.Cell> => {
-  return pipe(template, ReadonlyArray.map(Cell.build))
+  return pipe(template, Array.map(Cell.build))
 }
 
 export const parse = (input: string): Board<Cell.Cell> => {
@@ -47,8 +47,8 @@ export const parse = (input: string): Board<Cell.Cell> => {
     input,
     String.trim,
     String.split("\n"),
-    ReadonlyArray.map(rowStr => {
-      return pipe(rowStr, String.split(""), ReadonlyArray.map(Cell.parse))
+    Array.map(rowStr => {
+      return pipe(rowStr, String.split(""), Array.map(Cell.parse))
     }),
   )
 
@@ -65,12 +65,12 @@ export const isPlayers = (
   )
 
 export const empty: Board<Cell.Cell> = pipe(
-  ReadonlyArray.range(0, BOARD_ROWS - 1),
-  ReadonlyArray.map(_rowIdx => {
+  Array.range(0, BOARD_ROWS - 1),
+  Array.map(_rowIdx => {
     return buildRow(
       pipe(
-        ReadonlyArray.range(0, BOARD_COLS - 1),
-        ReadonlyArray.map(_colIdx => "Empty"),
+        Array.range(0, BOARD_COLS - 1),
+        Array.map(_colIdx => "Empty"),
       ),
     )
   }),
@@ -96,10 +96,10 @@ export const show =
   (board: Board<T>): string => {
     return pipe(
       board,
-      ReadonlyArray.map(row => {
-        return pipe(row, ReadonlyArray.map(showElement), ReadonlyArray.join(""))
+      Array.map(row => {
+        return pipe(row, Array.map(showElement), Array.join(""))
       }),
-      ReadonlyArray.join("|"),
+      Array.join("|"),
     )
   }
 
@@ -128,11 +128,7 @@ export const lookup =
   (rowIdx: number) =>
   (colIdx: number) =>
   <T>(board: Board<T>): Option.Option<T> => {
-    return pipe(
-      board,
-      ReadonlyArray.get(rowIdx),
-      Option.flatMap(ReadonlyArray.get(colIdx)),
-    )
+    return pipe(board, Array.get(rowIdx), Option.flatMap(Array.get(colIdx)))
   }
 
 export const map =
@@ -140,10 +136,10 @@ export const map =
   (board: Board<T>): Board<U> => {
     return pipe(
       board,
-      ReadonlyArray.map(row => {
+      Array.map(row => {
         return pipe(
           row,
-          ReadonlyArray.map(cell => {
+          Array.map(cell => {
             return f(cell)
           }),
         )
@@ -156,10 +152,10 @@ export const mapWithIndex =
   (board: Board<T>): Board<U> => {
     return pipe(
       board,
-      ReadonlyArray.map((row, rowIdx) => {
+      Array.map((row, rowIdx) => {
         return pipe(
           row,
-          ReadonlyArray.map((cell, colIdx) => {
+          Array.map((cell, colIdx) => {
             return f(rowIdx, colIdx, cell)
           }),
         )
@@ -172,10 +168,10 @@ export const reduceWithIndex =
   (board: Board<A>): B => {
     return pipe(
       board,
-      ReadonlyArray.reduce(acc, (innerAcc, row, rowIdx) => {
+      Array.reduce(acc, (innerAcc, row, rowIdx) => {
         return pipe(
           row,
-          ReadonlyArray.reduce(innerAcc, (acc_, cell, colIdx) => {
+          Array.reduce(innerAcc, (acc_, cell, colIdx) => {
             return f(rowIdx, colIdx, acc_, cell)
           }),
         )
@@ -190,10 +186,10 @@ export const modifyAt =
   (board: Board<Cell.Cell>): Board<Cell.Cell> => {
     return pipe(
       board,
-      ReadonlyArray.modify(rowIdx, (row): Row<Cell.Cell> => {
+      Array.modify(rowIdx, (row): Row<Cell.Cell> => {
         return pipe(
           row,
-          ReadonlyArray.modify(colIdx, () => nextCell),
+          Array.modify(colIdx, () => nextCell),
         )
       }),
     )

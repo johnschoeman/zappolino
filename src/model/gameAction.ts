@@ -1,4 +1,4 @@
-import { Either, Option, pipe, ReadonlyArray } from "effect"
+import { Array, Either, Option, pipe } from "effect"
 
 import { Card, Deck } from "./deck"
 import * as Game from "./game"
@@ -11,7 +11,7 @@ export const selectSupplyPile =
   (game: Game.Game): Game.Game => {
     const currentPlayer = game.currentPlayer
     const supply = game.supply
-    const optionSupplyPile = pipe(supply, ReadonlyArray.get(supplyPileIdx))
+    const optionSupplyPile = pipe(supply, Array.get(supplyPileIdx))
 
     if (Option.isNone(optionSupplyPile)) {
       return game

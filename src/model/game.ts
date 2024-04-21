@@ -1,4 +1,4 @@
-import { Option, pipe, ReadonlyArray } from "effect"
+import { Array, Option, pipe } from "effect"
 
 import { Board, Cell } from "./board"
 import { Card, Deck } from "./deck"
@@ -315,7 +315,7 @@ const incrementPositionFor = ([
   heg,
 ]: BoardProgression): BoardProgression => {
   const { currentPlayer } = game
-  const nextPositions = ReadonlyArray.map(
+  const nextPositions = Array.map(
     (position: Position.Position): Position.Position => {
       const { rowIdx, colIdx } = position
       switch (currentPlayer) {
@@ -362,7 +362,7 @@ const addPiecesFor = ([
   const { board, currentPlayer } = game
   const nextBoard: Board.Board<Cell.Cell> = pipe(
     positions,
-    ReadonlyArray.reduce(board, (acc, position) => {
+    Array.reduce(board, (acc, position) => {
       const { rowIdx, colIdx } = position
       const piece: Cell.Cell = {
         _tag: "Piece",
@@ -390,17 +390,17 @@ const addHegemonyPoints = ([
 
   const nextHegemonyWhite = pipe(
     board,
-    ReadonlyArray.get(Board.homeRowIdx("Black")),
-    Option.map(ReadonlyArray.filter(Cell.isPlayers("White"))),
-    Option.map(ReadonlyArray.length),
+    Array.get(Board.homeRowIdx("Black")),
+    Option.map(Array.filter(Cell.isPlayers("White"))),
+    Option.map(Array.length),
     Option.getOrElse(() => 0),
   )
 
   const nextHegemonyBlack = pipe(
     board,
-    ReadonlyArray.get(Board.homeRowIdx("White")),
-    Option.map(ReadonlyArray.filter(Cell.isPlayers("Black"))),
-    Option.map(ReadonlyArray.length),
+    Array.get(Board.homeRowIdx("White")),
+    Option.map(Array.filter(Cell.isPlayers("Black"))),
+    Option.map(Array.length),
     Option.getOrElse(() => 0),
   )
 
