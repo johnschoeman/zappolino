@@ -92,24 +92,28 @@ test("Game.progressBoard - It progress the correct pieces forward", () => {
   expectGameBoardToMatch(resultBlack, expectedBlack)
 })
 
-test("Game.progressBoard - When the piece crosses the board, it increments the score", () => {
+test("Game.progressBoard - When the piece enters the opponents home row, it increments the score and removes the piece", () => {
   const gameWhite: Game.Game = buildGame("White")(
     `
+-----
 -P---
 -----
 -----
 -----
 ---p-
+-----
 `,
   )
 
   const gameBlack: Game.Game = buildGame("Black")(
     `
+-----
 -P---
 -----
 -----
 -----
 ---p-
+-----
 `,
   )
 
@@ -119,13 +123,17 @@ test("Game.progressBoard - When the piece crosses the board, it increments the s
 -----
 -----
 -----
+-----
 ---p-
+-----
 `,
   )
 
   const expectedBlack: Game.Game = buildGame("Black")(
     `
+-----
 -P---
+-----
 -----
 -----
 -----

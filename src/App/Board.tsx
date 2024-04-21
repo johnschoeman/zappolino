@@ -23,8 +23,16 @@ type RowViewProps = {
   rowIdx: number
 }
 const RowView = ({ row, rowIdx }: RowViewProps): JSX.Element => {
+  const isWhiteHomeRow = Board.homeRowIdx("White") === rowIdx
+  const isBlackHomeRow = Board.homeRowIdx("Black") === rowIdx
+
+  const style = cn("flex flex-row", {
+    "border-t-2 border-red-400": isWhiteHomeRow,
+    "border-b-2 border-blue-400": isBlackHomeRow,
+  })
+
   return (
-    <div class="flex flex-row">
+    <div class={style}>
       {pipe(
         row,
         ReadonlyArray.map((cell, idx) => (

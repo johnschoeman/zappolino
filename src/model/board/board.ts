@@ -11,6 +11,8 @@ import * as Cell from "./cell"
 // 2 | - - - - - | 2
 // 3 | - - - - - | 3
 // 4 | - - - - - | 4
+// 5 | - - - - - | 5
+// 6 | - - - - - | 6
 //     A B C D E
 // ---- White ----
 
@@ -21,7 +23,12 @@ import * as Cell from "./cell"
 // -----
 // -----
 // -P---
+// -----
+// -----
 // `
+
+export const BOARD_ROWS = 7
+export const BOARD_COLS = 5
 
 export type Board<T> = Row<T>[]
 
@@ -48,14 +55,6 @@ export const parse = (input: string): Board<Cell.Cell> => {
   return result
 }
 
-export const initial: Board<Cell.Cell> = [
-  buildRow(["Empty", "Empty", "Empty", "Empty", "Empty"]),
-  buildRow(["Empty", "Empty", "Empty", "Empty", "Empty"]),
-  buildRow(["Empty", "Empty", "Empty", "Empty", "Empty"]),
-  buildRow(["Empty", "Empty", "Empty", "Empty", "Empty"]),
-  buildRow(["Empty", "Empty", "Empty", "Empty", "Empty"]),
-]
-
 export const isPlayers = (
   player: Player.Player,
 ): ((cell: Cell.Cell) => boolean) =>
@@ -65,21 +64,28 @@ export const isPlayers = (
     Match.exhaustive,
   )
 
-const emptyRow: Row<Cell.Cell> = [
-  Cell.empty,
-  Cell.empty,
-  Cell.empty,
-  Cell.empty,
-  Cell.empty,
-]
+export const empty: Board<Cell.Cell> = pipe(
+  ReadonlyArray.range(0, BOARD_ROWS - 1),
+  ReadonlyArray.map(_rowIdx => {
+    return buildRow(
+      pipe(
+        ReadonlyArray.range(0, BOARD_COLS - 1),
+        ReadonlyArray.map(_colIdx => "Empty"),
+      ),
+    )
+  }),
+)
 
-export const empty: Board<Cell.Cell> = [
-  emptyRow,
-  emptyRow,
-  emptyRow,
-  emptyRow,
-  emptyRow,
-]
+export const initial: Board<Cell.Cell> = empty
+
+export const homeRowIdx = (player: Player.Player): number => {
+  switch (player) {
+    case "White":
+      return BOARD_ROWS - 1
+    case "Black":
+      return 0
+  }
+}
 
 export const showStr = (board: Board<Cell.Cell>): string => {
   return show(Cell.show)(board)

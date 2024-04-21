@@ -39,11 +39,13 @@ test("GamePlayCard.validateHasCardCost - if the player has the points, it return
 
 // ---- DeployHoplite
 
-test("GamePlayCard.playDeployHopliteCard - it only allows valid placement", () => {
+test("GamePlayCard.playDeployHopliteCard - it only allows placement on the players home row", () => {
   const player = "White"
   const board = Board.parse(
     `
+-----
 -p---
+-----
 -----
 -----
 -----
@@ -59,13 +61,15 @@ test("GamePlayCard.playDeployHopliteCard - it only allows valid placement", () =
     },
   })
 
-  const posValid = { rowIdx: 4, colIdx: 0 }
-  const posNotOnHomeRow = { rowIdx: 3, colIdx: 0 }
-  const posOnExistingPiece = { rowIdx: 4, colIdx: 3 }
+  const posValid = { rowIdx: Board.homeRowIdx("White"), colIdx: 0 }
+  const posNotOnHomeRow = { rowIdx: Board.homeRowIdx("White") - 1, colIdx: 0 }
+  const posOnExistingPiece = { rowIdx: Board.homeRowIdx("White"), colIdx: 3 }
 
   const expectedBoard = Board.parse(
     `
+-----
 -p---
+-----
 -----
 -----
 -----

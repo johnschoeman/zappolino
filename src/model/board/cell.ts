@@ -31,6 +31,18 @@ export const isEmpty = (cell: Cell): boolean => {
   )(cell)
 }
 
+export const isPlayers =
+  (p: Player.Player) =>
+  (cell: Cell): boolean => {
+    return match.pipe(
+      Match.tag("Empty", () => false),
+      Match.tag("Piece", ({ player }) => {
+        return player === p
+      }),
+      Match.exhaustive,
+    )(cell)
+  }
+
 export const buildPiece = (player: Player.Player): Piece => {
   return {
     _tag: "Piece",
@@ -55,7 +67,12 @@ export const show = (cell: Cell): string => {
   return match.pipe(
     Match.tag("Empty", () => "-"),
     Match.tag("Piece", ({ player }) => {
-      return `${Player.show(player)}`
+      switch (player) {
+        case "White":
+          return "P"
+        case "Black":
+          return "p"
+      }
     }),
     Match.exhaustive,
   )(cell)

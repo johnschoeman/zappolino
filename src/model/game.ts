@@ -271,16 +271,19 @@ export const addPiece =
     }
   }
 
-type GameAndPositions = [Game, Position.Position[]]
+type HegemonyGained = number
+type BoardProgression = [Game, Position.Position[], HegemonyGained]
 
 export const progressBoard = (game: Game): Game => {
   const nextGame = pipe(
-    [game, []],
+    [game, [], 0],
     getPiecePositionsFor,
     incrementPositionFor,
     removePiecesFor,
     addPiecesFor,
-    ([game_, _]) => game_,
+    addHegemonyPoints,
+    removePiecesInHomeRow,
+    ([game_, _positions, _heg]) => game_,
   )
 
   return nextGame
@@ -289,7 +292,8 @@ export const progressBoard = (game: Game): Game => {
 const getPiecePositionsFor = ([
   game,
   _positions,
-]: GameAndPositions): GameAndPositions => {
+  _heg,
+]: BoardProgression): BoardProgression => {
   const { board, currentPlayer } = game
   const nextPositions = Board.reduceWithIndex<Cell.Cell, Position.Position[]>(
     [],
@@ -302,13 +306,14 @@ const getPiecePositionsFor = ([
     },
   )(board)
 
-  return [game, nextPositions]
+  return [game, nextPositions, _heg]
 }
 
 const incrementPositionFor = ([
   game,
   positions,
-]: GameAndPositions): GameAndPositions => {
+  heg,
+]: BoardProgression): BoardProgression => {
   const { currentPlayer } = game
   const nextPositions = ReadonlyArray.map(
     (position: Position.Position): Position.Position => {
@@ -324,13 +329,14 @@ const incrementPositionFor = ([
     },
   )(positions)
 
-  return [game, nextPositions]
+  return [game, nextPositions, heg]
 }
 
 const removePiecesFor = ([
   game,
   positions,
-]: GameAndPositions): GameAndPositions => {
+  heg,
+]: BoardProgression): BoardProgression => {
   const { board, currentPlayer } = game
   const nextBoard = pipe(
     board,
@@ -345,13 +351,14 @@ const removePiecesFor = ([
     }),
   )
 
-  return [{ ...game, board: nextBoard }, positions]
+  return [{ ...game, board: nextBoard }, positions, heg]
 }
 
 const addPiecesFor = ([
   game,
   positions,
-]: GameAndPositions): GameAndPositions => {
+  _heg,
+]: BoardProgression): BoardProgression => {
   const { board, currentPlayer } = game
   const nextBoard: Board.Board<Cell.Cell> = pipe(
     positions,
@@ -365,53 +372,82 @@ const addPiecesFor = ([
     }),
   )
 
+  const nextGame = {
+    ...game,
+    board: nextBoard,
+  }
+  return [nextGame, [], _heg]
+}
+
+const addHegemonyPoints = ([
+  game,
+  _positions,
+  _heg,
+]: BoardProgression): BoardProgression => {
+  const { board } = game
+
   const currentHegemony = game.hegemony
 
   const nextHegemonyWhite = pipe(
-    positions,
-    ReadonlyArray.reduce(
-      currentHegemony.hegemonyWhite,
-      (acc: number, pos: Position.Position) => {
-        if (currentPlayer === "Black") {
-          return acc
-        }
-        if (pos.rowIdx < 0) {
-          return acc + 1
-        } else {
-          return acc
-        }
-      },
-    ),
+    board,
+    ReadonlyArray.get(Board.homeRowIdx("Black")),
+    Option.map(ReadonlyArray.filter(Cell.isPlayers("White"))),
+    Option.map(ReadonlyArray.length),
+    Option.getOrElse(() => 0),
   )
 
   const nextHegemonyBlack = pipe(
-    positions,
-    ReadonlyArray.reduce(
-      currentHegemony.hegemonyBlack,
-      (acc: number, pos: Position.Position) => {
-        if (currentPlayer === "White") {
-          return acc
-        }
-        if (pos.rowIdx > 4) {
-          return acc + 1
-        } else {
-          return acc
-        }
-      },
-    ),
+    board,
+    ReadonlyArray.get(Board.homeRowIdx("White")),
+    Option.map(ReadonlyArray.filter(Cell.isPlayers("Black"))),
+    Option.map(ReadonlyArray.length),
+    Option.getOrElse(() => 0),
   )
 
   const nextHegemony = {
-    hegemonyWhite: nextHegemonyWhite,
-    hegemonyBlack: nextHegemonyBlack,
+    hegemonyWhite: currentHegemony.hegemonyWhite + nextHegemonyWhite,
+    hegemonyBlack: currentHegemony.hegemonyBlack + nextHegemonyBlack,
   }
 
   const nextGame = {
     ...game,
-    board: nextBoard,
     hegemony: nextHegemony,
   }
-  return [nextGame, []]
+  return [nextGame, [], 0]
+}
+
+const removePiecesInHomeRow = ([
+  game,
+  _positions,
+  _heg,
+]: BoardProgression): BoardProgression => {
+  const { board } = game
+
+  const nextBoard = pipe(
+    board,
+    Board.mapWithIndex((rowIdx, _colIdx, cell) => {
+      const isBlackHomeRow = Board.homeRowIdx("Black") === rowIdx
+      const isWhiteHomeRow = Board.homeRowIdx("White") === rowIdx
+      const isBlackPiece = Cell.isPlayers("Black")(cell)
+      const isWhitePiece = Cell.isPlayers("White")(cell)
+
+      if (
+        (isBlackHomeRow && isWhitePiece) ||
+        (isWhiteHomeRow && isBlackPiece)
+      ) {
+        return Cell.empty
+      } else {
+        return cell
+      }
+    }),
+  )
+
+  const nextGame = {
+    ...game,
+    board: nextBoard,
+  }
+
+  return [nextGame, _positions, _heg]
 }
 
 export const togglePlayer = (game: Game): Game => {

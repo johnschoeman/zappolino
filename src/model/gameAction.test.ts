@@ -126,51 +126,13 @@ test("GameAction.endTurn - When the player is black, it increments the turn coun
   expect(result.turnCount).toEqual(expectedTurnCount)
 })
 
-test("GameAction.endTurn - When a piece makes it off the board it adds a hegemony point", () => {
-  const boardStr = `
--P---
------
------
------
----p-
-`
-  const board = Board.parse(boardStr)
-  const player = "White"
-
-  const game: Game.Game = gameFactory.build({
-    board,
-    currentPlayer: player,
-    hegemony: {
-      hegemonyBlack: 0,
-      hegemonyWhite: 0,
-    },
-  })
-
-  const result = GameAction.endTurn(game)
-
-  const expectedBoardStr = `
------
------
------
------
----p-
-`
-  const expectedBoard = Board.parse(expectedBoardStr)
-
-  const expectedHegemony: Game.Hegemony = {
-    hegemonyBlack: 0,
-    hegemonyWhite: 1,
-  }
-
-  expect(result.hegemony).toEqual(expectedHegemony)
-  expect(result.board).toEqual(expectedBoard)
-})
-
 // ---- Select Cell ----
 
 test("GameAction.selectCell - when making a valid move, it plays the selected card", () => {
   const boardStr = `
+-----
 -p---
+-----
 -----
 -----
 -----
@@ -198,11 +160,13 @@ test("GameAction.selectCell - when making a valid move, it plays the selected ca
     deckBlack,
   })
 
-  const pos = { rowIdx: 4, colIdx: 0 }
+  const pos = { rowIdx: Board.homeRowIdx("White"), colIdx: 0 }
   const result = GameAction.selectCell(pos)(game)
 
   const expectedBoardStr = `
+-----
 -p---
+-----
 -----
 -----
 -----

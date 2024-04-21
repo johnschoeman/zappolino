@@ -100,12 +100,7 @@ export const playSelectMatCard =
 const isValidRowForPlayer =
   (player: Player.Player) =>
   (rowIdx: number): boolean => {
-    switch (player) {
-      case "Black":
-        return rowIdx === 0
-      case "White":
-        return rowIdx === 4
-    }
+    return Board.homeRowIdx(player) === rowIdx
   }
 
 // --- Play Card Functions
