@@ -3,6 +3,33 @@ import { expect, test } from "bun:test"
 import * as Board from "./board"
 import * as Cell from "./cell"
 
+test("Board.transpose - it transposes the board", () => {
+  const boardStr = `
+---p-
+---p-
+-----
+-----
+-----
+-P---
+-----
+`
+  const board = Board.parse(boardStr)
+
+  const result = Board.transpose(board)
+
+  const expectedStr = `
+-------
+-----P-
+-------
+pp-----
+-------
+`
+
+  const expected = Board.parse(expectedStr)
+
+  expectBoardsToEqual(result, expected)
+})
+
 test("Board.parse - when given a valid string notation, it returns a board", () => {
   const input = `
 ---p-

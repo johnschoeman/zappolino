@@ -33,6 +33,7 @@ export const BOARD_COLS = 5
 export type Board<T> = Row<T>[]
 
 export type Row<T> = T[]
+export type Column<T> = T[]
 
 export type CellWithPos = { cell: Cell.Cell; rowIdx: number; colIdx: number }
 
@@ -50,6 +51,17 @@ export const parse = (input: string): Board<Cell.Cell> => {
     Array.map(rowStr => {
       return pipe(rowStr, String.split(""), Array.map(Cell.parse))
     }),
+  )
+
+  return result
+}
+
+export const parseColumn = (input: string): Column<Cell.Cell> => {
+  const result: Column<Cell.Cell> = pipe(
+    input,
+    String.trim,
+    String.split(""),
+    Array.map(Cell.parse),
   )
 
   return result
@@ -78,14 +90,14 @@ export const empty: Board<Cell.Cell> = pipe(
 
 export const initial: Board<Cell.Cell> = empty
 
-export const homeRowIdx = (player: Player.Player): number => {
-  switch (player) {
-    case "White":
-      return BOARD_ROWS - 1
-    case "Black":
-      return 0
-  }
-}
+// export const homeRowIdx = (player: Player.Player): number => {
+//   switch (player) {
+//     case "White":
+//       return BOARD_ROWS - 1
+//     case "Black":
+//       return 0
+//   }
+// }
 
 export const showStr = (board: Board<Cell.Cell>): string => {
   return show(Cell.show)(board)
@@ -162,6 +174,39 @@ export const mapWithIndex =
       }),
     )
   }
+
+const determineWidth = (board: Board<Cell.Cell>): number => {
+  return pipe(
+    board,
+    Array.head,
+    Option.map(Array.length),
+    Option.getOrElse(() => 0),
+  )
+}
+
+const determineHeight = (board: Board<Cell.Cell>): number => {
+  return pipe(board, Array.length)
+}
+
+export const transpose = (board: Board<Cell.Cell>): Board<Cell.Cell> => {
+  const width = determineWidth(board)
+  const height = determineHeight(board)
+  const initialAcc = pipe(
+    Array.replicate(height)(Cell.empty),
+    Array.replicate(width),
+  )
+
+  return pipe(
+    board,
+    reduceWithIndex<Cell.Cell, Board<Cell.Cell>>(
+      initialAcc,
+      (rowIdx, colIdx, acc, cell) => {
+        const next = modifyAt(colIdx)(rowIdx)(cell)(acc)
+        return next
+      },
+    ),
+  )
+}
 
 export const reduceWithIndex =
   <A, B>(acc: B, f: (rowIdx: number, colIdx: number, b: B, a: A) => B) =>

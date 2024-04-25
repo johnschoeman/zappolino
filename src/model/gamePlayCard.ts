@@ -100,7 +100,7 @@ export const playSelectMatCard =
 const isValidRowForPlayer =
   (player: Player.Player) =>
   (rowIdx: number): boolean => {
-    return Board.homeRowIdx(player) === rowIdx
+    return Player.homeRowIdx(player) === rowIdx
   }
 
 // --- Play Card Functions

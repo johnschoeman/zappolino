@@ -226,6 +226,14 @@ export const resetTurnPoints = (game: Game): Game => {
   }
 }
 
+export const togglePlayer = (game: Game): Game => {
+  const { currentPlayer } = game
+  return {
+    ...game,
+    currentPlayer: Player.toggle(currentPlayer),
+  }
+}
+
 // ---- Updating Board ----
 
 export const movePiece =
@@ -271,118 +279,149 @@ export const addPiece =
     }
   }
 
-type HegemonyGained = number
-type BoardProgression = [Game, Position.Position[], HegemonyGained]
+type BoardProgression = [Game, Position.Position[]]
 
 export const progressBoard = (game: Game): Game => {
   const nextGame = pipe(
-    [game, [], 0],
-    getPiecePositionsFor,
-    incrementPositionFor,
-    removePiecesFor,
-    addPiecesFor,
+    [game, []],
+    // getPiecePositionsFor,
+    // incrementPositionFor,
+    // removePiecesFor,
+    // addPiecesFor,
+    progressEachColumn,
     addHegemonyPoints,
     removePiecesInHomeRow,
-    ([game_, _positions, _heg]) => game_,
+    ([game_, _positions]) => game_,
   )
 
   return nextGame
 }
 
-const getPiecePositionsFor = ([
+const progressEachColumn = ([
   game,
   _positions,
-  _heg,
 ]: BoardProgression): BoardProgression => {
-  const { board, currentPlayer } = game
-  const nextPositions = Board.reduceWithIndex<Cell.Cell, Position.Position[]>(
-    [],
-    (rowIdx, colIdx, acc, cell) => {
-      if (Cell.belongsTo(currentPlayer)(cell)) {
-        return [...acc, { rowIdx, colIdx }]
-      } else {
-        return acc
-      }
-    },
-  )(board)
-
-  return [game, nextPositions, _heg]
-}
-
-const incrementPositionFor = ([
-  game,
-  positions,
-  heg,
-]: BoardProgression): BoardProgression => {
-  const { currentPlayer } = game
-  const nextPositions = Array.map(
-    (position: Position.Position): Position.Position => {
-      const { rowIdx, colIdx } = position
-      switch (currentPlayer) {
-        case "Black":
-          return Position.build(rowIdx + 1, colIdx)
-        case "White":
-          return Position.build(rowIdx - 1, colIdx)
-        default:
-          return Position.build(rowIdx, colIdx)
-      }
-    },
-  )(positions)
-
-  return [game, nextPositions, heg]
-}
-
-const removePiecesFor = ([
-  game,
-  positions,
-  heg,
-]: BoardProgression): BoardProgression => {
-  const { board, currentPlayer } = game
+  const { board } = game
   const nextBoard = pipe(
     board,
-    Board.map<Cell.Cell, Cell.Cell>(cell => {
-      return pipe(
-        cell,
-        Cell.belongsTo(currentPlayer),
-        belongsToCurrentPlayer => {
-          return belongsToCurrentPlayer ? Cell.empty : cell
-        },
-      )
-    }),
+    Board.transpose,
+    Array.map(progressColumn(game.currentPlayer)),
+    Board.transpose,
   )
-
-  return [{ ...game, board: nextBoard }, positions, heg]
+  return [{ ...game, board: nextBoard }, []]
 }
 
-const addPiecesFor = ([
-  game,
-  positions,
-  _heg,
-]: BoardProgression): BoardProgression => {
-  const { board, currentPlayer } = game
-  const nextBoard: Board.Board<Cell.Cell> = pipe(
-    positions,
-    Array.reduce(board, (acc, position) => {
-      const { rowIdx, colIdx } = position
-      const piece: Cell.Cell = {
-        _tag: "Piece",
-        player: currentPlayer,
-      }
-      return Board.modifyAt(rowIdx)(colIdx)(piece)(acc)
-    }),
-  )
+// traverse the array from opponent side to player side
+// check if the cell belongs to the player
+// if no
+//   continue
+// if yes
+//   check if piece is opponents piece
+//   if no
+//     continue
+//   if yes
+//     check count of consecutive opponent pieces towards the opponent side and
+//     consecutive player pieces towards player side.
+//     if player pieces > opponent pieces
+//       move the player piece forward
+//     else
+//       continue
 
-  const nextGame = {
-    ...game,
-    board: nextBoard,
+export const progressColumn =
+  (player: Player.Player) =>
+  (column: Board.Column<Cell.Cell>): Board.Column<Cell.Cell> => {
+    return pipe(
+      column,
+      c => {
+        if (player === "Black") {
+          return Array.reverse(c)
+        } else {
+          return c
+        }
+      },
+      col =>
+        Array.reduce<Board.Column<Cell.Cell>, Cell.Cell>(
+          col,
+          (acc, cell, idx) => {
+            if (!Cell.isPlayers(player)(cell)) {
+              return acc
+            }
+
+            const cellTowardsOpponent = pipe(acc, Array.get(idx - 1))
+
+            const isCellTowardsOppoentBelongToPlayer = pipe(
+              cellTowardsOpponent,
+              Option.map(Cell.isPlayers(player)),
+              Option.getOrElse(() => false),
+            )
+
+            const isCellTowardsOpponentEmpty = pipe(
+              cellTowardsOpponent,
+              Option.map(Cell.isEmpty),
+              Option.getOrElse(() => false),
+            )
+
+            if (isCellTowardsOppoentBelongToPlayer) {
+              return acc
+            }
+
+            if (isCellTowardsOpponentEmpty) {
+              return pipe(
+                acc,
+                Array.modify(idx - 1, () => Cell.buildPiece(player)),
+                Array.modify(idx, () => Cell.empty),
+              )
+            }
+
+            const [leftDepth, rightDepth] = pipe(
+              acc,
+              Array.splitAt(idx),
+              ([left, right]) => {
+                const _leftDepth = pipe(
+                  left,
+                  Array.reverse,
+                  Array.takeWhile((_cell, _idx) =>
+                    Cell.isOpponents(player)(_cell),
+                  ),
+                  Array.length,
+                )
+                const _rightDepth = pipe(
+                  right,
+                  Array.takeWhile((_cell, _idx) =>
+                    Cell.isPlayers(player)(_cell),
+                  ),
+                  Array.length,
+                )
+
+                return [_leftDepth, _rightDepth]
+              },
+            )
+
+            const isDepthGreater = rightDepth > leftDepth
+
+            if (isDepthGreater) {
+              return pipe(
+                acc,
+                Array.modify(idx - 1, () => Cell.buildPiece(player)),
+                Array.modify(idx, () => Cell.empty),
+              )
+            }
+            return acc
+          },
+        )(col),
+      c => {
+        if (player === "Black") {
+          return Array.reverse(c)
+        } else {
+          return c
+        }
+      },
+    )
   }
-  return [nextGame, [], _heg]
-}
 
 const addHegemonyPoints = ([
   game,
   _positions,
-  _heg,
 ]: BoardProgression): BoardProgression => {
   const { board } = game
 
@@ -390,7 +429,7 @@ const addHegemonyPoints = ([
 
   const nextHegemonyWhite = pipe(
     board,
-    Array.get(Board.homeRowIdx("Black")),
+    Array.get(Player.homeRowIdx("Black")),
     Option.map(Array.filter(Cell.isPlayers("White"))),
     Option.map(Array.length),
     Option.getOrElse(() => 0),
@@ -398,7 +437,7 @@ const addHegemonyPoints = ([
 
   const nextHegemonyBlack = pipe(
     board,
-    Array.get(Board.homeRowIdx("White")),
+    Array.get(Player.homeRowIdx("White")),
     Option.map(Array.filter(Cell.isPlayers("Black"))),
     Option.map(Array.length),
     Option.getOrElse(() => 0),
@@ -413,21 +452,20 @@ const addHegemonyPoints = ([
     ...game,
     hegemony: nextHegemony,
   }
-  return [nextGame, [], 0]
+  return [nextGame, []]
 }
 
 const removePiecesInHomeRow = ([
   game,
   _positions,
-  _heg,
 ]: BoardProgression): BoardProgression => {
   const { board } = game
 
   const nextBoard = pipe(
     board,
     Board.mapWithIndex((rowIdx, _colIdx, cell) => {
-      const isBlackHomeRow = Board.homeRowIdx("Black") === rowIdx
-      const isWhiteHomeRow = Board.homeRowIdx("White") === rowIdx
+      const isBlackHomeRow = Player.homeRowIdx("Black") === rowIdx
+      const isWhiteHomeRow = Player.homeRowIdx("White") === rowIdx
       const isBlackPiece = Cell.isPlayers("Black")(cell)
       const isWhitePiece = Cell.isPlayers("White")(cell)
 
@@ -447,13 +485,5 @@ const removePiecesInHomeRow = ([
     board: nextBoard,
   }
 
-  return [nextGame, _positions, _heg]
-}
-
-export const togglePlayer = (game: Game): Game => {
-  const { currentPlayer } = game
-  return {
-    ...game,
-    currentPlayer: Player.toggle(currentPlayer),
-  }
+  return [nextGame, _positions]
 }

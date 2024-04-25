@@ -34,9 +34,19 @@ export const selectCommitResourceMat = async (page: Page): Promise<void> => {
 }
 
 export const selectCell =
-  (rankFile: Position.RankFile) =>
+  (rankFileStr: string) =>
   async (page: Page): Promise<void> => {
-    await page.getByTestId(rankFile).click()
+    const rankFile = Position.parseRankFile(rankFileStr)
+    const testId = Position.showRankFile(rankFile)
+    await page.getByTestId(testId).click()
+  }
+
+export const selectHomeRowCell =
+  (player: Player.Player, file: Position.File) =>
+  async (page: Page): Promise<void> => {
+    const rankFile = Position.buildRankFile(Player.homeRank(player), file)
+    const testId = Position.showRankFile(rankFile)
+    await page.getByTestId(testId).click()
   }
 
 export const selectNthSupply =
@@ -57,10 +67,12 @@ export const expectNthSupplyToHaveCount =
 // ---- Expectations
 
 export const expectCellToHavePiece =
-  (rankFile: Position.RankFile) =>
+  (rankFileStr: string) =>
   (player: Player.Player) =>
   async (page: Page): Promise<void> => {
-    await expect(page.getByTestId(rankFile)).toHaveAttribute(
+    const rankFile = Position.parseRankFile(rankFileStr)
+    const testId = Position.showRankFile(rankFile)
+    await expect(page.getByTestId(testId)).toHaveAttribute(
       "data-cell",
       Cell.show({ _tag: "Piece", player }),
     )

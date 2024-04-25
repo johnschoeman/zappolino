@@ -43,6 +43,18 @@ export const isPlayers =
     )(cell)
   }
 
+export const isOpponents =
+  (p: Player.Player) =>
+  (cell: Cell): boolean => {
+    return match.pipe(
+      Match.tag("Empty", () => false),
+      Match.tag("Piece", ({ player }) => {
+        return player !== p
+      }),
+      Match.exhaustive,
+    )(cell)
+  }
+
 export const buildPiece = (player: Player.Player): Piece => {
   return {
     _tag: "Piece",

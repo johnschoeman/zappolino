@@ -1,64 +1,22 @@
-type Rank = "0" | "1" | "2" | "3" | "4"
-type File = "A" | "B" | "C" | "D" | "E"
+import { String } from "effect"
 
-export type RankFile =
-  | "A0"
-  | "A1"
-  | "A2"
-  | "A3"
-  | "A4"
-  | "B0"
-  | "B1"
-  | "B2"
-  | "B3"
-  | "B4"
-  | "C0"
-  | "C1"
-  | "C2"
-  | "C3"
-  | "C4"
-  | "D0"
-  | "D1"
-  | "D2"
-  | "D3"
-  | "D4"
-  | "E0"
-  | "E1"
-  | "E2"
-  | "E3"
-  | "E4"
+export type Rank = "0" | "1" | "2" | "3" | "4" | "5" | "6"
+export type File = "A" | "B" | "C" | "D" | "E"
 
-const allRankFile: RankFile[] = [
-  "A0",
-  "A1",
-  "A2",
-  "A3",
-  "A4",
-  "B0",
-  "B1",
-  "B2",
-  "B3",
-  "B4",
-  "C0",
-  "C1",
-  "C2",
-  "C3",
-  "C4",
-  "D0",
-  "D1",
-  "D2",
-  "D3",
-  "D4",
-  "E0",
-  "E1",
-  "E2",
-  "E3",
-  "E4",
-]
+const allRank = ["0", "1", "2", "3", "4", "5", "6"]
+const allFile = ["A", "B", "C", "D", "E"]
 
-const isRankFile = (str: string): str is RankFile => {
-  const result = allRankFile.includes(str as RankFile)
-  return result
+export type RankFile = {
+  rank: Rank
+  file: File
+}
+
+export const isRank = (str: string): str is Rank => {
+  return allRank.includes(str as Rank)
+}
+
+export const isFile = (str: string): str is File => {
+  return allFile.includes(str as File)
 }
 
 export type Position = { rowIdx: number; colIdx: number }
@@ -67,20 +25,22 @@ export const build = (rowIdx: number, colIdx: number): Position => {
   return { rowIdx, colIdx }
 }
 
+export const buildRankFile = (rank: Rank, file: File): RankFile => {
+  return { rank, file }
+}
+
 export const toRankFile = ({ rowIdx, colIdx }: Position): RankFile => {
   const rank = rowToRank(rowIdx)
   const file = colToFile(colIdx)
 
-  const result = `${file}${rank}`
-
-  if (isRankFile(result)) {
-    return result
-  } else {
-    return "A0"
+  const result = {
+    file,
+    rank,
   }
+  return result
 }
 
-const rowToRank = (rowIdx: number): Rank => {
+export const rowToRank = (rowIdx: number): Rank => {
   switch (rowIdx) {
     case 0:
       return "0"
@@ -92,12 +52,16 @@ const rowToRank = (rowIdx: number): Rank => {
       return "3"
     case 4:
       return "4"
+    case 5:
+      return "5"
+    case 6:
+      return "6"
     default:
       return "0"
   }
 }
 
-const colToFile = (colIdx: number): File => {
+export const colToFile = (colIdx: number): File => {
   switch (colIdx) {
     case 0:
       return "A"
@@ -110,6 +74,57 @@ const colToFile = (colIdx: number): File => {
     case 4:
       return "E"
     default:
-      return "E"
+      return "A"
   }
+}
+
+export const showRankFile = ({ file, rank }: RankFile): string => {
+  return `${file}${rank}`
+}
+
+const parseRank = (str: string): Rank => {
+  switch (str) {
+    case "0":
+      return "0"
+    case "1":
+      return "1"
+    case "2":
+      return "2"
+    case "3":
+      return "3"
+    case "4":
+      return "4"
+    case "5":
+      return "5"
+    case "6":
+      return "6"
+    default:
+      return "0"
+  }
+}
+
+export const parseFile = (str: string): File => {
+  switch (str) {
+    case "A":
+      return "A"
+    case "B":
+      return "B"
+    case "C":
+      return "C"
+    case "D":
+      return "D"
+    case "E":
+      return "E"
+    default:
+      return "A"
+  }
+}
+
+export const parseRankFile = (str: string): RankFile => {
+  const [fileStr, rankStr] = String.split("")(str)
+
+  const rank = parseRank(rankStr)
+  const file = parseFile(fileStr ?? "")
+
+  return { rank, file }
 }

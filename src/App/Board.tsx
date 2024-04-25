@@ -2,7 +2,7 @@ import { JSX } from "solid-js"
 import cn from "classnames"
 import { Array, Match, pipe } from "effect"
 
-import { Board, Cell, GameAction, Position } from "@app/model"
+import { Board, Cell, GameAction, Player, Position } from "@app/model"
 import { GameState } from "@app/state"
 
 const BoardView = (): JSX.Element => {
@@ -23,8 +23,8 @@ type RowViewProps = {
   rowIdx: number
 }
 const RowView = ({ row, rowIdx }: RowViewProps): JSX.Element => {
-  const isWhiteHomeRow = Board.homeRowIdx("White") === rowIdx
-  const isBlackHomeRow = Board.homeRowIdx("Black") === rowIdx
+  const isWhiteHomeRow = Player.homeRowIdx("White") === rowIdx
+  const isBlackHomeRow = Player.homeRowIdx("Black") === rowIdx
 
   const style = cn("flex flex-row", {
     "border-t-2 border-red-400": isWhiteHomeRow,
@@ -56,7 +56,10 @@ const CellView = ({ cell, rowIdx, colIdx }: CellViewProps): JSX.Element => {
       GameState.setGame,
     )
   }
-  const testId = Position.toRankFile({ rowIdx, colIdx })
+  const testId = pipe(
+    Position.toRankFile({ rowIdx, colIdx }),
+    Position.showRankFile,
+  )
 
   return (
     <div

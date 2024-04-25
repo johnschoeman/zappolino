@@ -1,9 +1,9 @@
 import { expect, test } from "bun:test"
-import { Option } from "effect"
+import { Array, Option, pipe } from "effect"
 
 import { deckFactory, gameFactory } from "../../factories"
 
-import { Board } from "./board"
+import { Board, Cell } from "./board"
 import * as Game from "./game"
 import * as Player from "./player"
 
@@ -43,6 +43,40 @@ test("Game.commitSelectedCard", () => {
 })
 
 // ---- Board ----
+
+test("Game.progressColumn", () => {
+  const column1 = parseColumn("--pP----")
+  const column2 = parseColumn("--pPP---")
+  const column3 = parseColumn("--pPP--P")
+
+  const column4 = parseColumn("--pPP---")
+  const column5 = parseColumn("pppPP---")
+
+  const result1 = Game.progressColumn("White")(column1)
+  const result2 = Game.progressColumn("White")(column2)
+  const result3 = Game.progressColumn("White")(column3)
+
+  const result4 = Game.progressColumn("Black")(column4)
+  const result5 = Game.progressColumn("Black")(column5)
+
+  const expected1 = parseColumn("--pP----")
+  const expected2 = parseColumn("--PP----")
+  const expected3 = parseColumn("--PP--P-")
+
+  const expected4 = parseColumn("--pPP---")
+  const expected5 = parseColumn("-pppP---")
+
+  expectColumnToMatch(result1, expected1)
+  expectColumnToMatch(result2, expected2)
+  expectColumnToMatch(result3, expected3)
+
+  expectColumnToMatch(result4, expected4)
+  expectColumnToMatch(result5, expected5)
+})
+
+const parseColumn = (str: string): Board.Column<Cell.Cell> => {
+  return Board.parseColumn(str)
+}
 
 test("Game.progressBoard - It progress the correct pieces forward", () => {
   const gameWhite: Game.Game = buildGame("White")(
@@ -150,6 +184,38 @@ test("Game.progressBoard - When the piece enters the opponents home row, it incr
   expect(resultBlack.hegemony.hegemonyBlack).toBe(1)
 })
 
+test("Game.progressBoard - it progresses each column", () => {
+  const gameWhite: Game.Game = buildGame("White")(
+    `
+-----
+----p
+--p-P
+pppp-
+PPP-P
+-P-PP
+-----
+`,
+  )
+
+  const expectedWhite: Game.Game = buildGame("White")(
+    `
+-----
+----p
+--p-P
+pPppP
+PPPPP
+-----
+-----
+`,
+  )
+
+  const resultWhite = Game.progressBoard(gameWhite)
+
+  expectGameBoardToMatch(resultWhite, expectedWhite)
+})
+
+// ---- Game.addPiece
+
 test("Game.addPiece - adds a piece", () => {
   const gameWhite: Game.Game = buildGame("White")(
     `
@@ -212,6 +278,16 @@ const expectGameBoardToMatch = (gameA: Game.Game, gameB: Game.Game): void => {
   const gameBText = Game.show(gameB)
 
   expect(gameAText).toBe(gameBText)
+}
+
+const expectColumnToMatch = (
+  colA: Board.Column<Cell.Cell>,
+  colB: Board.Column<Cell.Cell>,
+): void => {
+  const colAText = pipe(colA, Array.map(Cell.show), Array.join(""))
+  const colBText = pipe(colB, Array.map(Cell.show), Array.join(""))
+
+  expect(colAText).toBe(colBText)
 }
 
 const buildGame =

@@ -5,3 +5,4 @@ build
 *.config.ts
 public
 tests-examples
+playwright-report/

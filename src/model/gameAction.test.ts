@@ -7,6 +7,7 @@ import { Board } from "./board"
 import { Card, Deck } from "./deck"
 import * as Game from "./game"
 import * as GameAction from "./gameAction"
+import * as Player from "./player"
 import * as Supply from "./supply"
 
 // ---- End Turn ----
@@ -160,7 +161,7 @@ test("GameAction.selectCell - when making a valid move, it plays the selected ca
     deckBlack,
   })
 
-  const pos = { rowIdx: Board.homeRowIdx("White"), colIdx: 0 }
+  const pos = { rowIdx: Player.homeRowIdx("White"), colIdx: 0 }
   const result = GameAction.selectCell(pos)(game)
 
   const expectedBoardStr = `

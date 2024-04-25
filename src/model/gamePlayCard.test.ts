@@ -7,6 +7,7 @@ import { Board } from "./board"
 import { Card } from "./deck"
 import * as Game from "./game"
 import * as GamePlayCard from "./gamePlayCard"
+import * as Player from "./player"
 
 test("GamePlayCard.validateHasCardCost - if the player has the points, it returns the game, and error if not", () => {
   const strategyCard: Card.Card = "DeployHoplite"
@@ -61,9 +62,9 @@ test("GamePlayCard.playDeployHopliteCard - it only allows placement on the playe
     },
   })
 
-  const posValid = { rowIdx: Board.homeRowIdx("White"), colIdx: 0 }
-  const posNotOnHomeRow = { rowIdx: Board.homeRowIdx("White") - 1, colIdx: 0 }
-  const posOnExistingPiece = { rowIdx: Board.homeRowIdx("White"), colIdx: 3 }
+  const posValid = { rowIdx: Player.homeRowIdx("White"), colIdx: 0 }
+  const posNotOnHomeRow = { rowIdx: Player.homeRowIdx("White") - 1, colIdx: 0 }
+  const posOnExistingPiece = { rowIdx: Player.homeRowIdx("White"), colIdx: 3 }
 
   const expectedBoard = Board.parse(
     `
