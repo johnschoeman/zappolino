@@ -8,7 +8,7 @@
   "scripts": {
     "build": "bin/build.sh",
     "build:css": "npx tailwindcss -i ./src/tailwind.css -o public/static/css/index.css",
-    "start": "node bin/dev.js",
+    "start": "node bin/dev.mjs",
     "serve": "bin/serve.sh",
     "lint": "eslint ./",
     "lint:fix": "eslint ./ --fix",

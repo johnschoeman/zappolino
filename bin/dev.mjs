@@ -1,8 +1,12 @@
-const chokidar = require("chokidar")
-const util = require("util")
-const exec = util.promisify(require("child_process").exec)
-const browserSync = require("browser-sync").create()
-const chalk = require("chalk")
+import chokidar from "chokidar"
+import util from "util"
+import browserSync from "browser-sync"
+import chalk from "chalk"
+import cp from "child_process"
+
+const bs = browserSync.create()
+
+const exec = util.promisify(cp.exec)
 
 const logPrefix = "[" + chalk.blue("Developsync") + "]"
 const log = console.log.bind(console, logPrefix)
@@ -42,17 +46,17 @@ const startDevServer = async log => {
   })
 
   // BrowserSync
-  browserSync.watch("./build/static/js/*.js").on("change", () => {
+  bs.watch("./build/static/js/*.js").on("change", () => {
     log("Reloading js...")
-    browserSync.reload()
+    bs.reload()
   })
 
-  browserSync.watch("./build/static/css/*.css").on("change", () => {
+  bs.watch("./build/static/css/*.css").on("change", () => {
     log("Reloading css...")
-    browserSync.reload()
+    bs.reload()
   })
 
-  browserSync.init({
+  bs.init({
     open: false,
     server: "./build",
     snippet: true,
