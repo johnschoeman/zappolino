@@ -10,6 +10,7 @@
     "build:css": "npx tailwindcss -i ./src/tailwind.css -o public/static/css/index.css",
     "start": "node bin/dev.mjs",
     "serve": "bin/serve.sh",
+    "validate": "bin/validate.sh",
     "lint": "eslint ./",
     "lint:fix": "eslint ./ --fix",
     "prettier": "prettier -l '**/*.{js,jsx,ts,tsx}'",
