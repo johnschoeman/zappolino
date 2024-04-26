@@ -69,6 +69,37 @@ export const all: Card[] = [
   "Oracle",
 ]
 
+export const show = (card: Card): string => {
+  switch (card) {
+    case "ManeuverLeft":
+      return "maneuver-left"
+    case "ManeuverRight":
+      return "maneuver-right"
+    case "ManeuverForward":
+      return "maneuver-forward"
+    case "AssaultForward":
+      return "assualt-forward"
+    case "AssaultLeft":
+      return "assault-left"
+    case "AssaultRight":
+      return "assault-right"
+    case "Charge":
+      return "charge"
+    case "FlankLeft":
+      return "flank-left"
+    case "FlankRight":
+      return "flank-right"
+    case "DeployHoplite":
+      return "deploy-hoplite"
+    case "MilitaryReforms":
+      return "military-reforms"
+    case "PoliticalReforms":
+      return "political-reforms"
+    case "Oracle":
+      return "oracle"
+  }
+}
+
 export const toKind = (card: Card): Kind => {
   switch (card) {
     case "ManeuverLeft":

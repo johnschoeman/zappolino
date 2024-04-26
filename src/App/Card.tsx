@@ -15,7 +15,8 @@ const CardView = (props: CardViewProps): JSX.Element => {
 
   const acquireCost = Card.toResourceCost(card)
   const resourceGain = Card.toResourceValue(card)
-  const [strategyValue, tacticValue, resourceValue] = Card.toPlayValue(card)
+  const [_placementValue, strategyValue, tacticValue, resourceValue] =
+    Card.toPlayValue(card)
 
   const showStrategyValue = strategyValue > 0
   const showTacticValue = tacticValue > 0
@@ -29,8 +30,10 @@ const CardView = (props: CardViewProps): JSX.Element => {
     "bg-purple-400": kind === "Strategy",
   })
 
+  const testId = Card.show(card)
+
   return (
-    <div class={style}>
+    <div class={style} data-testId={testId}>
       <div class="divide-y">
         <div class={headerStyle}>{title}</div>
         <div class="text-center p-2">{kind}</div>
