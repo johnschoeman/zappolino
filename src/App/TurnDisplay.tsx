@@ -14,6 +14,9 @@ const TurnDisplay = (): JSX.Element => {
 }
 
 const StrategyAndTacticCounts = (): JSX.Element => {
+  const placementCount = (): number => {
+    return pipe(GameState.game(), game => game.turnPoints.placementPoints)
+  }
   const strategyCount = (): number => {
     return pipe(GameState.game(), game => game.turnPoints.strategyPoints)
   }
@@ -26,6 +29,11 @@ const StrategyAndTacticCounts = (): JSX.Element => {
 
   return (
     <div class="flex flex-row justify-around items-center">
+      <div>
+        Placement Points:
+        <span data-testid="placement-count">{placementCount()}</span>
+      </div>
+
       <div>
         Strategy Points:
         <span data-testid="strategy-count">{strategyCount()}</span>

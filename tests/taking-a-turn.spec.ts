@@ -12,6 +12,7 @@ import {
   expectTurnPointsToBe,
   selectHomeRowCell,
   selectNthCard,
+  selectPlayMat,
   startGame,
 } from "./testHelpers"
 
@@ -23,22 +24,43 @@ test("single turn - place a piece", async ({ page }) => {
   await expectCurrentPlayerToBe("White")(page)
   await expectDiscardCountToBe(0)(page)
   await expectTurnPointsToBe({
+    placementPoints: 1,
     strategyPoints: 1,
     tacticPoints: 1,
     resourcePoints: 0,
   })(page)
   await expectToHaveHandSize(5)(page)
 
-  // ---- Select and play Deploy Hoplite card
-  await selectNthCard(0)(page)
+  // ---- Start turn by placing a piece
   await selectHomeRowCell("White", "A")(page)
-
   await expectCellToHavePiece("A6")("White")(page)
   await expectTurnPointsToBe({
+    placementPoints: 0,
+    strategyPoints: 1,
+    tacticPoints: 1,
+    resourcePoints: 0,
+  })(page)
+
+  // ---- Select and play Deploy Hoplite card
+  await selectNthCard(0)(page)
+  await selectPlayMat(page)
+  await expectTurnPointsToBe({
+    placementPoints: 1,
     strategyPoints: 0,
     tacticPoints: 1,
     resourcePoints: 0,
   })(page)
+
+  // ---- Place a piece
+  await selectHomeRowCell("White", "B")(page)
+  await expectCellToHavePiece("B6")("White")(page)
+  await expectTurnPointsToBe({
+    placementPoints: 0,
+    strategyPoints: 0,
+    tacticPoints: 1,
+    resourcePoints: 0,
+  })(page)
+
   await expectToHaveHandSize(4)(page)
   await expectPlayedCardSize(1)(page)
 

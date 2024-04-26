@@ -24,6 +24,7 @@ test("acquire a card from supply", async ({ page }) => {
   await expectCurrentPlayerToBe("White")(page)
   await expectDiscardCountToBe(0)(page)
   await expectTurnPointsToBe({
+    placementPoints: 1,
     strategyPoints: 1,
     tacticPoints: 1,
     resourcePoints: 0,
@@ -37,6 +38,7 @@ test("acquire a card from supply", async ({ page }) => {
   await expectNthSupplyToHaveCount(0)(initialSupplySize)(page)
   await expectDiscardCountToBe(0)(page)
   await expectTurnPointsToBe({
+    placementPoints: 1,
     strategyPoints: 1,
     tacticPoints: 1,
     resourcePoints: 0,
@@ -48,6 +50,7 @@ test("acquire a card from supply", async ({ page }) => {
   await selectCommitResourceMat(page)
 
   await expectTurnPointsToBe({
+    placementPoints: 1,
     strategyPoints: 1,
     tacticPoints: 1,
     resourcePoints: 1,
@@ -59,6 +62,7 @@ test("acquire a card from supply", async ({ page }) => {
   await expectNthSupplyToHaveCount(0)(nextSupplySize)(page)
   await expectDiscardCountToBe(1)(page)
   await expectTurnPointsToBe({
+    placementPoints: 1,
     strategyPoints: 1,
     tacticPoints: 1,
     resourcePoints: 0,

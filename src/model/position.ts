@@ -123,7 +123,7 @@ export const parseFile = (str: string): File => {
 export const parseRankFile = (str: string): RankFile => {
   const [fileStr, rankStr] = String.split("")(str)
 
-  const rank = parseRank(rankStr)
+  const rank = parseRank(rankStr ?? "")
   const file = parseFile(fileStr ?? "")
 
   return { rank, file }

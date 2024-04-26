@@ -1,8 +1,10 @@
 import { Array, Either, Option, pipe } from "effect"
 
+import { Board, Cell } from "./board"
 import { Card, Deck } from "./deck"
 import * as Game from "./game"
 import * as GamePlayCard from "./gamePlayCard"
+import * as Player from "./player"
 import * as Position from "./position"
 import * as Supply from "./supply"
 
@@ -46,7 +48,7 @@ export const selectSupplyPile =
     return pipe(
       game,
       Game.updateDeckFor(currentPlayer)(nextDeck),
-      Game.decreaseTurnPoints([0, 0, resourceCost]),
+      Game.decreaseTurnPoints([0, 0, 0, resourceCost]),
       Game.updateSupply(nextSupply),
     )
   }
@@ -80,6 +82,7 @@ export const selectPlayMat = (game: Game.Game): Game.Game => {
   return pipe(
     game,
     GamePlayCard.validateHasCardCost(card.value),
+    Either.andThen(GamePlayCard.consumeCardCost(card.value)),
     Either.andThen(GamePlayCard.playSelectMatCard(card.value)),
     Either.map(Game.consumeSelectedCard),
     Either.match({
@@ -92,30 +95,38 @@ export const selectPlayMat = (game: Game.Game): Game.Game => {
 export const selectCell =
   ({ rowIdx, colIdx }: Position.Position) =>
   (game: Game.Game): Game.Game => {
-    const deck = Game.currentPlayerDeck(game)
-    const card = pipe(
-      game.selectedCardIdx,
-      Option.andThen(cardIdx => {
-        return Deck.getCardAt(cardIdx)(deck)
-      }),
-    )
+    const hasPlacementPoint = game.turnPoints.placementPoints > 0
 
-    if (Option.isNone(card)) {
+    if (!hasPlacementPoint) {
       return game
     }
 
-    return pipe(
-      game,
-      GamePlayCard.validateHasCardCost(card.value),
-      Either.andThen(
-        GamePlayCard.playSelectPieceCard({ rowIdx, colIdx })(card.value),
-      ),
-      Either.map(Game.consumeSelectedCard),
-      Either.match({
-        onLeft: () => game,
-        onRight: nextGame => nextGame,
-      }),
-    )
+    const player = game.currentPlayer
+    const optionCell = Board.lookup(rowIdx)(colIdx)(game.board)
+
+    if (Option.isNone(optionCell)) {
+      // return Either.left("InvalidCell")
+      return game
+    }
+
+    const cell = optionCell.value
+
+    const isValidRow = isValidRowForPlayer(player)(rowIdx)
+    const isNoPiecePresent = Cell.isEmpty(cell)
+    const isValid = isValidRow && isNoPiecePresent
+
+    if (!isValid) {
+      // return Either.left("InvalidPlacement")
+      return game
+    }
+
+    return pipe(game, Game.addPiece(rowIdx)(colIdx), Game.consumePlacementPoint)
+  }
+
+const isValidRowForPlayer =
+  (player: Player.Player) =>
+  (rowIdx: number): boolean => {
+    return Player.homeRowIdx(player) === rowIdx
   }
 
 export const endTurn = (game: Game.Game): Game.Game => {

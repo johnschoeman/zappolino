@@ -97,6 +97,7 @@ test("GameAction.endTurn - It discards, draws a new hand, progress the board and
     deckWhite: expectedDeckWhite,
     deckBlack,
     turnPoints: {
+      placementPoints: 1,
       strategyPoints: 1,
       tacticPoints: 1,
       resourcePoints: 0,
@@ -129,7 +130,7 @@ test("GameAction.endTurn - When the player is black, it increments the turn coun
 
 // ---- Select Cell ----
 
-test("GameAction.selectCell - when making a valid move, it plays the selected card", () => {
+test("GameAction.selectCell - if the player has placement points and they select a valid cell, it places a piece", () => {
   const boardStr = `
 -----
 -p---
@@ -139,30 +140,28 @@ test("GameAction.selectCell - when making a valid move, it plays the selected ca
 -----
 ---P-
 `
-  const board = Board.parse(boardStr)
+  const initialBoard = Board.parse(boardStr)
   const player = "White"
-  const deckWhite = deckFactory.build({
-    playedCards: ["ManeuverRight"],
-    hand: ["DeployHoplite", "ManeuverLeft"],
-    draw: ["DeployHoplite", "ManeuverForward"],
-    disc: [],
-  })
-  const deckBlack = deckFactory.build({
-    hand: [],
-    draw: [],
-    disc: [],
-  })
 
-  const game: Game.Game = gameFactory.build({
-    board,
-    selectedCardIdx: Option.some(0),
+  const game1: Game.Game = gameFactory.build({
+    board: initialBoard,
     currentPlayer: player,
-    deckWhite,
-    deckBlack,
+    turnPoints: {
+      placementPoints: 1,
+    },
+  })
+  const game2: Game.Game = gameFactory.build({
+    board: initialBoard,
+    currentPlayer: player,
+    turnPoints: {
+      placementPoints: 0,
+    },
   })
 
   const pos = { rowIdx: Player.homeRowIdx("White"), colIdx: 0 }
-  const result = GameAction.selectCell(pos)(game)
+
+  const result1 = GameAction.selectCell(pos)(game1)
+  const result2 = GameAction.selectCell(pos)(game2)
 
   const expectedBoardStr = `
 -----
@@ -174,34 +173,24 @@ test("GameAction.selectCell - when making a valid move, it plays the selected ca
 P--P-
 `
   const expectedBoard = Board.parse(expectedBoardStr)
-  const expectedDeckWhite: Deck.Deck = {
-    playedCards: ["DeployHoplite", "ManeuverRight"],
-    hand: ["ManeuverLeft"],
-    draw: ["DeployHoplite", "ManeuverForward"],
-    disc: [],
-    commitedCards: [],
-  }
 
-  const expected: Game.Game = {
+  const expected1: Game.Game = gameFactory.build({
     currentPlayer: "White",
     board: expectedBoard,
-    selectedCardIdx: Option.none(),
-    deckWhite: expectedDeckWhite,
-    deckBlack,
     turnPoints: {
-      tacticPoints: 1,
-      strategyPoints: 0,
-      resourcePoints: 0,
+      placementPoints: 0,
     },
-    supply: Supply.initial,
-    turnCount: 1,
-    hegemony: {
-      hegemonyWhite: 0,
-      hegemonyBlack: 0,
+  })
+  const expected2: Game.Game = gameFactory.build({
+    currentPlayer: "White",
+    board: initialBoard,
+    turnPoints: {
+      placementPoints: 0,
     },
-  }
+  })
 
-  expect(result).toEqual(expected)
+  expect(result1).toEqual(expected1)
+  expect(result2).toEqual(expected2)
 })
 
 // ---- Select Hand Card ----

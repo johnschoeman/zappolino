@@ -24,12 +24,14 @@ export type Hegemony = {
 }
 
 export type TurnPoints = {
+  placementPoints: number
   strategyPoints: number
   tacticPoints: number
   resourcePoints: number
 }
 
 export const initialTurnPoints: TurnPoints = {
+  placementPoints: 1,
   strategyPoints: 1,
   tacticPoints: 1,
   resourcePoints: 0,
@@ -119,13 +121,20 @@ export const consumeStrategyPoint = (game: Game): Game => {
 }
 
 export const decreaseTurnPoints =
-  ([strategyPoints, tacticPoints, resourcePoints]: Card.PlayValue) =>
+  ([
+    placementPointsDiff,
+    strategyPointsDiff,
+    tacticPointsDiff,
+    resourcePointsDiff,
+  ]: Card.PlayValue) =>
   (game: Game): Game => {
-    const turnPoints = game.turnPoints
+    const { placementPoints, strategyPoints, tacticPoints, resourcePoints } =
+      game.turnPoints
     const nextTurnPoints = {
-      strategyPoints: turnPoints.strategyPoints - strategyPoints,
-      tacticPoints: turnPoints.tacticPoints - tacticPoints,
-      resourcePoints: turnPoints.resourcePoints - resourcePoints,
+      placementPoints: placementPoints - placementPointsDiff,
+      strategyPoints: strategyPoints - strategyPointsDiff,
+      tacticPoints: tacticPoints - tacticPointsDiff,
+      resourcePoints: resourcePoints - resourcePointsDiff,
     }
     return {
       ...game,
@@ -134,19 +143,38 @@ export const decreaseTurnPoints =
   }
 
 export const increaseTurnPoints =
-  ([strategyPoints, tacticPoints, resourcePoints]: Card.PlayValue) =>
+  ([
+    placementPointsDiff,
+    strategyPointsDiff,
+    tacticPointsDiff,
+    resourcePointsDiff,
+  ]: Card.PlayValue) =>
   (game: Game): Game => {
-    const turnPoints = game.turnPoints
+    const { placementPoints, strategyPoints, tacticPoints, resourcePoints } =
+      game.turnPoints
     const nextTurnPoints = {
-      strategyPoints: turnPoints.strategyPoints + strategyPoints,
-      tacticPoints: turnPoints.tacticPoints + tacticPoints,
-      resourcePoints: turnPoints.resourcePoints + resourcePoints,
+      placementPoints: placementPoints + placementPointsDiff,
+      strategyPoints: strategyPoints + strategyPointsDiff,
+      tacticPoints: tacticPoints + tacticPointsDiff,
+      resourcePoints: resourcePoints + resourcePointsDiff,
     }
     return {
       ...game,
       turnPoints: nextTurnPoints,
     }
   }
+
+export const consumePlacementPoint = (game: Game): Game => {
+  const turnPoints = game.turnPoints
+  const nextTurnPoints = {
+    ...turnPoints,
+    placementPoints: turnPoints.placementPoints - 1,
+  }
+  return {
+    ...game,
+    turnPoints: nextTurnPoints,
+  }
+}
 
 export const consumeTacticPoint = (game: Game): Game => {
   const turnPoints = game.turnPoints
@@ -194,7 +222,7 @@ export const commitSelectedCard = (game: Game): Game => {
   )
   const nextGame = pipe(
     game,
-    increaseTurnPoints([0, 0, resourceValue]),
+    increaseTurnPoints([0, 0, 0, resourceValue]),
     updateDeckFor(player)(nextDeck),
     unselectHandCard,
   )

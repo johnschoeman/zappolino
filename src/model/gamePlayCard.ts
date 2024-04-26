@@ -1,10 +1,11 @@
 import { Either, Option, pipe } from "effect"
 
-import { Board, Cell } from "./board"
+import { Board } from "./board"
 import { Card } from "./deck"
 import * as Game from "./game"
 import * as Player from "./player"
 import * as Position from "./position"
+
 // ---- Validation Logic ----
 
 type CardCostError = "NotEnoughStrategyPoints" | "NotEnoughTacticPoints"
@@ -22,6 +23,18 @@ export const validateHasCardCost =
       return Either.left("NotEnoughTacticPoints")
     }
     return Either.right(game)
+  }
+
+export const consumeCardCost =
+  (card: Card.Card) =>
+  (game: Game.Game): Either.Either<Game.Game, CardCostError> => {
+    const [strategyCost, tacticCost] = Card.toPlayCost(card)
+
+    const nextGame = Game.decreaseTurnPoints([0, strategyCost, tacticCost, 0])(
+      game,
+    )
+
+    return Either.right(nextGame)
   }
 
 // ---- Playing Cards ----
@@ -46,8 +59,6 @@ export const playSelectPieceCard =
   (card: Card.Card) =>
   (game: Game.Game): Either.Either<Game.Game, PlayCardError> => {
     switch (card) {
-      case "DeployHoplite":
-        return playDeployHoplitePiece(pos)(game)
       case "ManeuverForward":
         return playManeuverForward(pos)(game)
       case "ManeuverRight":
@@ -66,6 +77,7 @@ export const playSelectPieceCard =
         return playFlankLeft(pos)(game)
       case "FlankRight":
         return playFlankRight(pos)(game)
+      case "DeployHoplite":
       case "MilitaryReforms":
       case "PoliticalReforms":
       case "Oracle":
@@ -78,12 +90,13 @@ export const playSelectMatCard =
   (game: Game.Game): Either.Either<Game.Game, PlayCardError> => {
     switch (card) {
       case "MilitaryReforms":
-        return playMilitaryReforms(game)
+        return playStrategyCard("MilitaryReforms")(game)
       case "PoliticalReforms":
-        return playPoliticalReforms(game)
+        return playStrategyCard("PoliticalReforms")(game)
       case "Oracle":
-        return playOracle(game)
+        return playStrategyCard("Oracle")(game)
       case "DeployHoplite":
+        return playStrategyCard("DeployHoplite")(game)
       case "ManeuverForward":
       case "ManeuverRight":
       case "ManeuverLeft":
@@ -97,43 +110,21 @@ export const playSelectMatCard =
     }
   }
 
-const isValidRowForPlayer =
-  (player: Player.Player) =>
-  (rowIdx: number): boolean => {
-    return Player.homeRowIdx(player) === rowIdx
+// ---- Play Card Functions
+
+// -- Strategy Cards
+
+export const playStrategyCard =
+  (card: Card.Card) =>
+  (game: Game.Game): Either.Either<Game.Game, PlayCardError> => {
+    return pipe(
+      game,
+      Game.increaseTurnPoints(Card.toPlayValue(card)),
+      Either.right,
+    )
   }
 
-// --- Play Card Functions
-
-const playMilitaryReforms = (
-  game: Game.Game,
-): Either.Either<Game.Game, PlayCardError> => {
-  return pipe(
-    game,
-    Game.increaseTurnPoints(Card.toPlayValue("MilitaryReforms")),
-    Either.right,
-  )
-}
-
-const playPoliticalReforms = (
-  game: Game.Game,
-): Either.Either<Game.Game, PlayCardError> => {
-  return pipe(
-    game,
-    Game.increaseTurnPoints(Card.toPlayValue("PoliticalReforms")),
-    Either.right,
-  )
-}
-
-export const playOracle = (
-  game: Game.Game,
-): Either.Either<Game.Game, PlayCardError> => {
-  return pipe(
-    game,
-    Game.increaseTurnPoints(Card.toPlayValue("Oracle")),
-    Either.right,
-  )
-}
+// -- Tactic Cards
 
 // Move - Move from one position to another, without validation
 
@@ -423,31 +414,3 @@ export const playManeuverRight = playManeuverDirection(moveRight)
 export const playAssaultForward = playAssaultDirection(moveForward)
 export const playAssaultLeft = playAssaultDirection(moveLeft)
 export const playAssaultRight = playAssaultDirection(moveRight)
-
-export const playDeployHoplitePiece =
-  ({ rowIdx, colIdx }: Position.Position) =>
-  (game: Game.Game): Either.Either<Game.Game, PlayCardError> => {
-    const player = game.currentPlayer
-    const optionCell = Board.lookup(rowIdx)(colIdx)(game.board)
-
-    if (Option.isNone(optionCell)) {
-      return Either.left("InvalidCell")
-    }
-
-    const cell = optionCell.value
-
-    const isValidRow = isValidRowForPlayer(player)(rowIdx)
-    const isNoPiecePresent = Cell.isEmpty(cell)
-    const isValid = isValidRow && isNoPiecePresent
-
-    if (!isValid) {
-      return Either.left("InvalidPlacement")
-    }
-
-    return pipe(
-      game,
-      Game.addPiece(rowIdx)(colIdx),
-      Game.consumeStrategyPoint,
-      Either.right,
-    )
-  }

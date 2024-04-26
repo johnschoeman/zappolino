@@ -7,7 +7,6 @@ import { Board } from "./board"
 import { Card } from "./deck"
 import * as Game from "./game"
 import * as GamePlayCard from "./gamePlayCard"
-import * as Player from "./player"
 
 test("GamePlayCard.validateHasCardCost - if the player has the points, it returns the game, and error if not", () => {
   const strategyCard: Card.Card = "DeployHoplite"
@@ -36,63 +35,6 @@ test("GamePlayCard.validateHasCardCost - if the player has the points, it return
   expect(result2).toEqual(Either.right(game1))
   expect(result3).toEqual(Either.left("NotEnoughStrategyPoints"))
   expect(result4).toEqual(Either.left("NotEnoughTacticPoints"))
-})
-
-// ---- DeployHoplite
-
-test("GamePlayCard.playDeployHopliteCard - it only allows placement on the players home row", () => {
-  const player = "White"
-  const board = Board.parse(
-    `
------
--p---
------
------
------
------
----P-
-`,
-  )
-  const game: Game.Game = gameFactory.build({
-    board,
-    currentPlayer: player,
-    turnPoints: {
-      strategyPoints: 1,
-      tacticPoints: 1,
-    },
-  })
-
-  const posValid = { rowIdx: Player.homeRowIdx("White"), colIdx: 0 }
-  const posNotOnHomeRow = { rowIdx: Player.homeRowIdx("White") - 1, colIdx: 0 }
-  const posOnExistingPiece = { rowIdx: Player.homeRowIdx("White"), colIdx: 3 }
-
-  const expectedBoard = Board.parse(
-    `
------
--p---
------
------
------
------
-P--P-
-`,
-  )
-  const expected1: Game.Game = gameFactory.build({
-    board: expectedBoard,
-    currentPlayer: "White",
-    turnPoints: {
-      strategyPoints: 0,
-      tacticPoints: 1,
-    },
-  })
-
-  const result1 = GamePlayCard.playDeployHoplitePiece(posValid)(game)
-  const result2 = GamePlayCard.playDeployHoplitePiece(posNotOnHomeRow)(game)
-  const result3 = GamePlayCard.playDeployHoplitePiece(posOnExistingPiece)(game)
-
-  expect(result1).toEqual(Either.right(expected1))
-  expect(result2).toEqual(Either.left("InvalidPlacement"))
-  expect(result3).toEqual(Either.left("InvalidPlacement"))
 })
 
 // ---- ManeuverForward
@@ -419,7 +361,7 @@ PPP--
 
 // ---- Oracle
 
-test("GamePlayCard.playOracle - it gains the correct points", () => {
+test("GamePlayCard.playStrategyCard - it gains the correct points", () => {
   const player = "White"
   const board = Board.parse(
     `
@@ -440,7 +382,7 @@ test("GamePlayCard.playOracle - it gains the correct points", () => {
     },
   })
 
-  const result1 = GamePlayCard.playOracle(game)
+  const result1 = GamePlayCard.playStrategyCard("Oracle")(game)
 
   const expected1: Game.Game = gameFactory.build({
     board,

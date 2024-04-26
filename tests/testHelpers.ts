@@ -110,8 +110,16 @@ export const expectDiscardCountToBe =
   }
 
 export const expectTurnPointsToBe =
-  ({ strategyPoints, tacticPoints, resourcePoints }: Game.TurnPoints) =>
+  ({
+    placementPoints,
+    strategyPoints,
+    tacticPoints,
+    resourcePoints,
+  }: Game.TurnPoints) =>
   async (page: Page): Promise<void> => {
+    await expect(page.getByTestId("placement-count")).toHaveText(
+      `${placementPoints}`,
+    )
     await expect(page.getByTestId("tactic-count")).toHaveText(`${tacticPoints}`)
     await expect(page.getByTestId("strategy-count")).toHaveText(
       `${strategyPoints}`,
