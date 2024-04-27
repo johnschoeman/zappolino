@@ -16,7 +16,7 @@ import {
   startGame,
 } from "./testHelpers"
 
-test("single turn - place a piece", async ({ page }) => {
+test("take a single turn - place a piece", async ({ page }) => {
   await page.goto("http://localhost:3000")
 
   await startGame(page)
@@ -70,7 +70,7 @@ test("single turn - place a piece", async ({ page }) => {
   await expectCurrentPlayerToBe("Black")(page)
 })
 
-test("many turns - progress the pieces on the board", async ({ page }) => {
+test("take many turns - progress the pieces on the board", async ({ page }) => {
   await page.goto("http://localhost:3000")
 
   await startGame(page)

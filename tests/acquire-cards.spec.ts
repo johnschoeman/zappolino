@@ -14,7 +14,7 @@ import {
   startGame,
 } from "./testHelpers"
 
-test("acquire a card from supply", async ({ page }) => {
+test("acquire a supply card", async ({ page }) => {
   await page.goto("http://localhost:3000")
 
   await startGame(page)

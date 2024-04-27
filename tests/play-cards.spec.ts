@@ -1,22 +1,22 @@
 import { expect, test } from "@playwright/test"
 
-// import { expectCurrentPlayerToBe, expectCellToHavePiece } from "./expectations"
+import { selectHomeRowCell, selectNthCard,startGame } from "./testHelpers"
 
-test("Select Playmat Card", async ({ page }) => {
+test("Play tactic card", async ({ page }) => {
   await page.goto("http://localhost:3000")
 
-  // Start game
-  await page.getByTestId("start-game-button").click()
-  await expect(page.getByTestId("game-board")).toBeVisible()
+  await startGame(page)
 
-  // get and select card that requires playmat
+  await selectHomeRowCell("White", "B")(page)
+
+  await selectNthCard(1)(page)
 
   // select playmat
 
   // expect card was played correctly
 })
 
-test("Select Piece Card", async ({ page }) => {
+test("Play strategy card", async ({ page }) => {
   await page.goto("http://localhost:3000")
 
   // Start game
