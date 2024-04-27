@@ -12,10 +12,10 @@ const HandView = (): JSX.Element => {
     return pipe(GameState.currentPlayerDeck(), deck => deck.hand)
   }
 
-  const handStyle = "p-2 border rounded"
+  const handStyle = "p-2"
   return (
     <div data-testid="player-hand-list" class={handStyle}>
-      <h2>Hand</h2>
+      <h2 class="section-header">Hand</h2>
       <div class="flex flex-row space-x-2 overflow-x-auto pr-16">
         {pipe(
           hand(),

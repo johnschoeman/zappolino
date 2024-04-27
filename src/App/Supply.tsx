@@ -16,8 +16,8 @@ const handleOnClickSupplyPile = (pileIdx: number) => (): void => {
 
 const SupplyView = (): JSX.Element => {
   return (
-    <div class="border rounded p-2">
-      <h1>Supply</h1>
+    <div class="p-2">
+      <h1 class="section-header">Supply</h1>
       <div class="w-screen h-full flex flex-wrap space-x-2">
         {pipe(
           GameState.game().supply,

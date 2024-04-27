@@ -8,7 +8,7 @@ import CardView from "../Card"
 import PlaceHolderCardView from "../PlaceholderCard"
 
 const PlayMat = (): JSX.Element => {
-  const playMatStyle = "p-2 border rounded"
+  const playMatStyle = "p-2"
 
   const playedCards = (): Deck.Played => {
     return pipe(GameState.playedCards())
@@ -32,7 +32,7 @@ const PlayMat = (): JSX.Element => {
       class={playMatStyle}
       onClick={handleOnClickPlayMat}
     >
-      <h2>
+      <h2 class="section-header">
         Play Mat <span>{countPlayed()}</span>
       </h2>
 

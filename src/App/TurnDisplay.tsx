@@ -7,7 +7,7 @@ import { GameState } from "@app/state"
 
 const TurnDisplay = (): JSX.Element => {
   return (
-    <div class="w-full border rounded p-2 flex flex-row justify-between">
+    <div class="w-full rounded p-2 flex flex-row justify-between">
       <StrategyAndTacticCounts />
       <EndTurnButton />
     </div>
@@ -29,17 +29,16 @@ const StrategyAndTacticCounts = (): JSX.Element => {
   }
 
   const containerStyle = "flex flex-row items-center space-x-2 p-2"
-  const basePointStyle =
-    "font-bold border rounded flex justify-center items-center w-12 h-12"
+  const basePointStyle = "point-display"
 
-  const placementCountStyle = cn(basePointStyle, "bg-blue-400")
-  const strategyCountStyle = cn(basePointStyle, "bg-purple-400")
-  const tacticCountStyle = cn(basePointStyle, "bg-red-400")
-  const resourceCountStyle = cn(basePointStyle, "bg-yellow-400")
+  const placementCountStyle = cn(basePointStyle, "hoplite")
+  const strategyCountStyle = cn(basePointStyle, "strategy")
+  const tacticCountStyle = cn(basePointStyle, "tactic")
+  const resourceCountStyle = cn(basePointStyle, "resource")
 
   return (
     <div class="w-full">
-      <h2 class="text-sm font-bold">Turn Points</h2>
+      <h2 class="section-header">Turn Points</h2>
 
       <div class="w-full flex flex-row items-center space-x-4">
         <div class={containerStyle}>

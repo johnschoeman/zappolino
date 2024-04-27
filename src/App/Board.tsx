@@ -27,8 +27,8 @@ const RowView = ({ row, rowIdx }: RowViewProps): JSX.Element => {
   const isBlackHomeRow = Player.homeRowIdx("Black") === rowIdx
 
   const style = cn("flex flex-row", {
-    "border-t-2 border-red-400": isWhiteHomeRow,
-    "border-b-2 border-blue-400": isBlackHomeRow,
+    "border-t-2 border-sparta": isWhiteHomeRow,
+    "border-b-2 border-athens": isBlackHomeRow,
   })
 
   return (
