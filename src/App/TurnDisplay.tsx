@@ -1,4 +1,5 @@
 import { JSX } from "solid-js"
+import cn from "classnames"
 import { pipe } from "effect"
 
 import { GameAction } from "@app/model"
@@ -27,24 +28,47 @@ const StrategyAndTacticCounts = (): JSX.Element => {
     return pipe(GameState.game(), game => game.turnPoints.resourcePoints)
   }
 
+  const containerStyle = "flex flex-row items-center space-x-2 p-2"
+  const basePointStyle =
+    "font-bold border rounded flex justify-center items-center w-12 h-12"
+
+  const placementCountStyle = cn(basePointStyle, "bg-blue-400")
+  const strategyCountStyle = cn(basePointStyle, "bg-purple-400")
+  const tacticCountStyle = cn(basePointStyle, "bg-red-400")
+  const resourceCountStyle = cn(basePointStyle, "bg-yellow-400")
+
   return (
-    <div class="flex flex-row justify-around items-center">
-      <div>
-        Placement Points:
-        <span data-testid="placement-count">{placementCount()}</span>
-      </div>
+    <div class="w-full">
+      <h2 class="text-sm font-bold">Turn Points</h2>
 
-      <div>
-        Strategy Points:
-        <span data-testid="strategy-count">{strategyCount()}</span>
-      </div>
+      <div class="w-full flex flex-row items-center space-x-4">
+        <div class={containerStyle}>
+          <span>Hoplite:</span>
+          <span class={placementCountStyle} data-testid="placement-count">
+            {placementCount()}
+          </span>
+        </div>
 
-      <div>
-        Tactic Points: <span data-testid="tactic-count">{tacticCount()}</span>
-      </div>
+        <div class={containerStyle}>
+          <span>Strategy:</span>
+          <span class={strategyCountStyle} data-testid="strategy-count">
+            {strategyCount()}
+          </span>
+        </div>
 
-      <div>
-        Resources: <span data-testid="resource-count">{resourceCount()}</span>
+        <div class={containerStyle}>
+          <span>Tactic:</span>
+          <span class={tacticCountStyle} data-testid="tactic-count">
+            {tacticCount()}
+          </span>
+        </div>
+
+        <div class={containerStyle}>
+          <span>Resources:</span>
+          <span class={resourceCountStyle} data-testid="resource-count">
+            {resourceCount()}
+          </span>
+        </div>
       </div>
     </div>
   )

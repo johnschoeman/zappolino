@@ -18,7 +18,7 @@ const SupplyView = (): JSX.Element => {
   return (
     <div class="border rounded p-2">
       <h1>Supply</h1>
-      <div class="w-full h-full grid grid-cols-3 gap-2">
+      <div class="w-screen h-full flex flex-wrap space-x-2">
         {pipe(
           GameState.game().supply,
           Array.map((supplyPile, idx) => {

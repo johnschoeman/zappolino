@@ -53,8 +53,7 @@ export type PlayValue = [
 
 type Kind = "Tactic" | "Strategy"
 
-export const all: Card[] = [
-  "DeployHoplite",
+const allTactic: Card[] = [
   "ManeuverLeft",
   "ManeuverRight",
   "ManeuverForward",
@@ -64,10 +63,16 @@ export const all: Card[] = [
   "Charge",
   "FlankLeft",
   "FlankRight",
+]
+
+export const allStrategy: Card[] = [
+  "DeployHoplite",
   "MilitaryReforms",
   "PoliticalReforms",
   "Oracle",
 ]
+
+export const all: Card[] = [...allStrategy, ...allTactic]
 
 export const show = (card: Card): string => {
   switch (card) {
