@@ -92,7 +92,78 @@ export const selectPlayMat = (game: Game.Game): Game.Game => {
   )
 }
 
+type SelectCellAction = "PlayTacticCard" | "PlacePiece" | "InvalidSelectCell"
+
+const determineSelectCellAction = (game: Game.Game): SelectCellAction => {
+  const deck = Game.currentPlayerDeck(game)
+  const card = pipe(
+    game.selectedCardIdx,
+    Option.andThen(cardIdx => {
+      return Deck.getCardAt(cardIdx)(deck)
+    }),
+  )
+
+  if (Option.isNone(card)) {
+    return "PlacePiece"
+  }
+
+  if (Card.isTactic(card.value)) {
+    return "PlayTacticCard"
+  }
+
+  return "InvalidSelectCell"
+}
+
 export const selectCell =
+  (pos: Position.Position) =>
+  (game: Game.Game): Game.Game => {
+    const selectCellAction = determineSelectCellAction(game)
+    switch (selectCellAction) {
+      case "PlayTacticCard":
+        return selectCellPlayTacticCard(pos)(game)
+      case "PlacePiece":
+        return selectCellPlacePiece(pos)(game)
+      case "InvalidSelectCell":
+        return game
+    }
+  }
+
+const selectCellPlayTacticCard =
+  ({ rowIdx, colIdx }: Position.Position) =>
+  (game: Game.Game): Game.Game => {
+    const hasTacticPoint = game.turnPoints.tacticPoints > 0
+
+    if (!hasTacticPoint) {
+      return game
+    }
+
+    const deck = Game.currentPlayerDeck(game)
+    const card = pipe(
+      game.selectedCardIdx,
+      Option.andThen(cardIdx => {
+        return Deck.getCardAt(cardIdx)(deck)
+      }),
+    )
+
+    if (Option.isNone(card)) {
+      return game
+    }
+
+    return pipe(
+      game,
+      GamePlayCard.playSelectPieceCard({ rowIdx, colIdx })(card.value),
+      Either.map(Game.consumeSelectedCard),
+      Either.match({
+        onLeft: error => {
+          console.error(error)
+          return game
+        },
+        onRight: nextGame => nextGame,
+      }),
+    )
+  }
+
+const selectCellPlacePiece =
   ({ rowIdx, colIdx }: Position.Position) =>
   (game: Game.Game): Game.Game => {
     const hasPlacementPoint = game.turnPoints.placementPoints > 0

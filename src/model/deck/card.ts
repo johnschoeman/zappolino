@@ -105,6 +105,14 @@ export const show = (card: Card): string => {
   }
 }
 
+export const isTactic = (card: Card): boolean => {
+  return toKind(card) === "Tactic"
+}
+
+export const isStrategy = (card: Card): boolean => {
+  return toKind(card) === "Strategy"
+}
+
 export const toKind = (card: Card): Kind => {
   switch (card) {
     case "ManeuverLeft":

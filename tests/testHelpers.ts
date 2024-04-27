@@ -78,6 +78,17 @@ export const expectCellToHavePiece =
     )
   }
 
+export const expectCellToBeEmpty =
+  (rankFileStr: string) =>
+  async (page: Page): Promise<void> => {
+    const rankFile = Position.parseRankFile(rankFileStr)
+    const testId = Position.showRankFile(rankFile)
+    await expect(page.getByTestId(testId)).toHaveAttribute(
+      "data-cell",
+      Cell.show(Cell.empty),
+    )
+  }
+
 export const expectHegemonyToBe =
   ({ hegemonyWhite, hegemonyBlack }: Game.Hegemony) =>
   async (page: Page): Promise<void> => {

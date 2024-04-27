@@ -1,31 +1,52 @@
-import { expect, test } from "@playwright/test"
+import { test } from "@playwright/test"
 
-import { selectHomeRowCell, selectNthCard,startGame } from "./testHelpers"
+import {
+  expectCellToBeEmpty,
+  expectCellToHavePiece,
+  expectTurnPointsToBe,
+  selectHomeRowCell,
+  selectNthCard,
+  selectPlayMat,
+  startGame,
+} from "./testHelpers"
 
-test("Play tactic card", async ({ page }) => {
+test("play tactic card", async ({ page }) => {
   await page.goto("http://localhost:3000")
 
   await startGame(page)
 
+  // place hoplite piece
+  await selectHomeRowCell("White", "B")(page)
+  await expectCellToHavePiece("B6")("White")(page)
+
+  // select and play maneuver forward card
+  await selectNthCard(4)(page)
   await selectHomeRowCell("White", "B")(page)
 
-  await selectNthCard(1)(page)
-
-  // select playmat
-
-  // expect card was played correctly
+  // expect hoplite piece to have maneuvered forward
+  await expectCellToHavePiece("B5")("White")(page)
+  await expectCellToBeEmpty("B6")(page)
 })
 
-test("Play strategy card", async ({ page }) => {
+test("play strategy card", async ({ page }) => {
   await page.goto("http://localhost:3000")
 
-  // Start game
-  await page.getByTestId("start-game-button").click()
-  await expect(page.getByTestId("game-board")).toBeVisible()
+  await startGame(page)
 
-  // get and select card that requires selecting a board piece
+  await expectTurnPointsToBe({
+    resourcePoints: 0,
+    strategyPoints: 1,
+    tacticPoints: 1,
+    placementPoints: 1,
+  })(page)
 
-  // select board piece
+  await selectNthCard(0)(page)
+  await selectPlayMat(page)
 
-  // expect card was played correctly and board was updated correctly
+  await expectTurnPointsToBe({
+    resourcePoints: 0,
+    strategyPoints: 0,
+    tacticPoints: 1,
+    placementPoints: 2,
+  })(page)
 })

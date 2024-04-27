@@ -143,15 +143,15 @@ export const playAssaultDirection =
   (game: Game.Game): Either.Either<Game.Game, PlayCardError> => {
     const player = game.currentPlayer
     const { rowIdx, colIdx } = from
-    const optionCell = Board.lookup(rowIdx)(colIdx)(game.board)
+    const optionFromCell = Board.lookup(rowIdx)(colIdx)(game.board)
 
-    if (Option.isNone(optionCell)) {
+    if (Option.isNone(optionFromCell)) {
       return Either.left("InvalidCell")
     }
 
-    const cell = optionCell.value
+    const fromCell = optionFromCell.value
 
-    const isPiecePresent = Board.isPlayers(player)(cell)
+    const isPiecePresent = Board.isPlayers(player)(fromCell)
     const isValid = isPiecePresent
 
     if (!isValid) {
@@ -185,15 +185,15 @@ export const playManeuverDirection =
   (game: Game.Game): Either.Either<Game.Game, PlayCardError> => {
     const player = game.currentPlayer
     const { rowIdx, colIdx } = from
-    const optionCell = Board.lookup(rowIdx)(colIdx)(game.board)
+    const optionFromCell = Board.lookup(rowIdx)(colIdx)(game.board)
 
-    if (Option.isNone(optionCell)) {
+    if (Option.isNone(optionFromCell)) {
       return Either.left("InvalidCell")
     }
 
-    const cell = optionCell.value
+    const fromCell = optionFromCell.value
 
-    const isPiecePresent = Board.isPlayers(player)(cell)
+    const isPiecePresent = Board.isPlayers(player)(fromCell)
     const isValid = isPiecePresent
 
     if (!isValid) {
@@ -240,15 +240,15 @@ export const playCharge =
   (game: Game.Game): Either.Either<Game.Game, PlayCardError> => {
     const player = game.currentPlayer
     const { rowIdx, colIdx } = from
-    const optionCell = Board.lookup(rowIdx)(colIdx)(game.board)
+    const optionFromCell = Board.lookup(rowIdx)(colIdx)(game.board)
 
-    if (Option.isNone(optionCell)) {
+    if (Option.isNone(optionFromCell)) {
       return Either.left("InvalidCell")
     }
 
-    const cell = optionCell.value
+    const fromCell = optionFromCell.value
 
-    const isPiecePresent = Board.isPlayers(player)(cell)
+    const isPiecePresent = Board.isPlayers(player)(fromCell)
     const isValid = isPiecePresent
 
     if (!isValid) {
@@ -281,15 +281,15 @@ export const playFlankLeft =
   (game: Game.Game): Either.Either<Game.Game, PlayCardError> => {
     const player = game.currentPlayer
     const { rowIdx, colIdx } = from
-    const optionCell = Board.lookup(rowIdx)(colIdx)(game.board)
+    const optionFromCell = Board.lookup(rowIdx)(colIdx)(game.board)
 
-    if (Option.isNone(optionCell)) {
+    if (Option.isNone(optionFromCell)) {
       return Either.left("InvalidCell")
     }
 
-    const cell = optionCell.value
+    const fromCell = optionFromCell.value
 
-    const isPiecePresent = Board.isPlayers(player)(cell)
+    const isPiecePresent = Board.isPlayers(player)(fromCell)
     const isValid = isPiecePresent
 
     if (!isValid) {
@@ -327,15 +327,15 @@ export const playFlankRight =
   (game: Game.Game): Either.Either<Game.Game, PlayCardError> => {
     const player = game.currentPlayer
     const { rowIdx, colIdx } = from
-    const optionCell = Board.lookup(rowIdx)(colIdx)(game.board)
+    const optionFromCell = Board.lookup(rowIdx)(colIdx)(game.board)
 
-    if (Option.isNone(optionCell)) {
+    if (Option.isNone(optionFromCell)) {
       return Either.left("InvalidCell")
     }
 
-    const cell = optionCell.value
+    const fromCell = optionFromCell.value
 
-    const isPiecePresent = Board.isPlayers(player)(cell)
+    const isPiecePresent = Board.isPlayers(player)(fromCell)
     const isValid = isPiecePresent
 
     if (!isValid) {

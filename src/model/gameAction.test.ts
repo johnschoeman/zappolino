@@ -193,6 +193,69 @@ P--P-
   expect(result2).toEqual(expected2)
 })
 
+test("GameAction.selectCell - if a player has a tactic card selected, it plays the tactic card", () => {
+  const boardStr = `
+-----
+-p---
+-----
+-----
+-----
+-----
+---P-
+`
+  const initialBoard = Board.parse(boardStr)
+  const player = "White"
+
+  const deckWhite1 = deckFactory.build({
+    hand: ["ManeuverForward"],
+    disc: [],
+  })
+
+  const game1: Game.Game = gameFactory.build({
+    board: initialBoard,
+    currentPlayer: player,
+    selectedCardIdx: Option.some(0),
+    deckWhite: deckWhite1,
+    turnPoints: {
+      placementPoints: 1,
+      tacticPoints: 1,
+      strategyPoints: 1,
+      resourcePoints: 1,
+    },
+  })
+
+  const pos = { rowIdx: Player.homeRowIdx("White"), colIdx: 3 }
+
+  const result1 = GameAction.selectCell(pos)(game1)
+
+  const expectedBoardStr = `
+-----
+-p---
+-----
+-----
+-----
+---P-
+-----
+`
+  const expectedBoard = Board.parse(expectedBoardStr)
+  const expectedDeckWhite1 = deckFactory.build({
+    hand: [],
+    playedCards: ["ManeuverForward"],
+  })
+  const expectedSelectedCardIdx = Option.none()
+  const expectedTurnPoints = {
+    placementPoints: 1,
+    tacticPoints: 0,
+    strategyPoints: 1,
+    resourcePoints: 1,
+  }
+
+  expect(result1.board).toEqual(expectedBoard)
+  expect(result1.selectedCardIdx).toEqual(expectedSelectedCardIdx)
+  expect(result1.deckWhite).toEqual(expectedDeckWhite1)
+  expect(result1.turnPoints).toEqual(expectedTurnPoints)
+})
+
 // ---- Select Hand Card ----
 
 test("GameAction.selectHandCard", () => {})
