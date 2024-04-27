@@ -6,6 +6,9 @@ import * as Player from "./player"
 import * as Position from "./position"
 import * as Supply from "./supply"
 
+const HEGEMONY_CROSSING = 5
+const HEGEMONY_TAKING = 1
+
 export type Game = {
   board: Board.Board<Cell.Cell>
   currentPlayer: Player.Player
@@ -81,6 +84,30 @@ export const deckFor =
   }
 
 // ---- Update Game State
+
+const updateBoard =
+  (board: Board.Board<Cell.Cell>) =>
+  (game: Game): Game => {
+    return { ...game, board }
+  }
+
+const addHegemonyForCurrentPlayer =
+  (points: number) =>
+  (game: Game): Game => {
+    const { currentPlayer, hegemony } = game
+    const nextHegemony = { ...hegemony }
+
+    switch (currentPlayer) {
+      case "Black":
+        nextHegemony.hegemonyBlack = hegemony.hegemonyBlack + points
+        break
+      case "White":
+        nextHegemony.hegemonyWhite = hegemony.hegemonyWhite + points
+        break
+    }
+
+    return { ...game, hegemony: nextHegemony }
+  }
 
 export const incrementTurnCount = (game: Game): Game => {
   const currentPlayer = game.currentPlayer
@@ -307,38 +334,54 @@ export const addPiece =
     }
   }
 
-type BoardProgression = [Game, Position.Position[]]
-
 export const progressBoard = (game: Game): Game => {
   const nextGame = pipe(
-    [game, []],
-    // getPiecePositionsFor,
-    // incrementPositionFor,
-    // removePiecesFor,
-    // addPiecesFor,
+    game,
     progressEachColumn,
     addHegemonyPoints,
     removePiecesInHomeRow,
-    ([game_, _positions]) => game_,
   )
 
   return nextGame
 }
 
-const progressEachColumn = ([
-  game,
-  _positions,
-]: BoardProgression): BoardProgression => {
+type Points = number
+export type ColumnProgression = [Board.Column<Cell.Cell>, Points]
+type BoardProgression = [Board.Board<Cell.Cell>, Points]
+
+const progressEachColumn = (game: Game): Game => {
   const { board } = game
-  const nextBoard = pipe(
+
+  const nextGame = pipe(
     board,
     Board.transpose,
     Array.map(progressColumn(game.currentPlayer)),
-    Board.transpose,
+    Array.reduce<BoardProgression, ColumnProgression>(
+      [[], 0],
+      ([accBoard, accPoints], [col, colPoints]) => {
+        const nextBoard = pipe(accBoard, Array.append(col))
+        const nextPoints = accPoints + colPoints
+        return [nextBoard, nextPoints]
+      },
+    ),
+    ([board_, points]) => {
+      const nextBoard = Board.transpose(board_)
+      return pipe(
+        game,
+        updateBoard(nextBoard),
+        addHegemonyForCurrentPlayer(points),
+      )
+    },
   )
-  return [{ ...game, board: nextBoard }, []]
+
+  return nextGame
 }
 
+// progressColumn
+//
+// Move pieces for the current player forward if the file depth of a continuous
+// length of pieces is deeper than the opponents pieces.
+//
 // traverse the array from opponent side to player side
 // check if the cell belongs to the player
 // if no
@@ -357,7 +400,7 @@ const progressEachColumn = ([
 
 export const progressColumn =
   (player: Player.Player) =>
-  (column: Board.Column<Cell.Cell>): Board.Column<Cell.Cell> => {
+  (column: Board.Column<Cell.Cell>): ColumnProgression => {
     return pipe(
       column,
       c => {
@@ -368,14 +411,16 @@ export const progressColumn =
         }
       },
       col =>
-        Array.reduce<Board.Column<Cell.Cell>, Cell.Cell>(
-          col,
+        Array.reduce<ColumnProgression, Cell.Cell>(
+          [col, 0],
           (acc, cell, idx) => {
+            const [accCol, accPoints] = acc
+
             if (!Cell.isPlayers(player)(cell)) {
               return acc
             }
 
-            const cellTowardsOpponent = pipe(acc, Array.get(idx - 1))
+            const cellTowardsOpponent = pipe(accCol, Array.get(idx - 1))
 
             const isCellTowardsOppoentBelongToPlayer = pipe(
               cellTowardsOpponent,
@@ -394,15 +439,17 @@ export const progressColumn =
             }
 
             if (isCellTowardsOpponentEmpty) {
-              return pipe(
-                acc,
+              const nextCol = pipe(
+                accCol,
                 Array.modify(idx - 1, () => Cell.buildPiece(player)),
                 Array.modify(idx, () => Cell.empty),
               )
+
+              return [nextCol, accPoints]
             }
 
             const [leftDepth, rightDepth] = pipe(
-              acc,
+              accCol,
               Array.splitAt(idx),
               ([left, right]) => {
                 const _leftDepth = pipe(
@@ -428,29 +475,28 @@ export const progressColumn =
             const isDepthGreater = rightDepth > leftDepth
 
             if (isDepthGreater) {
-              return pipe(
-                acc,
+              const nextCol = pipe(
+                accCol,
                 Array.modify(idx - 1, () => Cell.buildPiece(player)),
                 Array.modify(idx, () => Cell.empty),
               )
+              const nextPoints = accPoints + HEGEMONY_TAKING
+              return [nextCol, nextPoints]
             }
             return acc
           },
         )(col),
-      c => {
+      ([c, p]) => {
         if (player === "Black") {
-          return Array.reverse(c)
+          return [Array.reverse(c), p]
         } else {
-          return c
+          return [c, p]
         }
       },
     )
   }
 
-const addHegemonyPoints = ([
-  game,
-  _positions,
-]: BoardProgression): BoardProgression => {
+const addHegemonyPoints = (game: Game): Game => {
   const { board } = game
 
   const currentHegemony = game.hegemony
@@ -460,6 +506,7 @@ const addHegemonyPoints = ([
     Array.get(Player.homeRowIdx("Black")),
     Option.map(Array.filter(Cell.isPlayers("White"))),
     Option.map(Array.length),
+    Option.map(count => count * HEGEMONY_CROSSING),
     Option.getOrElse(() => 0),
   )
 
@@ -468,6 +515,7 @@ const addHegemonyPoints = ([
     Array.get(Player.homeRowIdx("White")),
     Option.map(Array.filter(Cell.isPlayers("Black"))),
     Option.map(Array.length),
+    Option.map(count => count * HEGEMONY_CROSSING),
     Option.getOrElse(() => 0),
   )
 
@@ -480,13 +528,10 @@ const addHegemonyPoints = ([
     ...game,
     hegemony: nextHegemony,
   }
-  return [nextGame, []]
+  return nextGame
 }
 
-const removePiecesInHomeRow = ([
-  game,
-  _positions,
-]: BoardProgression): BoardProgression => {
+const removePiecesInHomeRow = (game: Game): Game => {
   const { board } = game
 
   const nextBoard = pipe(
@@ -513,5 +558,5 @@ const removePiecesInHomeRow = ([
     board: nextBoard,
   }
 
-  return [nextGame, _positions]
+  return nextGame
 }

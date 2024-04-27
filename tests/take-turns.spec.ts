@@ -8,7 +8,6 @@ import {
   expectHegemonyToBe,
   expectPlayedCardSize,
   expectToHaveHandSize,
-  expectTurnCountToBe,
   expectTurnPointsToBe,
   selectHomeRowCell,
   selectNthCard,

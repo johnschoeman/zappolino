@@ -59,12 +59,12 @@ test("Game.progressColumn", () => {
   const result4 = Game.progressColumn("Black")(column4)
   const result5 = Game.progressColumn("Black")(column5)
 
-  const expected1 = parseColumn("--pP----")
-  const expected2 = parseColumn("--PP----")
-  const expected3 = parseColumn("--PP--P-")
+  const expected1: Game.ColumnProgression = [parseColumn("--pP----"), 0]
+  const expected2: Game.ColumnProgression = [parseColumn("--PP----"), 1]
+  const expected3: Game.ColumnProgression = [parseColumn("--PP--P-"), 1]
 
-  const expected4 = parseColumn("--pPP---")
-  const expected5 = parseColumn("-pppP---")
+  const expected4: Game.ColumnProgression = [parseColumn("--pPP---"), 0]
+  const expected5: Game.ColumnProgression = [parseColumn("-pppP---"), 1]
 
   expectColumnToMatch(result1, expected1)
   expectColumnToMatch(result2, expected2)
@@ -126,6 +126,67 @@ test("Game.progressBoard - It progress the correct pieces forward", () => {
   expectGameBoardToMatch(resultBlack, expectedBlack)
 })
 
+test("Game.progressBoard - when a piece is taken, it adds a point", () => {
+  const gameWhite: Game.Game = buildGame("White")(
+    `
+-----
+-----
+--p--
+--P--
+--P--
+-----
+-----
+`,
+  )
+
+  const gameBlack: Game.Game = buildGame("Black")(
+    `
+-----
+-----
+--p--
+--p--
+--P--
+-----
+-----
+`,
+  )
+
+  const expectedWhite: Game.Game = buildGame("White")(
+    `
+-----
+-----
+--P--
+--P--
+-----
+-----
+-----
+`,
+  )
+
+  const expectedBlack: Game.Game = buildGame("Black")(
+    `
+-----
+-----
+-----
+--p--
+--p--
+-----
+-----
+`,
+  )
+
+  const resultWhite = Game.progressBoard(gameWhite)
+  const resultBlack = Game.progressBoard(gameBlack)
+
+  expectGameBoardToMatch(resultWhite, expectedWhite)
+  expect(resultWhite.hegemony.hegemonyWhite).toBe(1)
+  expect(resultWhite.hegemony.hegemonyBlack).toBe(0)
+
+  expectGameBoardToMatch(resultBlack, expectedBlack)
+  expect(resultBlack.hegemony.hegemonyWhite).toBe(0)
+  expect(resultBlack.hegemony.hegemonyBlack).toBe(1)
+})
+
 test("Game.progressBoard - When the piece enters the opponents home row, it increments the score and removes the piece", () => {
   const gameWhite: Game.Game = buildGame("White")(
     `
@@ -179,9 +240,9 @@ test("Game.progressBoard - When the piece enters the opponents home row, it incr
   const resultBlack = Game.progressBoard(gameBlack)
 
   expectGameBoardToMatch(resultWhite, expectedWhite)
-  expect(resultWhite.hegemony.hegemonyWhite).toBe(1)
+  expect(resultWhite.hegemony.hegemonyWhite).toBe(5)
   expectGameBoardToMatch(resultBlack, expectedBlack)
-  expect(resultBlack.hegemony.hegemonyBlack).toBe(1)
+  expect(resultBlack.hegemony.hegemonyBlack).toBe(5)
 })
 
 test("Game.progressBoard - it progresses each column", () => {
@@ -281,13 +342,14 @@ const expectGameBoardToMatch = (gameA: Game.Game, gameB: Game.Game): void => {
 }
 
 const expectColumnToMatch = (
-  colA: Board.Column<Cell.Cell>,
-  colB: Board.Column<Cell.Cell>,
+  [colA, pointsA]: Game.ColumnProgression,
+  [colB, pointsB]: Game.ColumnProgression,
 ): void => {
   const colAText = pipe(colA, Array.map(Cell.show), Array.join(""))
   const colBText = pipe(colB, Array.map(Cell.show), Array.join(""))
 
-  expect(colAText).toBe(colBText)
+  expect(colAText).toEqual(colBText)
+  expect(pointsA).toEqual(pointsB)
 }
 
 const buildGame =
