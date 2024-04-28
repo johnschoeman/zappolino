@@ -43,7 +43,8 @@ test("play strategy card", async ({ page }) => {
     resourcePoints: 0,
     strategyPoints: 1,
     tacticPoints: 1,
-    placementPoints: 1,
+    hoplitePoints: 1,
+    drawPoints: 0,
   })(page)
 
   await selectNthCard(0)(page)
@@ -53,6 +54,7 @@ test("play strategy card", async ({ page }) => {
     resourcePoints: 0,
     strategyPoints: 0,
     tacticPoints: 1,
-    placementPoints: 2,
+    hoplitePoints: 2,
+    drawPoints: 0,
   })(page)
 })

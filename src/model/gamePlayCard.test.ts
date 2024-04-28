@@ -178,6 +178,8 @@ PP---
 
 // ---- Charge
 
+// todo: if charging into piece, gain a point,
+// todo: remove ability to charge into home row
 test("GamePlayCard.playCharge - it charges the selected piece forward", () => {
   const player = "White"
   const board = Board.parse(

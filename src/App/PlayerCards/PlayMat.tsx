@@ -1,7 +1,7 @@
 import { JSX } from "solid-js"
 import { Array, pipe } from "effect"
 
-import { Card, Deck, GameAction } from "@app/model"
+import { Card, Deck } from "@app/model"
 import { GameState } from "@app/state"
 
 import CardView from "../Card"
@@ -23,7 +23,7 @@ const PlayMat = (): JSX.Element => {
   }
 
   const handleOnClickPlayMat = (): void => {
-    pipe(GameState.game(), GameAction.selectPlayMat, GameState.setGame)
+    GameState.selectPlayMat()
   }
 
   return (

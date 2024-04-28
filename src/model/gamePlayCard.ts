@@ -30,9 +30,13 @@ export const consumeCardCost =
   (game: Game.Game): Either.Either<Game.Game, CardCostError> => {
     const [strategyCost, tacticCost] = Card.toPlayCost(card)
 
-    const nextGame = Game.decreaseTurnPoints([0, strategyCost, tacticCost, 0])(
-      game,
-    )
+    const nextGame = Game.decreaseTurnPoints([
+      0,
+      strategyCost,
+      tacticCost,
+      0,
+      0,
+    ])(game)
 
     return Either.right(nextGame)
   }

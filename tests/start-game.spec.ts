@@ -2,6 +2,7 @@ import { test } from "@playwright/test"
 
 import {
   checkSupplyPile,
+  expectDrawPileSize,
   expectHandCount,
   expectSupplyPile,
   expectSupplyPileCount,
@@ -10,6 +11,7 @@ import {
   resetStartingHandCards,
   resetSupplyPile,
   setStartingHandCard,
+  setStartingHandSize,
   startGame,
 } from "./testHelpers"
 
@@ -24,16 +26,20 @@ test("starting a game - allows player to select starting hand and supply cards",
   await setStartingHandCard("ManeuverLeft")(1)(page)
   await setStartingHandCard("ManeuverRight")(0)(page)
 
+  await setStartingHandSize(3)(page)
+
   await resetSupplyPile(page)
   await checkSupplyPile("DeployHoplite")(page)
 
   await startGame(page)
 
-  await expectToHaveHandSize(4)(page)
-  await expectHandCount("DeployHoplite")(2)(page)
+  await expectToHaveHandSize(3)(page)
+  await expectHandCount("DeployHoplite")(1)(page)
   await expectHandCount("ManeuverForward")(1)(page)
   await expectHandCount("ManeuverLeft")(1)(page)
   await expectHandCount("ManeuverRight")(0)(page)
+
+  await expectDrawPileSize(1)(page)
 
   await expectSupplyPileCount(1)(page)
   await expectSupplyPile("DeployHoplite")(page)
@@ -42,6 +48,7 @@ test("starting a game - allows player to select starting hand and supply cards",
     resourcePoints: 0,
     strategyPoints: 1,
     tacticPoints: 1,
-    placementPoints: 1,
+    hoplitePoints: 1,
+    drawPoints: 0,
   })(page)
 })

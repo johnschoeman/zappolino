@@ -33,3 +33,9 @@ export const uncheckAllSupplyPiles = (): void => {
   const nextGameSetup = { ...currentGameSetup, supplyPiles }
   setGameSetup(nextGameSetup)
 }
+
+export const setHandSize = (handSize: number): void => {
+  const nextGameSetup = { ...gameSetup() }
+  nextGameSetup.startingHandSize = handSize
+  setGameSetup(nextGameSetup)
+}

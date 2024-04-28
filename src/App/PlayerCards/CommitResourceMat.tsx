@@ -1,7 +1,7 @@
 import { JSX } from "solid-js"
 import { Array, pipe } from "effect"
 
-import { Card, Deck, GameAction } from "@app/model"
+import { Card, Deck } from "@app/model"
 import { GameState } from "@app/state"
 
 import CardView from "../Card"
@@ -23,11 +23,7 @@ const CommitResourceMat = (): JSX.Element => {
   }
 
   const handleOnClickCommitResourceMat = (): void => {
-    pipe(
-      GameState.game(),
-      GameAction.selectCommitResourceMat,
-      GameState.setGame,
-    )
+    GameState.selectCommitResourceMat()
   }
 
   return (

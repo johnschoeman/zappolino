@@ -18,6 +18,12 @@ export const setStartingHandCard =
     await page.getByTestId(`starting-hand-${Card.show(card)}`).fill(`${count}`)
   }
 
+export const setStartingHandSize =
+  (count: number) =>
+  async (page: Page): Promise<void> => {
+    await page.getByTestId("starting-hand-size").fill(`${count}`)
+  }
+
 export const resetSupplyPile = async (page: Page): Promise<void> => {
   await page.getByTestId("starting-supply-uncheck-all").click()
 }
@@ -61,6 +67,10 @@ export const selectNthCard =
       /selected/,
     )
   }
+
+export const selectDrawPile = async (page: Page): Promise<void> => {
+  await page.getByTestId("draw-pile").click()
+}
 
 export const selectPlayMat = async (page: Page): Promise<void> => {
   await page.getByTestId("play-mat").click()
@@ -159,14 +169,15 @@ export const expectDiscardCountToBe =
 
 export const expectTurnPointsToBe =
   ({
-    placementPoints,
+    hoplitePoints,
     strategyPoints,
     tacticPoints,
     resourcePoints,
+    drawPoints,
   }: Game.TurnPoints) =>
   async (page: Page): Promise<void> => {
-    await expect(page.getByTestId("placement-count")).toHaveText(
-      `${placementPoints}`,
+    await expect(page.getByTestId("hoplite-count")).toHaveText(
+      `${hoplitePoints}`,
     )
     await expect(page.getByTestId("tactic-count")).toHaveText(`${tacticPoints}`)
     await expect(page.getByTestId("strategy-count")).toHaveText(
@@ -175,6 +186,7 @@ export const expectTurnPointsToBe =
     await expect(page.getByTestId("resource-count")).toHaveText(
       `${resourcePoints}`,
     )
+    await expect(page.getByTestId("draw-count")).toHaveText(`${drawPoints}`)
   }
 
 export const expectSupplyPileCount =
@@ -198,6 +210,12 @@ export const expectHandCount =
     await expect(page.getByTestId(`hand-card-${Card.show(card)}`)).toHaveCount(
       count,
     )
+  }
+
+export const expectDrawPileSize =
+  (count: number) =>
+  async (page: Page): Promise<void> => {
+    await expect(page.getByTestId("draw-pile-count")).toContainText(`${count}`)
   }
 
 export const expectToHaveHandSize =

@@ -2,7 +2,6 @@ import { JSX } from "solid-js"
 import cn from "classnames"
 import { pipe } from "effect"
 
-import { GameAction } from "@app/model"
 import { GameState } from "@app/state"
 
 const TurnDisplay = (): JSX.Element => {
@@ -15,26 +14,30 @@ const TurnDisplay = (): JSX.Element => {
 }
 
 const StrategyAndTacticCounts = (): JSX.Element => {
-  const placementCount = (): number => {
-    return pipe(GameState.game(), game => game.turnPoints.placementPoints)
+  const hoplCount = (): number => {
+    return pipe(GameState.game(), game => game.turnPoints.hoplitePoints)
   }
-  const strategyCount = (): number => {
+  const straCount = (): number => {
     return pipe(GameState.game(), game => game.turnPoints.strategyPoints)
   }
-  const tacticCount = (): number => {
+  const tactCount = (): number => {
     return pipe(GameState.game(), game => game.turnPoints.tacticPoints)
   }
-  const resourceCount = (): number => {
+  const resoCount = (): number => {
     return pipe(GameState.game(), game => game.turnPoints.resourcePoints)
+  }
+  const drawCount = (): number => {
+    return pipe(GameState.game(), game => game.turnPoints.drawPoints)
   }
 
   const containerStyle = "flex flex-row items-center space-x-2 p-2"
   const basePointStyle = "point-display"
 
-  const placementCountStyle = cn(basePointStyle, "hoplite")
-  const strategyCountStyle = cn(basePointStyle, "strategy")
-  const tacticCountStyle = cn(basePointStyle, "tactic")
-  const resourceCountStyle = cn(basePointStyle, "resource")
+  const placCountStyle = cn(basePointStyle, "hoplite")
+  const straCountStyle = cn(basePointStyle, "strategy")
+  const tactCountStyle = cn(basePointStyle, "tactic")
+  const resoCountStyle = cn(basePointStyle, "resource")
+  const drawCountStyle = cn(basePointStyle, "draw")
 
   return (
     <div class="w-full">
@@ -43,29 +46,36 @@ const StrategyAndTacticCounts = (): JSX.Element => {
       <div class="w-full flex flex-row items-center space-x-4">
         <div class={containerStyle}>
           <span>Hoplite:</span>
-          <span class={placementCountStyle} data-testid="placement-count">
-            {placementCount()}
+          <span class={placCountStyle} data-testid="hoplite-count">
+            {hoplCount()}
           </span>
         </div>
 
         <div class={containerStyle}>
           <span>Strategy:</span>
-          <span class={strategyCountStyle} data-testid="strategy-count">
-            {strategyCount()}
+          <span class={straCountStyle} data-testid="strategy-count">
+            {straCount()}
           </span>
         </div>
 
         <div class={containerStyle}>
           <span>Tactic:</span>
-          <span class={tacticCountStyle} data-testid="tactic-count">
-            {tacticCount()}
+          <span class={tactCountStyle} data-testid="tactic-count">
+            {tactCount()}
           </span>
         </div>
 
         <div class={containerStyle}>
           <span>Resources:</span>
-          <span class={resourceCountStyle} data-testid="resource-count">
-            {resourceCount()}
+          <span class={resoCountStyle} data-testid="resource-count">
+            {resoCount()}
+          </span>
+        </div>
+
+        <div class={containerStyle}>
+          <span>Draw:</span>
+          <span class={drawCountStyle} data-testid="draw-count">
+            {drawCount()}
           </span>
         </div>
       </div>
@@ -75,7 +85,7 @@ const StrategyAndTacticCounts = (): JSX.Element => {
 
 const EndTurnButton = (): JSX.Element => {
   const handleOnClickEndTurn = (): void => {
-    pipe(GameState.game(), GameAction.endTurn, GameState.setGame)
+    GameState.endTurn()
   }
 
   return (

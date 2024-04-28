@@ -33,10 +33,12 @@ export const initial: Deck = {
   commitedCards: [],
 }
 
-export const build = (hand: Hand.Hand): Deck => {
+export const build = (initialHand: Hand.Hand, handSize: number): Deck => {
+  const [hand, draw] = pipe(initialHand, Array.splitAt(handSize))
   return {
     ...initial,
     hand,
+    draw,
   }
 }
 

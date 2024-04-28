@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js"
 import { pipe } from "effect"
 
-import { Deck, Game, Hand, Supply } from "@app/model"
+import { Deck, Game, GameAction, Hand, Position, Supply } from "@app/model"
 
 import * as GameSetupState from "./gameSetupState"
 
@@ -11,28 +11,28 @@ type Started = {
 type NotStarted = {
   _tag: "NotStarted"
 }
-type GameFoo = NotStarted | Started
+type GameStatus = NotStarted | Started
 
-const initialGameFoo: GameFoo = { _tag: "NotStarted" }
+const initialGameStatus: GameStatus = { _tag: "NotStarted" }
 
-export const [gameFoo, setGameFoo] = createSignal<GameFoo>(initialGameFoo)
+export const [gameFoo, setGameStatus] = createSignal<GameStatus>(initialGameStatus)
 export const [game, setGame] = createSignal<Game.Game>(Game.initial)
 
 export const startGame = (): void => {
-  const { handCount, supplyPiles } = GameSetupState.gameSetup()
+  const { handCount, supplyPiles, startingHandSize } =
+    GameSetupState.gameSetup()
   const initialHand = Hand.build(handCount)
-  const initialDeck = Deck.build(initialHand)
+  const initialDeck = Deck.build(initialHand, startingHandSize)
   const initialSupply = Supply.build(supplyPiles)
-  console.log({ initialSupply, supplyPiles })
 
-  const game_ = Game.build(initialDeck, initialSupply)
+  const game_ = Game.build(initialDeck, initialSupply, startingHandSize)
 
   setGame(game_)
-  setGameFoo({ _tag: "Started" })
+  setGameStatus({ _tag: "Started" })
 }
 
 export const endGame = (): void => {
-  setGameFoo({ _tag: "NotStarted" })
+  setGameStatus({ _tag: "NotStarted" })
 }
 
 export const isGameStarted = (): boolean => {
@@ -49,4 +49,34 @@ export const playedCards = (): Deck.Played => {
 
 export const commitedResourceCards = (): Deck.Commited => {
   return pipe(game(), Game.currentPlayerDeck, deck => deck.commitedCards)
+}
+
+// ---- Game Actions
+
+export const selectCommitResourceMat = (): void => {
+  pipe(game(), GameAction.selectCommitResourceMat, setGame)
+}
+
+export const selectPlayMat = (): void => {
+  pipe(game(), GameAction.selectPlayMat, setGame)
+}
+
+export const selectHandCard = (idx: number): void => {
+  pipe(game(), GameAction.selectHandCard(idx), setGame)
+}
+
+export const selectCell = (position: Position.Position): void => {
+  pipe(game(), GameAction.selectCell(position), setGame)
+}
+
+export const endTurn = (): void => {
+  pipe(game(), GameAction.endTurn, setGame)
+}
+
+export const selectSupplyPile = (idx: number): void => {
+  pipe(game(), GameAction.selectSupplyPile(idx), setGame)
+}
+
+export const drawCard = (): void => {
+  pipe(game(), GameAction.drawCard, setGame)
 }

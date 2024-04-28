@@ -1,0 +1,118 @@
+-- Tactics
+Sortie
+Sally
+Strike
+Push         - push the whole column forward, regardless of depth calc, no pieces taken
+Withdraw     - remove piece from board, add a hoplite point
+Rush         - move piece up field to nearest opponent piece, if no opponent piece, do nothing
+Raid         - all tactics you play that move a piece this turn, gain 1 resource
+???          - all units maneuver forward 1
+???          - all units assault forward 1
+???          - all units charge forward 1
+
+-- Strategy
+Forage
+War Party
+12 Labors
+Greek Myth
+Martial Prowess
+Staggered March
+Military Logistics
+Hellenic Craftsmanship
+
+
+-- Places
+Temple of Zeus
+Temple of Poseidon
+Aegean Sea
+Ionian Sea
+
+-- Famous Units
+Scared Band of Thebes
+
+-- Koinas
+Dellian League
+Pelopisian League
+
+
+-- Navy
+Trireme
+
+
+-- Unit Types
+Hoplite -> heavy infantry, stronger, less flexible
+Pelitst -> harassing troops, more flexible more nimble, weaker
+  - moves 2x,
+  - not counted in depth calculation
+  - not able to assualt, uses `pelt` tactic cards to remove adjacent pieces.
+  - if maneuvered into by a hoplite, is taken
+Calvary
+  - moves 3x
+  - not counted in depth calculation.
+  - able to assualt by flanking, not by charging
+
+Pisloi - Naked or stripped forces, cared for horses, equipment
+  - 
+Helots - slaves
+
+-- Kit
+Swords, Spears, Javelins, Bows and Arrows
+Sling-propelled counter siege, Torsional Machine Catapult, Bow-Driven Catapults
+
+Panoply - individual soldier's equipment
+
+Helmets
+Chorintian (ancient, not classical)
+Phrygian / Thracian
+Chalcidean
+pilos (flet)
+Boeotian
+
+Linothorax
+Bronze Breastplate
+Greaves
+
+Hoplon (shield)
+  - +1 depth when defending, next turn
+Aspis (shield) -
+Argive grip    -
+Pelta - small shield used with Sarissa
+
+Dory Hus - spear makers
+Dory         - ???
+Spearhead    - ???
+Sauroter "lizard-killer" - ??? Styrax
+Sarissa Pike
+  - +1 depth at end of turn
+
+Cornel Wood
+
+Kopis (hacking sword) -
+Spartan Kopis
+  - "It is long enough to reach your heart"
+  - if 1 v 1 in depth calculation, the player pieces win at end of turn.
+Xiphos (short sword)  -
+
+-- Cards
+
+Hoplite               - +1 hoplite
+Organized Deploy      - +1 strategy +1 hoplite
+Military Mobilization - +1 strategy +2 hoplite
+Auxiliary Troops      - +2 hoplite
+Phalanx               - +3 hoplite
+
+Polis                 - +1 draw +2 strategy
+Wartime Preparations  - +1 draw +1 strategy +1 tactic +1 resources
+Hellenic Craftsman    - +3 draw
+Scouting Party        - +1 draw +3 tactic
+
+Democratic Faction    - +3 strategy
+
+The Senate            - +2 draw +2 strategy +1 tactic
+The Five Ephors       - +2 draw +1 strategy +3 tactic
+
+Battle Plans          - +1 tactic
+Military Training     - +2 tactic
+Military Logistics    - +3 tactic
+Thracian Tactics      - +4 tactic
+Oligarchic Faction    - +5 tactic

@@ -48,7 +48,7 @@ export const selectSupplyPile =
     return pipe(
       game,
       Game.updateDeckFor(currentPlayer)(nextDeck),
-      Game.decreaseTurnPoints([0, 0, 0, resourceCost]),
+      Game.decreaseTurnPoints([0, 0, 0, resourceCost, 0]),
       Game.updateSupply(nextSupply),
     )
   }
@@ -166,7 +166,7 @@ const selectCellPlayTacticCard =
 const selectCellPlacePiece =
   ({ rowIdx, colIdx }: Position.Position) =>
   (game: Game.Game): Game.Game => {
-    const hasPlacementPoint = game.turnPoints.placementPoints > 0
+    const hasPlacementPoint = game.turnPoints.hoplitePoints > 0
 
     if (!hasPlacementPoint) {
       return game
@@ -200,14 +200,33 @@ const isValidRowForPlayer =
     return Player.homeRowIdx(player) === rowIdx
   }
 
+export const drawCard = (game: Game.Game): Game.Game => {
+  if (game.turnPoints.drawPoints < 1) {
+    return game
+  }
+
+  const player = game.currentPlayer
+  const playerDeck = Game.currentPlayerDeck(game)
+  const nextDeck = pipe(playerDeck, Deck.draw(1))
+
+  const result = pipe(
+    game,
+    Game.updateDeckFor(player)(nextDeck),
+    Game.consumeDrawPoint,
+  )
+
+  return result
+}
+
 export const endTurn = (game: Game.Game): Game.Game => {
   const player = game.currentPlayer
   const playerDeck = Game.currentPlayerDeck(game)
+  const handSize = game.handSize
   const nextDeck = pipe(
     playerDeck,
     Deck.discardPlayed,
     Deck.discardHand,
-    Deck.draw(5),
+    Deck.draw(handSize),
   )
 
   const result = pipe(

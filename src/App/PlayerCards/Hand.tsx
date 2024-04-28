@@ -2,7 +2,7 @@ import { JSX } from "solid-js"
 import cn from "classnames"
 import { Array, Option, pipe } from "effect"
 
-import { Card, GameAction, Hand } from "@app/model"
+import { Card, Hand } from "@app/model"
 import { GameState } from "@app/state"
 
 import CardView from "../Card"
@@ -52,7 +52,7 @@ const CardContainer = (props: CardContainerProps): JSX.Element => {
   const testIdPrefix = `hand-card`
 
   const handleOnClickCard = (): void => {
-    pipe(GameState.game(), GameAction.selectHandCard(idx), GameState.setGame)
+    GameState.selectHandCard(idx)
   }
 
   const style = cn({ selected: isSelected() })

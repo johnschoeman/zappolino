@@ -17,7 +17,10 @@ const GameSetupView = (): JSX.Element => {
 
       <div class="flex flex-row w-full justify-between p-4">
         <SupplyPiles />
-        <StartingHandCards />
+        <div>
+          <StartingHandCards />
+          <StartingHandSize />
+        </div>
       </div>
 
       <div class="flex-grow flex justify-center items-center w-full">
@@ -169,6 +172,38 @@ const HandCardInput = (props: HandCardInputProps): JSX.Element => {
         value={value}
         min="0"
         max="3"
+      />
+    </div>
+  )
+}
+
+const StartingHandSize = (): JSX.Element => {
+  const gameSetup = GameSetupState.gameSetup()
+  const value = gameSetup.startingHandSize
+
+  const handleOnChangeValue: JSX.EventHandler<HTMLInputElement, Event> = e => {
+    const nextValue = e.currentTarget.value
+    GameSetupState.setHandSize(Number(nextValue))
+  }
+
+  const testId = "starting-hand-size"
+  const nameText = testId
+
+  return (
+    <div class="space-x-2">
+      <label for={testId} class="">
+        Starting Hand Size
+      </label>
+      <input
+        data-testid={testId}
+        type="number"
+        onChange={handleOnChangeValue}
+        name={nameText}
+        id={testId}
+        class=""
+        value={value}
+        min="1"
+        max="10"
       />
     </div>
   )

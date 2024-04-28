@@ -2,6 +2,10 @@ import { Array, pipe, Record } from "effect"
 
 import * as Card from "./card"
 
+const DEFAULT_HAND_SIZE = 5
+
+// ---- Hand
+
 export type Hand = Card.Card[]
 
 export const defaultInitialHand: Hand = [
@@ -11,6 +15,24 @@ export const defaultInitialHand: Hand = [
   "ManeuverRight",
   "ManeuverForward",
 ]
+
+export const build = (handCount: HandCount): Hand => {
+  return pipe(
+    handCount,
+    Record.toEntries,
+    Array.reduce<Hand, [Card.Card, number]>([], (acc, [card, count]) => {
+      if (count > 0) {
+        const nextCards: Hand = Array.replicate(count)(card)
+        const result: Hand = Array.appendAll(acc, nextCards)
+        return result
+      } else {
+        return acc
+      }
+    }),
+  )
+}
+
+// ---- HandCount
 
 export type HandCount = Record<Card.Card, number>
 const emptyHandCount: HandCount = {
@@ -48,18 +70,8 @@ export const initialHandCount: HandCount = handCountFromPartial({
   ManeuverRight: 1,
 })
 
-export const build = (handCount: HandCount): Hand => {
-  return pipe(
-    handCount,
-    Record.toEntries,
-    Array.reduce<Hand, [Card.Card, number]>([], (acc, [card, count]) => {
-      if (count > 0) {
-        const nextCards: Hand = Array.replicate(count)(card)
-        const result: Hand = Array.appendAll(acc, nextCards)
-        return result
-      } else {
-        return acc
-      }
-    }),
-  )
-}
+// ---- HandSize
+
+export type HandSize = number
+
+export const initialHandSize = DEFAULT_HAND_SIZE

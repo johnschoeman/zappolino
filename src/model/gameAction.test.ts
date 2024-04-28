@@ -4,7 +4,7 @@ import { Option } from "effect"
 import { deckFactory, gameFactory } from "../../factories"
 
 import { Board } from "./board"
-import { Card, Deck } from "./deck"
+import { Card, Deck, Hand } from "./deck"
 import * as Game from "./game"
 import * as GameAction from "./gameAction"
 import * as Player from "./player"
@@ -96,11 +96,13 @@ test("GameAction.endTurn - It discards, draws a new hand, progress the board and
     selectedCardIdx: Option.none(),
     deckWhite: expectedDeckWhite,
     deckBlack,
+    handSize: Hand.initialHandSize,
     turnPoints: {
-      placementPoints: 1,
+      hoplitePoints: 1,
       strategyPoints: 1,
       tacticPoints: 1,
       resourcePoints: 0,
+      drawPoints: 0,
     },
     supply: Supply.initial,
     turnCount: 1,
@@ -147,14 +149,14 @@ test("GameAction.selectCell - if the player has placement points and they select
     board: initialBoard,
     currentPlayer: player,
     turnPoints: {
-      placementPoints: 1,
+      hoplitePoints: 1,
     },
   })
   const game2: Game.Game = gameFactory.build({
     board: initialBoard,
     currentPlayer: player,
     turnPoints: {
-      placementPoints: 0,
+      hoplitePoints: 0,
     },
   })
 
@@ -178,14 +180,14 @@ P--P-
     currentPlayer: "White",
     board: expectedBoard,
     turnPoints: {
-      placementPoints: 0,
+      hoplitePoints: 0,
     },
   })
   const expected2: Game.Game = gameFactory.build({
     currentPlayer: "White",
     board: initialBoard,
     turnPoints: {
-      placementPoints: 0,
+      hoplitePoints: 0,
     },
   })
 
@@ -217,7 +219,7 @@ test("GameAction.selectCell - if a player has a tactic card selected, it plays t
     selectedCardIdx: Option.some(0),
     deckWhite: deckWhite1,
     turnPoints: {
-      placementPoints: 1,
+      hoplitePoints: 1,
       tacticPoints: 1,
       strategyPoints: 1,
       resourcePoints: 1,
@@ -244,10 +246,11 @@ test("GameAction.selectCell - if a player has a tactic card selected, it plays t
   })
   const expectedSelectedCardIdx = Option.none()
   const expectedTurnPoints = {
-    placementPoints: 1,
+    hoplitePoints: 1,
     tacticPoints: 0,
     strategyPoints: 1,
     resourcePoints: 1,
+    drawPoints: 0,
   }
 
   expect(result1.board).toEqual(expectedBoard)

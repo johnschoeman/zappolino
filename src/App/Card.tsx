@@ -17,9 +17,11 @@ const CardView = (props: CardViewProps): JSX.Element => {
 
   const acquireCost = Card.toResourceCost(card)
   const resourceGain = Card.toResourceValue(card)
-  const [_placementValue, strategyValue, tacticValue, resourceValue] =
+  const [hopliteValue, strategyValue, tacticValue, resourceValue, drawValue] =
     Card.toPlayValue(card)
 
+  const showHopliteValue = hopliteValue > 0
+  const showDrawValue = drawValue > 0
   const showStrategyValue = strategyValue > 0
   const showTacticValue = tacticValue > 0
   const showResourceValue = resourceValue > 0
@@ -45,6 +47,8 @@ const CardView = (props: CardViewProps): JSX.Element => {
         <div class="text-center">{description}</div>
 
         <div class="w-full flex flex-col text-center">
+          <div>{showHopliteValue && <div>+ {hopliteValue} Hoplite</div>}</div>
+          <div>{showDrawValue && <div>+ {drawValue} Draw</div>}</div>
           <div>
             {showStrategyValue && <div>+ {strategyValue} Strategy</div>}
           </div>

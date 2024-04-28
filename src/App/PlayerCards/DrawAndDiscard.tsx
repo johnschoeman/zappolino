@@ -17,11 +17,19 @@ const DrawAndDiscard = (): JSX.Element => {
   const cardStyle =
     "border rounded border-black bg-gray-200 justify-center items-center text-center"
 
+  const handleOnClickDraw = (): void => {
+    GameState.drawCard()
+  }
+
   return (
     <div class={discardStyle}>
       <div data-testid="draw-pile">
         <h2 class="section-header">Draw Pile</h2>
-        <div data-testid="draw-pile-count" class={cardStyle}>
+        <div
+          data-testid="draw-pile-count"
+          class={cardStyle}
+          onClick={handleOnClickDraw}
+        >
           {pipe(draw(), Array.length)}
         </div>
       </div>

@@ -9,8 +9,9 @@ test("card renders correctly", async ({ page }) => {
 
   await startGame(page)
 
-  const cardEl = page.getByTestId(`supply-pile-${Card.show("Oracle")}`)
+  const cardEl = page.getByTestId(`supply-pile-card-${Card.show("Oracle")}`)
 
+  await expect(cardEl).toContainText("+ 1 Draw")
   await expect(cardEl).toContainText("+ 1 Strategy")
   await expect(cardEl).toContainText("+ 2 Tactics")
   await expect(cardEl).toContainText("Cost: 5")
