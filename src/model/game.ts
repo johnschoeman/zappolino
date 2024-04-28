@@ -381,119 +381,103 @@ const progressEachColumn = (game: Game): Game => {
 //
 // Move pieces for the current player forward if the file depth of a continuous
 // length of pieces is deeper than the opponents pieces.
-//
-// traverse the array from opponent side to player side
-// check if the cell belongs to the player
-// if no
-//   continue
-// if yes
-//   check if piece is opponents piece
-//   if no
-//     continue
-//   if yes
-//     check count of consecutive opponent pieces towards the opponent side and
-//     consecutive player pieces towards player side.
-//     if player pieces > opponent pieces
-//       move the player piece forward
-//     else
-//       continue
+
+const orientColumnFor =
+  (player: Player.Player) =>
+  (column: Board.Column<Cell.Cell>): Board.Column<Cell.Cell> => {
+    return player === "Black" ? Array.reverse(column) : column
+  }
+
+const determineIsDepthGreater = (
+  column: Board.Column<Cell.Cell>,
+  player: Player.Player,
+  evaluateIdx: number,
+): boolean => {
+  return pipe(column, Array.splitAt(evaluateIdx), ([left, right]) => {
+    const leftDepth = pipe(
+      left,
+      Array.reverse,
+      Array.takeWhile((_cell, _idx) => Cell.isOpponents(player)(_cell)),
+      Array.length,
+    )
+    const rightDepth = pipe(
+      right,
+      Array.takeWhile((_cell, _idx) => Cell.isPlayers(player)(_cell)),
+      Array.length,
+    )
+
+    return rightDepth > leftDepth
+  })
+}
+
+const movePlayerPiece = (
+  col: Board.Column<Cell.Cell>,
+  player: Player.Player,
+  idx: number,
+): Board.Column<Cell.Cell> => {
+  return pipe(
+    col,
+    Array.modify(idx - 1, () => Cell.buildPiece(player)),
+    Array.modify(idx, () => Cell.empty),
+  )
+}
+
+const evaluateAndMoveFor =
+  (player: Player.Player) =>
+  (
+    [col, points]: ColumnProgression,
+    cell: Cell.Cell,
+    idx: number,
+  ): ColumnProgression => {
+    const isPlayersCell = Cell.isPlayers(player)(cell)
+    const adjacentCell = pipe(
+      col,
+      Array.get(idx - 1),
+      Option.getOrElse(() => Cell.empty),
+    )
+    const isAdjacentCellPlayers = Cell.isPlayers(player)(adjacentCell)
+
+    if (!isPlayersCell || isAdjacentCellPlayers) {
+      return [col, points]
+    }
+
+    const isAdjacentCellEmpty = Cell.isEmpty(adjacentCell)
+    const isDepthGreater = determineIsDepthGreater(col, player, idx)
+
+    const determineNextCol = (): Board.Column<Cell.Cell> => {
+      if (isAdjacentCellEmpty || isDepthGreater) {
+        return movePlayerPiece(col, player, idx)
+      } else {
+        return col
+      }
+    }
+
+    const determineNextPoints = (): number => {
+      if (isDepthGreater && !isAdjacentCellEmpty) {
+        return points + HEGEMONY_TAKING
+      } else {
+        return points
+      }
+    }
+
+    const nextCol = determineNextCol()
+    const nextPoints = determineNextPoints()
+    return [nextCol, nextPoints]
+  }
 
 export const progressColumn =
   (player: Player.Player) =>
   (column: Board.Column<Cell.Cell>): ColumnProgression => {
-    return pipe(
-      column,
-      c => {
-        if (player === "Black") {
-          return Array.reverse(c)
-        } else {
-          return c
-        }
-      },
-      col =>
-        Array.reduce<ColumnProgression, Cell.Cell>(
-          [col, 0],
-          (acc, cell, idx) => {
-            const [accCol, accPoints] = acc
+    const orientedColumn = orientColumnFor(player)(column)
+    const [processedColumn, points] = Array.reduce<
+      ColumnProgression,
+      Cell.Cell
+    >(
+      [orientedColumn, 0],
+      evaluateAndMoveFor(player),
+    )(orientedColumn)
 
-            if (!Cell.isPlayers(player)(cell)) {
-              return acc
-            }
-
-            const cellTowardsOpponent = pipe(accCol, Array.get(idx - 1))
-
-            const isCellTowardsOppoentBelongToPlayer = pipe(
-              cellTowardsOpponent,
-              Option.map(Cell.isPlayers(player)),
-              Option.getOrElse(() => false),
-            )
-
-            const isCellTowardsOpponentEmpty = pipe(
-              cellTowardsOpponent,
-              Option.map(Cell.isEmpty),
-              Option.getOrElse(() => false),
-            )
-
-            if (isCellTowardsOppoentBelongToPlayer) {
-              return acc
-            }
-
-            if (isCellTowardsOpponentEmpty) {
-              const nextCol = pipe(
-                accCol,
-                Array.modify(idx - 1, () => Cell.buildPiece(player)),
-                Array.modify(idx, () => Cell.empty),
-              )
-
-              return [nextCol, accPoints]
-            }
-
-            const [leftDepth, rightDepth] = pipe(
-              accCol,
-              Array.splitAt(idx),
-              ([left, right]) => {
-                const _leftDepth = pipe(
-                  left,
-                  Array.reverse,
-                  Array.takeWhile((_cell, _idx) =>
-                    Cell.isOpponents(player)(_cell),
-                  ),
-                  Array.length,
-                )
-                const _rightDepth = pipe(
-                  right,
-                  Array.takeWhile((_cell, _idx) =>
-                    Cell.isPlayers(player)(_cell),
-                  ),
-                  Array.length,
-                )
-
-                return [_leftDepth, _rightDepth]
-              },
-            )
-
-            const isDepthGreater = rightDepth > leftDepth
-
-            if (isDepthGreater) {
-              const nextCol = pipe(
-                accCol,
-                Array.modify(idx - 1, () => Cell.buildPiece(player)),
-                Array.modify(idx, () => Cell.empty),
-              )
-              const nextPoints = accPoints + HEGEMONY_TAKING
-              return [nextCol, nextPoints]
-            }
-            return acc
-          },
-        )(col),
-      ([c, p]) => {
-        if (player === "Black") {
-          return [Array.reverse(c), p]
-        } else {
-          return [c, p]
-        }
-      },
-    )
+    return [orientColumnFor(player)(processedColumn), points]
   }
 
 const addHegemonyPoints = (game: Game): Game => {
