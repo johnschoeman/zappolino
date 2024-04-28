@@ -1,3 +1,4 @@
+import * as GameStartedState from "./gameStartedState"
 import * as GameState from "./gameState"
 
-export { GameState }
+export { GameStartedState,GameState }

@@ -9,6 +9,11 @@ export const startGame = async (page: Page): Promise<void> => {
   await expect(page.getByTestId("game-board")).toBeVisible()
 }
 
+export const endGame = async (page: Page): Promise<void> => {
+  await page.getByTestId("end-game-button").click()
+  await expect(page.getByTestId("start-game-button")).toBeVisible()
+}
+
 export const endTurn = async (page: Page): Promise<void> => {
   await page.getByTestId("end-turn-button").click()
 }

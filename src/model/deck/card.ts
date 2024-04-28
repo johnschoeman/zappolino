@@ -12,6 +12,7 @@ export type MilitaryReforms = "MilitaryReforms"
 export type PoliticalReforms = "PoliticalReforms"
 export type Oracle = "Oracle"
 
+// -- Tactics
 // Sortie
 // Push
 // Withdraw
@@ -19,6 +20,106 @@ export type Oracle = "Oracle"
 // Sally
 // Strike
 // Raid
+//
+// ???          - all units maneuver forward 1
+// ???          - all units assault forward 1
+// ???          - all units charge forward 1
+//
+// -- Strategy
+// Forage
+// War Party
+// 12 Labors
+// Greek Myth
+// Martial Prowess
+// Staggered March
+// Military Logistics
+// Hellenic Craftsmanship
+//
+//
+// -- Places
+// Temple of Zeus
+// Temple of Poseidon
+// Aegean Sea
+//
+// -- Famous Units
+// Scared Band of Thebes
+//
+//
+// Dellian League
+// Pelopisian League
+//
+//
+// -- Navy
+// Trireme
+//
+//
+// -- Unit Types
+// Hoplite -> heavy infantry, less flexible
+// Pelitst -> harassing troops, more flexible more nimble
+//   - moves 2x, not counted in depth calculation
+// Calvary
+// Pisloi - Naked or stripped forces, cared for horses, equipment
+// Helots - slaves
+//
+// -- Kit
+// Swords, Spears, Javelins, Bows and Arrows
+// Sling-propelled countersiege, Torsional Machine Catapult, Bow-Driven Catapults
+//
+// Panoply - individual soldier's equipment
+//
+// Helmets
+// Chorintian (ancient, not classical)
+// Phrygian / Thracian
+// Chalcidean
+// pilos (flet)
+// Boeotian
+//
+// Linothorax
+// Bronze Breastplate
+// Greaves
+//
+// Hoplon (shield)
+// Aspis (shield) -
+// Argive grip    -
+// Pelta - small shield used with Sarissa
+//
+// Dory Hus - spear makers
+// Dory         - ???
+// Spearhead    - ???
+// Sauroter "lizard-killer" - ??? Styrax
+// ???          - +1 depth when defending, next turn
+// Sarissa Pike - +1 depth at end of turn
+// ???          - remove hoplite from field, +1 hoplite
+//
+// Cornel Wood
+//
+// Kopis (hacking sword) -
+// Spartan Kopis - "It is long enough to reach your heart"
+// Xiphos (short sword)  -
+//
+// -- Cards
+//
+// Hoplite               - +1 hoplite
+// Organized Deploy      - +1 strategy +1 hoplite
+// Military Mobilization - +1 strategy +2 hoplite
+// Auxiliary Troops      - +2 hoplite
+// Phalanx               - +3 hoplite
+//
+// City State            - +1 draw +2 strategy
+// Wartime Preparations  - +1 draw +1 strategy +1 tactic +1 resources
+// Hellenic Craftsman    - +3 draw
+// Scouting Party        - +1 draw +3 tactic
+//
+// Democratic Faction    - +3 strategy
+//
+// The Senate            - +2 draw +2 strategy +1 tactic
+// The Five Ephors       - +2 draw +1 strategy +3 tactic
+//
+// Battle Plans          - +1 tactic
+// Military Training     - +2 tactic
+// Military Logistics    - +3 tactic
+// Thracian Tactics      - +4 tactic
+// Oligarchic Faction    - +5 tactic
 
 export type Card =
   | DeployHoplite

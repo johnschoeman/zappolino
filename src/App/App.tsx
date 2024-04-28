@@ -1,17 +1,20 @@
-import { createSignal, JSX } from "solid-js"
+import { JSX } from "solid-js"
+
+import { GameStartedState } from "@app/state"
 
 import Game from "./Game"
 
-const [gameStarted, setGameStarted] = createSignal<boolean>(false)
-
 const App = (): JSX.Element => {
-  return <div>{!gameStarted() ? <LandingPage /> : <Game />}</div>
+  return (
+    <div>{!GameStartedState.gameStarted() ? <LandingPage /> : <Game />}</div>
+  )
 }
 
 const LandingPage = (): JSX.Element => {
   const handleOnClickStartGame = (): void => {
-    setGameStarted(true)
+    GameStartedState.setGameStarted(true)
   }
+
   return (
     <div class="w-full h-full p-8 flex justify-start items-center flex-col">
       <div class="flex">
