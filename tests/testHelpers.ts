@@ -1,8 +1,40 @@
 import { expect, Page } from "@playwright/test"
 
-import { Cell, Game, Player, Position } from "@app/model"
+import { Card, Cell, Game, Player, Position } from "@app/model"
 
 // ---- Workflows
+
+export const resetStartingHandCards = async (page: Page): Promise<void> => {
+  await setStartingHandCard("DeployHoplite")(0)(page)
+  await setStartingHandCard("ManeuverForward")(0)(page)
+  await setStartingHandCard("ManeuverLeft")(0)(page)
+  await setStartingHandCard("ManeuverRight")(0)(page)
+}
+
+export const setStartingHandCard =
+  (card: Card.Card) =>
+  (count: number) =>
+  async (page: Page): Promise<void> => {
+    await page.getByTestId(`starting-hand-${Card.show(card)}`).fill(`${count}`)
+  }
+
+export const resetSupplyPile = async (page: Page): Promise<void> => {
+  await page.getByTestId("starting-supply-uncheck-all").click()
+}
+
+export const checkSupplyPile =
+  (card: Card.Card) =>
+  async (page: Page): Promise<void> => {
+    await page.getByTestId(`starting-supply-pile-${Card.show(card)}`).check()
+  }
+
+export const uncheckSupplyPile =
+  (card: Card.Card) =>
+  async (page: Page): Promise<void> => {
+    await page
+      .getByTestId(`starting-supply-pile-${Card.show(card)}`)
+      .uncheck({ force: true })
+  }
 
 export const startGame = async (page: Page): Promise<void> => {
   await page.getByTestId("start-game-button").click()
@@ -142,6 +174,29 @@ export const expectTurnPointsToBe =
     )
     await expect(page.getByTestId("resource-count")).toHaveText(
       `${resourcePoints}`,
+    )
+  }
+
+export const expectSupplyPileCount =
+  (count: number) =>
+  async (page: Page): Promise<void> => {
+    await expect(page.getByTestId(/supply-pile-card/)).toHaveCount(count)
+  }
+
+export const expectSupplyPile =
+  (card: Card.Card) =>
+  async (page: Page): Promise<void> => {
+    await expect(
+      page.getByTestId(`supply-pile-card-${Card.show(card)}`),
+    ).toBeVisible()
+  }
+
+export const expectHandCount =
+  (card: Card.Card) =>
+  (count: number) =>
+  async (page: Page): Promise<void> => {
+    await expect(page.getByTestId(`hand-card-${Card.show(card)}`)).toHaveCount(
+      count,
     )
   }
 

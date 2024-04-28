@@ -62,6 +62,16 @@ export const show = (game: Game): string => {
   return `${Board.show(Cell.show)(board)} | player: ${currentPlayer}`
 }
 
+export const build = (deck: Deck.Deck, supply: Supply.Supply): Game => {
+  console.log(supply)
+  return {
+    ...initial,
+    deckBlack: deck,
+    deckWhite: deck,
+    supply: supply,
+  }
+}
+
 // Select -> User clicks a selectable game component
 // Consume -> User uses up a consumable game component, such as a card or point
 // Play -> Peforming the action that a card allows

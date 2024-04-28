@@ -1,17 +1,17 @@
 import { Array, Effect, Option, pipe, Random } from "effect"
 
 import * as Card from "./card"
+import * as Hand from "./hand"
 
 export type Pile = Card.Card[]
 
 export type Disc = Pile
 export type Draw = Pile
-export type Hand = Pile
 export type Played = Pile
 export type Commited = Pile
 
 export type Deck = {
-  hand: Hand
+  hand: Hand.Hand
   draw: Draw
   disc: Disc
   playedCards: Played
@@ -23,22 +23,21 @@ export const show = (deck: Deck): string => {
   return `hand: ${hand}, draw: ${draw}, disc: ${disc}, playedCards: ${playedCards}`
 }
 
-const initialHand: Hand = [
-  "DeployHoplite",
-  "DeployHoplite",
-  "ManeuverLeft",
-  "ManeuverRight",
-  "ManeuverForward",
-]
-
 const initialDraw: Draw = []
 
 export const initial: Deck = {
-  hand: initialHand,
+  hand: Hand.defaultInitialHand,
   draw: initialDraw,
   disc: [],
   playedCards: [],
   commitedCards: [],
+}
+
+export const build = (hand: Hand.Hand): Deck => {
+  return {
+    ...initial,
+    hand,
+  }
 }
 
 export const addCardToDiscard =
@@ -147,7 +146,7 @@ export const discardPlayed = (deck: Deck): Deck => {
 
 export const discardHand = (deck: Deck): Deck => {
   const { hand, draw: drawPile, disc, playedCards, commitedCards } = deck
-  const nextHand: Hand = []
+  const nextHand: Hand.Hand = []
   const nextDisc: Disc = pipe(hand, Array.appendAll(disc))
 
   return {

@@ -5,9 +5,11 @@ import { Card } from "@app/model"
 
 type CardViewProps = {
   card: Card.Card
+  testIdPrefix: string
 }
 const CardView = (props: CardViewProps): JSX.Element => {
   const card = props.card
+  const testIdPrefix = props.testIdPrefix
 
   const title = Card.toTitle(card)
   const kind = Card.toKind(card)
@@ -30,7 +32,7 @@ const CardView = (props: CardViewProps): JSX.Element => {
     "bg-purple-400": kind === "Strategy",
   })
 
-  const testId = Card.show(card)
+  const testId = `${testIdPrefix}-${Card.show(card)}`
 
   return (
     <div class={style} data-testId={testId}>

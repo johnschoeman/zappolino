@@ -44,7 +44,7 @@ const SupplyPile = ({ supplyPile, idx }: SupplyPileProps): JSX.Element => {
       onClick={handleOnClickSupplyPile(idx)}
       class="border w-48 flex flex-col items-center"
     >
-      <CardView card={card} />
+      <CardView card={card} testIdPrefix="supply-pile-card" />
 
       <div data-testid={`${testId}-count`} class="w-full text-center">
         {supplyPile.count}

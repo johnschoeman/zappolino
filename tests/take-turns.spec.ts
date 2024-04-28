@@ -9,15 +9,19 @@ import {
   expectPlayedCardSize,
   expectToHaveHandSize,
   expectTurnPointsToBe,
+  resetStartingHandCards,
   selectHomeRowCell,
   selectNthCard,
   selectPlayMat,
+  setStartingHandCard,
   startGame,
 } from "./testHelpers"
 
 test("take a single turn - place a piece", async ({ page }) => {
   await page.goto("http://localhost:3000")
 
+  await resetStartingHandCards(page)
+  await setStartingHandCard("DeployHoplite")(1)(page)
   await startGame(page)
 
   await expectCurrentPlayerToBe("White")(page)
@@ -28,7 +32,7 @@ test("take a single turn - place a piece", async ({ page }) => {
     tacticPoints: 1,
     resourcePoints: 0,
   })(page)
-  await expectToHaveHandSize(5)(page)
+  await expectToHaveHandSize(1)(page)
 
   // ---- Start turn by placing a piece
   await selectHomeRowCell("White", "A")(page)
@@ -60,7 +64,7 @@ test("take a single turn - place a piece", async ({ page }) => {
     resourcePoints: 0,
   })(page)
 
-  await expectToHaveHandSize(4)(page)
+  await expectToHaveHandSize(0)(page)
   await expectPlayedCardSize(1)(page)
 
   await endTurn(page)

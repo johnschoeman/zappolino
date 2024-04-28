@@ -63,7 +63,7 @@ const PlayedCardView = (props: PlayedCardViewProps): JSX.Element => {
 
   return (
     <div data-testid={testId} class="card">
-      <CardView card={card} />
+      <CardView card={card} testIdPrefix="play-mat" />
     </div>
   )
 }

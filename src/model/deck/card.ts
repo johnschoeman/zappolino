@@ -1,4 +1,3 @@
-export type DeployHoplite = "DeployHoplite"
 export type ManeuverLeft = "ManeuverLeft"
 export type ManeuverRight = "ManeuverRight"
 export type ManeuverForward = "ManeuverForward"
@@ -8,19 +7,20 @@ export type AssaultRight = "AssaultRight"
 export type Charge = "Charge"
 export type FlankLeft = "FlankLeft"
 export type FlankRight = "FlankRight"
+export type DeployHoplite = "DeployHoplite"
+export type CityState = "CityState"
 export type MilitaryReforms = "MilitaryReforms"
 export type PoliticalReforms = "PoliticalReforms"
 export type Oracle = "Oracle"
 
 // -- Tactics
 // Sortie
-// Push
+// Push         - push the whole column forward
 // Withdraw
 // Rush
 // Sally
 // Strike
 // Raid
-//
 // ???          - all units maneuver forward 1
 // ???          - all units assault forward 1
 // ???          - all units charge forward 1
@@ -122,7 +122,6 @@ export type Oracle = "Oracle"
 // Oligarchic Faction    - +5 tactic
 
 export type Card =
-  | DeployHoplite
   | ManeuverLeft
   | ManeuverRight
   | ManeuverForward
@@ -132,6 +131,8 @@ export type Card =
   | Charge
   | FlankLeft
   | FlankRight
+  | DeployHoplite
+  | CityState
   | MilitaryReforms
   | PoliticalReforms
   | Oracle
@@ -168,6 +169,7 @@ const allTactic: Card[] = [
 
 export const allStrategy: Card[] = [
   "DeployHoplite",
+  "CityState",
   "MilitaryReforms",
   "PoliticalReforms",
   "Oracle",
@@ -197,6 +199,8 @@ export const show = (card: Card): string => {
       return "flank-right"
     case "DeployHoplite":
       return "deploy-hoplite"
+    case "CityState":
+      return "city-state"
     case "MilitaryReforms":
       return "military-reforms"
     case "PoliticalReforms":
@@ -227,6 +231,7 @@ export const toKind = (card: Card): Kind => {
     case "FlankRight":
       return "Tactic"
     case "DeployHoplite":
+    case "CityState":
     case "MilitaryReforms":
     case "PoliticalReforms":
     case "Oracle":
@@ -236,8 +241,6 @@ export const toKind = (card: Card): Kind => {
 
 export const toTitle = (card: Card): string => {
   switch (card) {
-    case "DeployHoplite":
-      return "Deploy Hoplite"
     case "ManeuverLeft":
       return "Maneuver Left"
     case "ManeuverRight":
@@ -256,6 +259,10 @@ export const toTitle = (card: Card): string => {
       return "Flank Left"
     case "FlankRight":
       return "Flank Right"
+    case "DeployHoplite":
+      return "Deploy Hoplite"
+    case "CityState":
+      return "City State"
     case "MilitaryReforms":
       return "Military Reforms"
     case "PoliticalReforms":
@@ -267,8 +274,6 @@ export const toTitle = (card: Card): string => {
 
 export const toDescription = (card: Card): string => {
   switch (card) {
-    case "DeployHoplite":
-      return "Deploy a hoplite to the field on your home row"
     case "ManeuverLeft":
       return "Maneuver a hoplite to the left"
     case "ManeuverRight":
@@ -287,6 +292,10 @@ export const toDescription = (card: Card): string => {
       return "Move a hoplite left, taking any opponent piece"
     case "FlankRight":
       return "Move a hoplite right, taking any opponent piece"
+    case "DeployHoplite":
+      return "Deploy a hoplite to the field on your home row"
+    case "CityState":
+      return ""
     case "MilitaryReforms":
       return ""
     case "PoliticalReforms":
@@ -299,6 +308,7 @@ export const toDescription = (card: Card): string => {
 export const toPlayCost = (card: Card): PlayCost => {
   switch (card) {
     case "DeployHoplite":
+    case "CityState":
     case "MilitaryReforms":
     case "PoliticalReforms":
     case "Oracle":
@@ -316,6 +326,7 @@ export const toPlayCost = (card: Card): PlayCost => {
   }
 }
 
+// [Hoplite, Strategy, Tactics, Resources, Draw]
 export const toPlayValue = (card: Card): PlayValue => {
   switch (card) {
     case "ManeuverLeft":
@@ -330,6 +341,8 @@ export const toPlayValue = (card: Card): PlayValue => {
       return [0, 0, 0, 0]
     case "DeployHoplite":
       return [1, 0, 0, 0]
+    case "CityState":
+      return [0, 2, 0, 0]
     case "MilitaryReforms":
       return [0, 0, 3, 0]
     case "PoliticalReforms":
@@ -349,6 +362,7 @@ export const toResourceCost = (card: Card): ResourceCost => {
     case "AssaultLeft":
     case "AssaultRight":
     case "AssaultForward":
+    case "CityState":
       return 2
     case "Charge":
     case "FlankLeft":
@@ -375,6 +389,7 @@ export const toResourceValue = (card: Card): ResourceValue => {
     case "Charge":
     case "FlankLeft":
     case "FlankRight":
+    case "CityState":
       return 2
     case "MilitaryReforms":
     case "PoliticalReforms":

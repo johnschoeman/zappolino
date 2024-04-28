@@ -2,13 +2,13 @@ import { JSX } from "solid-js"
 import cn from "classnames"
 import { Array, Option, pipe } from "effect"
 
-import { Card, Deck, GameAction } from "@app/model"
+import { Card, GameAction, Hand } from "@app/model"
 import { GameState } from "@app/state"
 
 import CardView from "../Card"
 
 const HandView = (): JSX.Element => {
-  const hand = (): Deck.Hand => {
+  const hand = (): Hand.Hand => {
     return pipe(GameState.currentPlayerDeck(), deck => deck.hand)
   }
 
@@ -48,7 +48,8 @@ const CardContainer = (props: CardContainerProps): JSX.Element => {
     )
   }
 
-  const testId = `unplayed-card-${idx}`
+  const testIdIdx = `unplayed-card-${idx}`
+  const testIdPrefix = `hand-card`
 
   const handleOnClickCard = (): void => {
     pipe(GameState.game(), GameAction.selectHandCard(idx), GameState.setGame)
@@ -57,8 +58,8 @@ const CardContainer = (props: CardContainerProps): JSX.Element => {
   const style = cn({ selected: isSelected() })
 
   return (
-    <button data-testid={testId} onClick={handleOnClickCard} class={style}>
-      <CardView card={card} />
+    <button data-testid={testIdIdx} onClick={handleOnClickCard} class={style}>
+      <CardView card={card} testIdPrefix={testIdPrefix} />
 
       {isSelected() && (
         <div class="h-8 flex justify-center items-center">

@@ -78,6 +78,7 @@ export const playSelectPieceCard =
       case "FlankRight":
         return playFlankRight(pos)(game)
       case "DeployHoplite":
+      case "CityState":
       case "MilitaryReforms":
       case "PoliticalReforms":
       case "Oracle":
@@ -97,6 +98,8 @@ export const playSelectMatCard =
         return playStrategyCard("Oracle")(game)
       case "DeployHoplite":
         return playStrategyCard("DeployHoplite")(game)
+      case "CityState":
+        return playStrategyCard("CityState")(game)
       case "ManeuverForward":
       case "ManeuverRight":
       case "ManeuverLeft":

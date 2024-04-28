@@ -1,6 +1,6 @@
 import { JSX } from "solid-js"
 
-import { GameStartedState } from "@app/state"
+import { GameState } from "@app/state"
 
 import Board from "./Board"
 import GameDisplay from "./GameDisplay"
@@ -10,7 +10,7 @@ import TurnDisplay from "./TurnDisplay"
 
 const GameView = (): JSX.Element => {
   const handleOnClickEndGame = (): void => {
-    GameStartedState.setGameStarted(false)
+    GameState.endGame()
   }
 
   return (
