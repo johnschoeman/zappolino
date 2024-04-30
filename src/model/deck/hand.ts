@@ -24,7 +24,7 @@ const emptyHandCount: HandCount = {
   FlankLeft: 0,
   FlankRight: 0,
   DeployHoplite: 0,
-  CityState: 0,
+  Polis: 0,
   MilitaryReforms: 0,
   PoliticalReforms: 0,
   Oracle: 0,

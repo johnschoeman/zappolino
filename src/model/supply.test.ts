@@ -14,7 +14,7 @@ test("Supply.build", () => {
     FlankLeft: false,
     FlankRight: false,
     DeployHoplite: false,
-    CityState: false,
+    Polis: false,
     MilitaryReforms: false,
     PoliticalReforms: false,
     Oracle: false,

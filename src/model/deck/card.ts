@@ -8,7 +8,7 @@ export type Charge = "Charge"
 export type FlankLeft = "FlankLeft"
 export type FlankRight = "FlankRight"
 export type DeployHoplite = "DeployHoplite"
-export type CityState = "CityState"
+export type Polis = "Polis"
 export type MilitaryReforms = "MilitaryReforms"
 export type PoliticalReforms = "PoliticalReforms"
 export type Oracle = "Oracle"
@@ -132,7 +132,7 @@ export type Card =
   | FlankLeft
   | FlankRight
   | DeployHoplite
-  | CityState
+  | Polis
   | MilitaryReforms
   | PoliticalReforms
   | Oracle
@@ -169,7 +169,7 @@ const allTactic: Card[] = [
 
 export const allStrategy: Card[] = [
   "DeployHoplite",
-  "CityState",
+  "Polis",
   "MilitaryReforms",
   "PoliticalReforms",
   "Oracle",
@@ -199,7 +199,7 @@ export const show = (card: Card): string => {
       return "flank-right"
     case "DeployHoplite":
       return "deploy-hoplite"
-    case "CityState":
+    case "Polis":
       return "city-state"
     case "MilitaryReforms":
       return "military-reforms"
@@ -231,7 +231,7 @@ export const toKind = (card: Card): Kind => {
     case "FlankRight":
       return "Tactic"
     case "DeployHoplite":
-    case "CityState":
+    case "Polis":
     case "MilitaryReforms":
     case "PoliticalReforms":
     case "Oracle":
@@ -261,7 +261,7 @@ export const toTitle = (card: Card): string => {
       return "Flank Right"
     case "DeployHoplite":
       return "Deploy Hoplite"
-    case "CityState":
+    case "Polis":
       return "City State"
     case "MilitaryReforms":
       return "Military Reforms"
@@ -294,7 +294,7 @@ export const toDescription = (card: Card): string => {
       return "Move a hoplite right, taking any opponent piece"
     case "DeployHoplite":
       return "Deploy a hoplite to the field on your home row"
-    case "CityState":
+    case "Polis":
       return ""
     case "MilitaryReforms":
       return ""
@@ -308,7 +308,7 @@ export const toDescription = (card: Card): string => {
 export const toPlayCost = (card: Card): PlayCost => {
   switch (card) {
     case "DeployHoplite":
-    case "CityState":
+    case "Polis":
     case "MilitaryReforms":
     case "PoliticalReforms":
     case "Oracle":
@@ -341,7 +341,7 @@ export const toPlayValue = (card: Card): PlayValue => {
       return [0, 0, 0, 0]
     case "DeployHoplite":
       return [1, 0, 0, 0]
-    case "CityState":
+    case "Polis":
       return [0, 2, 0, 0]
     case "MilitaryReforms":
       return [0, 0, 3, 0]
@@ -362,7 +362,7 @@ export const toResourceCost = (card: Card): ResourceCost => {
     case "AssaultLeft":
     case "AssaultRight":
     case "AssaultForward":
-    case "CityState":
+    case "Polis":
       return 2
     case "Charge":
     case "FlankLeft":
@@ -389,7 +389,7 @@ export const toResourceValue = (card: Card): ResourceValue => {
     case "Charge":
     case "FlankLeft":
     case "FlankRight":
-    case "CityState":
+    case "Polis":
       return 2
     case "MilitaryReforms":
     case "PoliticalReforms":

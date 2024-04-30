@@ -10,7 +10,7 @@ import {
 test("play a draw card and draw new cards", async ({ page }) => {
   await page.goto("http://localhost:3000")
 
-  // select CityState to be starting hand card
+  // select Polis to be starting hand card
   await startGame(page)
 
   await expectTurnPointsToBe({
