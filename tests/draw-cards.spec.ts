@@ -22,11 +22,11 @@ test("play a draw card and draw new cards", async ({ page }) => {
   await startGame(page)
 
   await expectTurnPointsToBe({
-    resourcePoints: 0,
-    strategyPoints: 1,
-    tacticPoints: 1,
-    hoplitePoints: 1,
-    drawPoints: 0,
+    rescPts: 0,
+    strtPts: 1,
+    tactPts: 1,
+    hoplPts: 1,
+    drawPts: 0,
   })(page)
   await expectDrawPileSize(1)(page)
 
@@ -34,21 +34,21 @@ test("play a draw card and draw new cards", async ({ page }) => {
   await selectPlayMat(page)
 
   await expectTurnPointsToBe({
-    resourcePoints: 0,
-    strategyPoints: 2,
-    tacticPoints: 1,
-    hoplitePoints: 1,
-    drawPoints: 1,
+    rescPts: 0,
+    strtPts: 2,
+    tactPts: 1,
+    hoplPts: 1,
+    drawPts: 1,
   })(page)
 
   await selectDrawPile(page)
 
   await expectTurnPointsToBe({
-    resourcePoints: 0,
-    strategyPoints: 2,
-    tacticPoints: 1,
-    hoplitePoints: 1,
-    drawPoints: 0,
+    rescPts: 0,
+    strtPts: 2,
+    tactPts: 1,
+    hoplPts: 1,
+    drawPts: 0,
   })(page)
 
   await expectToHaveHandSize(1)(page)

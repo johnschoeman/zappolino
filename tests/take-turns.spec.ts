@@ -27,11 +27,11 @@ test("take a single turn - place a piece", async ({ page }) => {
   await expectCurrentPlayerToBe("White")(page)
   await expectDiscardCountToBe(0)(page)
   await expectTurnPointsToBe({
-    hoplitePoints: 1,
-    strategyPoints: 1,
-    tacticPoints: 1,
-    resourcePoints: 0,
-    drawPoints: 0,
+    hoplPts: 1,
+    strtPts: 1,
+    tactPts: 1,
+    rescPts: 0,
+    drawPts: 0,
   })(page)
   await expectToHaveHandSize(1)(page)
 
@@ -39,33 +39,33 @@ test("take a single turn - place a piece", async ({ page }) => {
   await selectHomeRowCell("White", "A")(page)
   await expectCellToHavePiece("A6")("White")(page)
   await expectTurnPointsToBe({
-    hoplitePoints: 0,
-    strategyPoints: 1,
-    tacticPoints: 1,
-    resourcePoints: 0,
-    drawPoints: 0,
+    hoplPts: 0,
+    strtPts: 1,
+    tactPts: 1,
+    rescPts: 0,
+    drawPts: 0,
   })(page)
 
   // ---- Select and play Deploy Hoplite card
   await selectNthCard(0)(page)
   await selectPlayMat(page)
   await expectTurnPointsToBe({
-    hoplitePoints: 1,
-    strategyPoints: 0,
-    tacticPoints: 1,
-    resourcePoints: 0,
-    drawPoints: 0,
+    hoplPts: 1,
+    strtPts: 0,
+    tactPts: 1,
+    rescPts: 0,
+    drawPts: 0,
   })(page)
 
   // ---- Place a piece
   await selectHomeRowCell("White", "B")(page)
   await expectCellToHavePiece("B6")("White")(page)
   await expectTurnPointsToBe({
-    hoplitePoints: 0,
-    strategyPoints: 0,
-    tacticPoints: 1,
-    resourcePoints: 0,
-    drawPoints: 0,
+    hoplPts: 0,
+    strtPts: 0,
+    tactPts: 1,
+    rescPts: 0,
+    drawPts: 0,
   })(page)
 
   await expectToHaveHandSize(0)(page)

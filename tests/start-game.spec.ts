@@ -45,10 +45,10 @@ test("starting a game - allows player to select starting hand and supply cards",
   await expectSupplyPile("DeployHoplite")(page)
 
   await expectTurnPointsToBe({
-    resourcePoints: 0,
-    strategyPoints: 1,
-    tacticPoints: 1,
-    hoplitePoints: 1,
-    drawPoints: 0,
+    rescPts: 0,
+    strtPts: 1,
+    tactPts: 1,
+    hoplPts: 1,
+    drawPts: 0,
   })(page)
 })

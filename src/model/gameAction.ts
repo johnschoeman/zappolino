@@ -26,10 +26,10 @@ export const selectSupplyPile =
       return game
     }
 
-    const resourcePoints = game.turnPoints.resourcePoints
+    const rescPts = game.turnPoints.rescPts
     const resourceCost = Card.toResourceCost(card)
 
-    if (resourcePoints < resourceCost) {
+    if (rescPts < resourceCost) {
       return game
     }
 
@@ -48,7 +48,7 @@ export const selectSupplyPile =
     return pipe(
       game,
       Game.updateDeckFor(currentPlayer)(nextDeck),
-      Game.decreaseTurnPoints([0, 0, 0, resourceCost, 0]),
+      Game.consumeResourcePoints(resourceCost),
       Game.updateSupply(nextSupply),
     )
   }
@@ -131,7 +131,7 @@ export const selectCell =
 const selectCellPlayTacticCard =
   ({ rowIdx, colIdx }: Position.Position) =>
   (game: Game.Game): Game.Game => {
-    const hasTacticPoint = game.turnPoints.tacticPoints > 0
+    const hasTacticPoint = game.turnPoints.tactPts > 0
 
     if (!hasTacticPoint) {
       return game
@@ -166,7 +166,7 @@ const selectCellPlayTacticCard =
 const selectCellPlacePiece =
   ({ rowIdx, colIdx }: Position.Position) =>
   (game: Game.Game): Game.Game => {
-    const hasPlacementPoint = game.turnPoints.hoplitePoints > 0
+    const hasPlacementPoint = game.turnPoints.hoplPts > 0
 
     if (!hasPlacementPoint) {
       return game
@@ -191,7 +191,7 @@ const selectCellPlacePiece =
       return game
     }
 
-    return pipe(game, Game.addPiece(rowIdx)(colIdx), Game.consumePlacementPoint)
+    return pipe(game, Game.addPiece(rowIdx)(colIdx), Game.consumeHoplitePoint)
   }
 
 const isValidRowForPlayer =
@@ -201,7 +201,7 @@ const isValidRowForPlayer =
   }
 
 export const drawCard = (game: Game.Game): Game.Game => {
-  if (game.turnPoints.drawPoints < 1) {
+  if (game.turnPoints.drawPts < 1) {
     return game
   }
 

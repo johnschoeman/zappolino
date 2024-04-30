@@ -17,8 +17,13 @@ const CardView = (props: CardViewProps): JSX.Element => {
 
   const acquireCost = Card.toResourceCost(card)
   const resourceGain = Card.toResourceValue(card)
-  const [hopliteValue, strategyValue, tacticValue, resourceValue, drawValue] =
-    Card.toPlayValue(card)
+  const {
+    hoplPts: hopliteValue,
+    strtPts: strategyValue,
+    tactPts: tacticValue,
+    rescPts: resourceValue,
+    drawPts: drawValue,
+  } = Card.toPlayValue(card)
 
   const showHopliteValue = hopliteValue > 0
   const showDrawValue = drawValue > 0

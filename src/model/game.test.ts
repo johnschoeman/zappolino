@@ -17,9 +17,9 @@ test("Game.commitSelectedCard", () => {
     deckWhite: deck,
     selectedCardIdx: Option.some(0),
     turnPoints: {
-      resourcePoints: 0,
-      strategyPoints: 0,
-      tacticPoints: 0,
+      rescPts: 0,
+      strtPts: 0,
+      tactPts: 0,
     },
   })
 
@@ -33,9 +33,9 @@ test("Game.commitSelectedCard", () => {
     currentPlayer: "White",
     deckWhite: expectedDeck,
     turnPoints: {
-      resourcePoints: 1,
-      strategyPoints: 0,
-      tacticPoints: 0,
+      rescPts: 1,
+      strtPts: 0,
+      tactPts: 0,
     },
   })
 

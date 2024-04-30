@@ -7,6 +7,7 @@ import * as Game from "./game"
 import * as GameAction from "./gameAction"
 import * as GameSetup from "./gameSetup"
 import * as Player from "./player"
+import * as PointsPool from "./pointsPool"
 import * as Position from "./position"
 import * as Supply from "./supply"
 
@@ -20,6 +21,7 @@ export {
   GameSetup,
   Hand,
   Player,
+  PointsPool,
   Position,
   Supply,
 }

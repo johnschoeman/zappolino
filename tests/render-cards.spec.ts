@@ -15,5 +15,5 @@ test("card renders correctly", async ({ page }) => {
   await expect(cardEl).toContainText("+ 1 Strategy")
   await expect(cardEl).toContainText("+ 2 Tactics")
   await expect(cardEl).toContainText("Cost: 5")
-  await expect(cardEl).toContainText("Resource: 3")
+  await expect(cardEl).toContainText("Resource: 5")
 })

@@ -15,19 +15,19 @@ const TurnDisplay = (): JSX.Element => {
 
 const StrategyAndTacticCounts = (): JSX.Element => {
   const hoplCount = (): number => {
-    return pipe(GameState.game(), game => game.turnPoints.hoplitePoints)
+    return pipe(GameState.game(), game => game.turnPoints.hoplPts)
   }
   const straCount = (): number => {
-    return pipe(GameState.game(), game => game.turnPoints.strategyPoints)
+    return pipe(GameState.game(), game => game.turnPoints.strtPts)
   }
   const tactCount = (): number => {
-    return pipe(GameState.game(), game => game.turnPoints.tacticPoints)
+    return pipe(GameState.game(), game => game.turnPoints.tactPts)
   }
   const resoCount = (): number => {
-    return pipe(GameState.game(), game => game.turnPoints.resourcePoints)
+    return pipe(GameState.game(), game => game.turnPoints.rescPts)
   }
   const drawCount = (): number => {
-    return pipe(GameState.game(), game => game.turnPoints.drawPoints)
+    return pipe(GameState.game(), game => game.turnPoints.drawPts)
   }
 
   const containerStyle = "flex flex-row items-center space-x-2 p-2"
@@ -46,35 +46,35 @@ const StrategyAndTacticCounts = (): JSX.Element => {
       <div class="w-full flex flex-row items-center space-x-4">
         <div class={containerStyle}>
           <span>Hoplite:</span>
-          <span class={placCountStyle} data-testid="hoplite-count">
+          <span class={placCountStyle} data-testid="hopl-pts-count">
             {hoplCount()}
           </span>
         </div>
 
         <div class={containerStyle}>
           <span>Strategy:</span>
-          <span class={straCountStyle} data-testid="strategy-count">
+          <span class={straCountStyle} data-testid="strt-pts-count">
             {straCount()}
           </span>
         </div>
 
         <div class={containerStyle}>
           <span>Tactic:</span>
-          <span class={tactCountStyle} data-testid="tactic-count">
+          <span class={tactCountStyle} data-testid="tact-pts-count">
             {tactCount()}
           </span>
         </div>
 
         <div class={containerStyle}>
           <span>Resources:</span>
-          <span class={resoCountStyle} data-testid="resource-count">
+          <span class={resoCountStyle} data-testid="resc-pts-count">
             {resoCount()}
           </span>
         </div>
 
         <div class={containerStyle}>
           <span>Draw:</span>
-          <span class={drawCountStyle} data-testid="draw-count">
+          <span class={drawCountStyle} data-testid="draw-pts-count">
             {drawCount()}
           </span>
         </div>

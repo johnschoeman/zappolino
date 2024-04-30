@@ -14,15 +14,15 @@ test("GamePlayCard.validateHasCardCost - if the player has the points, it return
 
   const game1 = gameFactory.build({
     turnPoints: {
-      strategyPoints: 1,
-      tacticPoints: 1,
+      strtPts: 1,
+      tactPts: 1,
     },
   })
 
   const game2 = gameFactory.build({
     turnPoints: {
-      strategyPoints: 0,
-      tacticPoints: 0,
+      strtPts: 0,
+      tactPts: 0,
     },
   })
 
@@ -54,8 +54,8 @@ PPP--
     board,
     currentPlayer: player,
     turnPoints: {
-      strategyPoints: 1,
-      tacticPoints: 1,
+      strtPts: 1,
+      tactPts: 1,
     },
   })
 
@@ -79,8 +79,8 @@ PPp--
     board: expectedBoard,
     currentPlayer: "White",
     turnPoints: {
-      strategyPoints: 1,
-      tacticPoints: 0,
+      strtPts: 1,
+      tactPts: 0,
     },
   })
 
@@ -122,8 +122,8 @@ PPP--
     board,
     currentPlayer: player,
     turnPoints: {
-      strategyPoints: 1,
-      tacticPoints: 1,
+      strtPts: 1,
+      tactPts: 1,
     },
   })
 
@@ -147,8 +147,8 @@ PP---
     board: expectedBoard,
     currentPlayer: "White",
     turnPoints: {
-      strategyPoints: 1,
-      tacticPoints: 0,
+      strtPts: 1,
+      tactPts: 0,
     },
   })
 
@@ -195,8 +195,8 @@ PPP--
     board,
     currentPlayer: player,
     turnPoints: {
-      strategyPoints: 1,
-      tacticPoints: 1,
+      strtPts: 1,
+      tactPts: 1,
     },
   })
 
@@ -220,8 +220,8 @@ PPp--
     board: expectedOntoNoPieceBoard,
     currentPlayer: "White",
     turnPoints: {
-      strategyPoints: 1,
-      tacticPoints: 0,
+      strtPts: 1,
+      tactPts: 0,
     },
   })
 
@@ -238,8 +238,8 @@ PP---
     board: expectedOntoOtherPieceBoard,
     currentPlayer: "White",
     turnPoints: {
-      strategyPoints: 1,
-      tacticPoints: 0,
+      strtPts: 1,
+      tactPts: 0,
     },
   })
 
@@ -256,8 +256,8 @@ PPP--
     board: expectedOffBoardBoard,
     currentPlayer: "White",
     turnPoints: {
-      strategyPoints: 1,
-      tacticPoints: 0,
+      strtPts: 1,
+      tactPts: 0,
     },
   })
 
@@ -294,8 +294,8 @@ PPP--
     board,
     currentPlayer: player,
     turnPoints: {
-      strategyPoints: 1,
-      tacticPoints: 1,
+      strtPts: 1,
+      tactPts: 1,
     },
   })
 
@@ -319,8 +319,8 @@ PPP--
     board: expectedOntoNoPieceBoard,
     currentPlayer: "White",
     turnPoints: {
-      strategyPoints: 1,
-      tacticPoints: 0,
+      strtPts: 1,
+      tactPts: 0,
     },
   })
 
@@ -337,8 +337,8 @@ PPP--
     board: expectedOntoOtherPieceBoard,
     currentPlayer: "White",
     turnPoints: {
-      strategyPoints: 1,
-      tacticPoints: 0,
+      strtPts: 1,
+      tactPts: 0,
     },
   })
 
@@ -378,9 +378,9 @@ test("GamePlayCard.playStrategyCard - it gains the correct points", () => {
     board,
     currentPlayer: player,
     turnPoints: {
-      strategyPoints: 1,
-      tacticPoints: 1,
-      resourcePoints: 0,
+      strtPts: 1,
+      tactPts: 1,
+      rescPts: 0,
     },
   })
 
@@ -390,9 +390,10 @@ test("GamePlayCard.playStrategyCard - it gains the correct points", () => {
     board,
     currentPlayer: player,
     turnPoints: {
-      strategyPoints: 2,
-      tacticPoints: 3,
-      resourcePoints: 0,
+      drawPts: 1,
+      strtPts: 2,
+      tactPts: 3,
+      rescPts: 2,
     },
   })
 

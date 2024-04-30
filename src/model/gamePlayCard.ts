@@ -4,6 +4,7 @@ import { Board } from "./board"
 import { Card } from "./deck"
 import * as Game from "./game"
 import * as Player from "./player"
+import * as PointsPool from "./pointsPool"
 import * as Position from "./position"
 
 // ---- Validation Logic ----
@@ -14,12 +15,12 @@ export const validateHasCardCost =
   (card: Card.Card) =>
   (game: Game.Game): Either.Either<Game.Game, CardCostError> => {
     const [strategyCost, tacticCost] = Card.toPlayCost(card)
-    const { strategyPoints, tacticPoints } = game.turnPoints
+    const { strtPts, tactPts } = game.turnPoints
 
-    if (strategyCost > strategyPoints) {
+    if (strategyCost > strtPts) {
       return Either.left("NotEnoughStrategyPoints")
     }
-    if (tacticCost > tacticPoints) {
+    if (tacticCost > tactPts) {
       return Either.left("NotEnoughTacticPoints")
     }
     return Either.right(game)
@@ -30,13 +31,9 @@ export const consumeCardCost =
   (game: Game.Game): Either.Either<Game.Game, CardCostError> => {
     const [strategyCost, tacticCost] = Card.toPlayCost(card)
 
-    const nextGame = Game.decreaseTurnPoints([
-      0,
-      strategyCost,
-      tacticCost,
-      0,
-      0,
-    ])(game)
+    const nextGame = Game.decreaseTurnPoints(
+      PointsPool.build({ strtPts: strategyCost, tactPts: tacticCost }),
+    )(game)
 
     return Either.right(nextGame)
   }

@@ -53,8 +53,8 @@ test("GameAction.endTurn - It discards, draws a new hand, progress the board and
     deckWhite,
     deckBlack,
     turnPoints: {
-      strategyPoints: 0,
-      tacticPoints: 0,
+      strtPts: 0,
+      tactPts: 0,
     },
   })
 
@@ -98,11 +98,11 @@ test("GameAction.endTurn - It discards, draws a new hand, progress the board and
     deckBlack,
     handSize: Hand.initialHandSize,
     turnPoints: {
-      hoplitePoints: 1,
-      strategyPoints: 1,
-      tacticPoints: 1,
-      resourcePoints: 0,
-      drawPoints: 0,
+      hoplPts: 1,
+      strtPts: 1,
+      tactPts: 1,
+      rescPts: 0,
+      drawPts: 0,
     },
     supply: Supply.initial,
     turnCount: 1,
@@ -149,14 +149,14 @@ test("GameAction.selectCell - if the player has placement points and they select
     board: initialBoard,
     currentPlayer: player,
     turnPoints: {
-      hoplitePoints: 1,
+      hoplPts: 1,
     },
   })
   const game2: Game.Game = gameFactory.build({
     board: initialBoard,
     currentPlayer: player,
     turnPoints: {
-      hoplitePoints: 0,
+      hoplPts: 0,
     },
   })
 
@@ -180,14 +180,14 @@ P--P-
     currentPlayer: "White",
     board: expectedBoard,
     turnPoints: {
-      hoplitePoints: 0,
+      hoplPts: 0,
     },
   })
   const expected2: Game.Game = gameFactory.build({
     currentPlayer: "White",
     board: initialBoard,
     turnPoints: {
-      hoplitePoints: 0,
+      hoplPts: 0,
     },
   })
 
@@ -219,10 +219,10 @@ test("GameAction.selectCell - if a player has a tactic card selected, it plays t
     selectedCardIdx: Option.some(0),
     deckWhite: deckWhite1,
     turnPoints: {
-      hoplitePoints: 1,
-      tacticPoints: 1,
-      strategyPoints: 1,
-      resourcePoints: 1,
+      hoplPts: 1,
+      tactPts: 1,
+      strtPts: 1,
+      rescPts: 1,
     },
   })
 
@@ -246,11 +246,11 @@ test("GameAction.selectCell - if a player has a tactic card selected, it plays t
   })
   const expectedSelectedCardIdx = Option.none()
   const expectedTurnPoints = {
-    hoplitePoints: 1,
-    tacticPoints: 0,
-    strategyPoints: 1,
-    resourcePoints: 1,
-    drawPoints: 0,
+    hoplPts: 1,
+    tactPts: 0,
+    strtPts: 1,
+    rescPts: 1,
+    drawPts: 0,
   }
 
   expect(result1.board).toEqual(expectedBoard)
@@ -276,13 +276,13 @@ test("GameAction.selectSupplyPile - It consumes the resource points and adds a c
 
   const supplyCard: Card.Card = "PoliticalReforms"
   const supply: Supply.Supply = [{ card: supplyCard, count: 1 }]
-  const resourcePoints = Card.toResourceCost(supplyCard) + 1
+  const rescPts = Card.toResourceCost(supplyCard) + 1
 
   const game: Game.Game = gameFactory.build({
     currentPlayer: player,
     deckWhite,
     supply,
-    turnPoints: { strategyPoints: 1, tacticPoints: 0, resourcePoints },
+    turnPoints: { strtPts: 1, tactPts: 0, rescPts },
   })
 
   const result = GameAction.selectSupplyPile(0)(game)
@@ -299,7 +299,7 @@ test("GameAction.selectSupplyPile - It consumes the resource points and adds a c
   const expected: Game.Game = gameFactory.build({
     currentPlayer: "White",
     deckWhite: expectedDeckWhite,
-    turnPoints: { tacticPoints: 0, strategyPoints: 1, resourcePoints: 1 },
+    turnPoints: { tactPts: 0, strtPts: 1, rescPts: 1 },
     supply: expectedSupply,
   })
 
@@ -339,9 +339,9 @@ test("GameAction.selectSupplyPile - If the supply count is 0, it does nothing", 
     currentPlayer: "White",
     deckWhite: expectedDeckWhite,
     turnPoints: {
-      tacticPoints: 1,
-      strategyPoints: 1,
-      resourcePoints: 0,
+      tactPts: 1,
+      strtPts: 1,
+      rescPts: 0,
     },
     supply: expectedSupply,
   })
@@ -364,7 +364,7 @@ test("GameAction.selectSupplyPile - If the player has doesnt have enough resourc
 
   const game: Game.Game = gameFactory.build({
     currentPlayer: player,
-    turnPoints: { tacticPoints: 1, strategyPoints: 1, resourcePoints: 3 },
+    turnPoints: { tactPts: 1, strtPts: 1, rescPts: 3 },
     deckWhite,
     supply,
   })
@@ -383,7 +383,7 @@ test("GameAction.selectSupplyPile - If the player has doesnt have enough resourc
   const expected: Game.Game = gameFactory.build({
     currentPlayer: "White",
     deckWhite: expectedDeckWhite,
-    turnPoints: { tacticPoints: 1, strategyPoints: 1, resourcePoints: 3 },
+    turnPoints: { tactPts: 1, strtPts: 1, rescPts: 3 },
     supply: expectedSupply,
   })
 

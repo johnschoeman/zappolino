@@ -24,11 +24,11 @@ test("acquire a supply card", async ({ page }) => {
   await expectCurrentPlayerToBe("White")(page)
   await expectDiscardCountToBe(0)(page)
   await expectTurnPointsToBe({
-    hoplitePoints: 1,
-    strategyPoints: 1,
-    tacticPoints: 1,
-    resourcePoints: 0,
-    drawPoints: 0,
+    hoplPts: 1,
+    strtPts: 1,
+    tactPts: 1,
+    rescPts: 0,
+    drawPts: 0,
   })(page)
   await expectNthSupplyToHaveCount(0)(initialSupplySize)(page)
 
@@ -39,11 +39,11 @@ test("acquire a supply card", async ({ page }) => {
   await expectNthSupplyToHaveCount(0)(initialSupplySize)(page)
   await expectDiscardCountToBe(0)(page)
   await expectTurnPointsToBe({
-    hoplitePoints: 1,
-    strategyPoints: 1,
-    tacticPoints: 1,
-    resourcePoints: 0,
-    drawPoints: 0,
+    hoplPts: 1,
+    strtPts: 1,
+    tactPts: 1,
+    rescPts: 0,
+    drawPts: 0,
   })(page)
 
   // ---- If the player commits enough resources
@@ -52,11 +52,11 @@ test("acquire a supply card", async ({ page }) => {
   await selectCommitResourceMat(page)
 
   await expectTurnPointsToBe({
-    hoplitePoints: 1,
-    strategyPoints: 1,
-    tacticPoints: 1,
-    resourcePoints: 1,
-    drawPoints: 0,
+    hoplPts: 1,
+    strtPts: 1,
+    tactPts: 1,
+    rescPts: 1,
+    drawPts: 0,
   })(page)
 
   await selectNthSupply(0)(page)
@@ -65,11 +65,11 @@ test("acquire a supply card", async ({ page }) => {
   await expectNthSupplyToHaveCount(0)(nextSupplySize)(page)
   await expectDiscardCountToBe(1)(page)
   await expectTurnPointsToBe({
-    hoplitePoints: 1,
-    strategyPoints: 1,
-    tacticPoints: 1,
-    resourcePoints: 0,
-    drawPoints: 0,
+    hoplPts: 1,
+    strtPts: 1,
+    tactPts: 1,
+    rescPts: 0,
+    drawPts: 0,
   })(page)
 
   await endTurn(page)

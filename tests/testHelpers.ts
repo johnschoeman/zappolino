@@ -1,6 +1,6 @@
 import { expect, Page } from "@playwright/test"
 
-import { Card, Cell, Game, Player, Position } from "@app/model"
+import { Card, Cell, Game, Player, PointsPool, Position } from "@app/model"
 
 // ---- Workflows
 
@@ -168,25 +168,13 @@ export const expectDiscardCountToBe =
   }
 
 export const expectTurnPointsToBe =
-  ({
-    hoplitePoints,
-    strategyPoints,
-    tacticPoints,
-    resourcePoints,
-    drawPoints,
-  }: Game.TurnPoints) =>
+  ({ hoplPts, strtPts, tactPts, rescPts, drawPts }: PointsPool.PointsPool) =>
   async (page: Page): Promise<void> => {
-    await expect(page.getByTestId("hoplite-count")).toHaveText(
-      `${hoplitePoints}`,
-    )
-    await expect(page.getByTestId("tactic-count")).toHaveText(`${tacticPoints}`)
-    await expect(page.getByTestId("strategy-count")).toHaveText(
-      `${strategyPoints}`,
-    )
-    await expect(page.getByTestId("resource-count")).toHaveText(
-      `${resourcePoints}`,
-    )
-    await expect(page.getByTestId("draw-count")).toHaveText(`${drawPoints}`)
+    await expect(page.getByTestId("hopl-pts-count")).toHaveText(`${hoplPts}`)
+    await expect(page.getByTestId("tact-pts-count")).toHaveText(`${tactPts}`)
+    await expect(page.getByTestId("strt-pts-count")).toHaveText(`${strtPts}`)
+    await expect(page.getByTestId("resc-pts-count")).toHaveText(`${rescPts}`)
+    await expect(page.getByTestId("draw-pts-count")).toHaveText(`${drawPts}`)
   }
 
 export const expectSupplyPileCount =

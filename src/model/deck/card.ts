@@ -1,3 +1,5 @@
+import * as PointsPool from "../pointsPool"
+
 export type ManeuverLeft = "ManeuverLeft"
 export type ManeuverRight = "ManeuverRight"
 export type ManeuverForward = "ManeuverForward"
@@ -34,18 +36,7 @@ type TacticCost = number
 type ResourceCost = number
 type PlayCost = [StrategyCost, TacticCost, ResourceCost]
 
-type PlacementValue = number
-type StrategyValue = number
-type TacticValue = number
-type ResourceValue = number
-type DrawValue = number
-export type PlayValue = [
-  PlacementValue,
-  StrategyValue,
-  TacticValue,
-  ResourceValue,
-  DrawValue,
-]
+export type PlayValue = PointsPool.PointsPool
 
 type Kind = "Tactic" | "Strategy"
 
@@ -216,7 +207,6 @@ export const toDescription = (card: Card): string => {
   }
 }
 
-// [StrategyCost, TacticCost, ResourceCost]
 export const toPlayCost = (card: Card): PlayCost => {
   switch (card) {
     case "DeployHoplite":
@@ -238,7 +228,6 @@ export const toPlayCost = (card: Card): PlayCost => {
   }
 }
 
-// [Hoplite, Strategy, Tactics, Resources, Draw]
 export const toPlayValue = (card: Card): PlayValue => {
   switch (card) {
     case "ManeuverLeft":
@@ -250,17 +239,22 @@ export const toPlayValue = (card: Card): PlayValue => {
     case "Charge":
     case "FlankLeft":
     case "FlankRight":
-      return [0, 0, 0, 0, 0]
+      return PointsPool.empty
     case "DeployHoplite":
-      return [1, 0, 0, 0, 0]
+      return PointsPool.build({ hoplPts: 1 })
     case "Polis":
-      return [0, 2, 0, 0, 1]
+      return PointsPool.build({ drawPts: 1, strtPts: 2 })
     case "MilitaryReforms":
-      return [0, 0, 3, 0, 0]
+      return PointsPool.build({ tactPts: 5 })
     case "PoliticalReforms":
-      return [0, 2, 0, 0, 0]
+      return PointsPool.build({ strtPts: 3 })
     case "Oracle":
-      return [0, 1, 2, 0, 1]
+      return PointsPool.build({
+        strtPts: 1,
+        drawPts: 1,
+        tactPts: 2,
+        rescPts: 2,
+      })
   }
 }
 
@@ -287,6 +281,7 @@ export const toResourceCost = (card: Card): ResourceCost => {
   }
 }
 
+type ResourceValue = number
 export const toResourceValue = (card: Card): ResourceValue => {
   switch (card) {
     case "DeployHoplite":
@@ -297,15 +292,15 @@ export const toResourceValue = (card: Card): ResourceValue => {
     case "AssaultLeft":
     case "AssaultRight":
     case "AssaultForward":
-      return 1
     case "Charge":
     case "FlankLeft":
     case "FlankRight":
-    case "Polis":
       return 2
+    case "Polis":
     case "MilitaryReforms":
     case "PoliticalReforms":
-    case "Oracle":
       return 3
+    case "Oracle":
+      return 5
   }
 }

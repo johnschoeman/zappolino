@@ -15,7 +15,8 @@ type GameStatus = NotStarted | Started
 
 const initialGameStatus: GameStatus = { _tag: "NotStarted" }
 
-export const [gameFoo, setGameStatus] = createSignal<GameStatus>(initialGameStatus)
+export const [gameStatus, setGameStatus] =
+  createSignal<GameStatus>(initialGameStatus)
 export const [game, setGame] = createSignal<Game.Game>(Game.initial)
 
 export const startGame = (): void => {
@@ -36,7 +37,7 @@ export const endGame = (): void => {
 }
 
 export const isGameStarted = (): boolean => {
-  return gameFoo()._tag === "Started"
+  return gameStatus()._tag === "Started"
 }
 
 export const currentPlayerDeck = (): Deck.Deck => {
