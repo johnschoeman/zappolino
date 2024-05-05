@@ -1,7 +1,7 @@
 import { JSX } from "solid-js"
 
 type PlaceHolderCardViewProps = {
-  children: JSX.Element
+  children?: JSX.Element
 }
 const PlaceHolderCardView = (props: PlaceHolderCardViewProps): JSX.Element => {
   const style =

@@ -56,36 +56,40 @@ export const initialCheckedSupplyPiles: CheckedSupplyPiles = {
   Oracle: true,
 }
 
-export const allChecked: CheckedSupplyPiles = {
-  ManeuverLeft: true,
-  ManeuverRight: true,
-  ManeuverForward: true,
-  AssaultLeft: true,
-  AssaultRight: true,
-  AssaultForward: true,
-  Charge: true,
-  FlankLeft: true,
-  FlankRight: true,
-  DeployHoplite: true,
-  Polis: true,
-  MilitaryReforms: true,
-  PoliticalReforms: true,
-  Oracle: true,
+export const allChecked = (): CheckedSupplyPiles => {
+  return {
+    ManeuverLeft: true,
+    ManeuverRight: true,
+    ManeuverForward: true,
+    AssaultLeft: true,
+    AssaultRight: true,
+    AssaultForward: true,
+    Charge: true,
+    FlankLeft: true,
+    FlankRight: true,
+    DeployHoplite: true,
+    Polis: true,
+    MilitaryReforms: true,
+    PoliticalReforms: true,
+    Oracle: true,
+  }
 }
 
-export const allUnchecked: CheckedSupplyPiles = {
-  ManeuverLeft: false,
-  ManeuverRight: false,
-  ManeuverForward: false,
-  AssaultLeft: false,
-  AssaultRight: false,
-  AssaultForward: false,
-  Charge: false,
-  FlankLeft: false,
-  FlankRight: false,
-  DeployHoplite: false,
-  Polis: false,
-  MilitaryReforms: false,
-  PoliticalReforms: false,
-  Oracle: false,
+export const allUnchecked = (): CheckedSupplyPiles => {
+  return {
+    ManeuverLeft: false,
+    ManeuverRight: false,
+    ManeuverForward: false,
+    AssaultLeft: false,
+    AssaultRight: false,
+    AssaultForward: false,
+    Charge: false,
+    FlankLeft: false,
+    FlankRight: false,
+    DeployHoplite: false,
+    Polis: false,
+    MilitaryReforms: false,
+    PoliticalReforms: false,
+    Oracle: false,
+  }
 }

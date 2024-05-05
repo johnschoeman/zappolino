@@ -6,14 +6,14 @@ import { GameSetupState } from "@app/state"
 
 const StartingHand = (): JSX.Element => {
   return (
-  <div class="w-full flex justify-center items-center">
-    <div class="w-full max-w-64 flex flex-col items-center">
-      <h2 class="section-header">Start Hand Cards</h2>
-      <StartingHandSize />
-      <div class="mt-4 mb-4 px-4 w-full border border-gray-400" />
-      <StartingHandCards />
+    <div class="w-full flex justify-center items-center">
+      <div class="w-full max-w-64 flex flex-col items-center">
+        <h2 class="section-header">Start Hand Cards</h2>
+        <StartingHandSize />
+        <div class="mt-4 mb-4 px-4 w-full border border-gray-400" />
+        <StartingHandCards />
+      </div>
     </div>
-  </div>
   )
 }
 

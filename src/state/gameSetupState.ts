@@ -21,14 +21,14 @@ export const setSupplyPiles = (
 }
 
 export const checkAllSupplyPiles = (): void => {
-  const supplyPiles = Supply.allChecked
+  const supplyPiles = Supply.allChecked()
   const currentGameSetup = gameSetup()
   const nextGameSetup = { ...currentGameSetup, supplyPiles }
   setGameSetup(nextGameSetup)
 }
 
 export const uncheckAllSupplyPiles = (): void => {
-  const supplyPiles = Supply.allUnchecked
+  const supplyPiles = Supply.allUnchecked()
   const currentGameSetup = gameSetup()
   const nextGameSetup = { ...currentGameSetup, supplyPiles }
   setGameSetup(nextGameSetup)
@@ -41,5 +41,7 @@ export const setHandSize = (handSize: number): void => {
 }
 
 export const randomizeSupplyPiles = (): void => {
-  return
+  const currentGameSetup = { ...gameSetup() }
+  const nextGameSetup = GameSetup.randomizeSupplyPiles(currentGameSetup)
+  setGameSetup(nextGameSetup)
 }
