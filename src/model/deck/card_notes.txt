@@ -49,9 +49,9 @@ Pelitst -> harassing troops, more flexible more nimble, weaker
 Calvary
   - moves 3x
   - not counted in depth calculation.
-  - able to assualt by flanking, not by charging
+  - able to maneuvers are treated as assaults for flanking
 
-Pisloi - Naked or stripped forces, cared for horses, equipment
+Psiloi - Naked or stripped forces, cared for horses, equipment
   - 
 Helots - slaves
 
@@ -95,24 +95,47 @@ Xiphos (short sword)  -
 
 -- Cards
 
-Hoplite               - +1 hoplite
-Organized Deploy      - +1 strategy +1 hoplite
-Military Mobilization - +1 strategy +2 hoplite
-Auxiliary Troops      - +2 hoplite
-Phalanx               - +3 hoplite
+Hoplite               - +1 hopl                         - resc 1 cost 2
+Auxiliary Troops      - +2 hopl                         - resc 2 cost 4
+Phalanx               - +3 hopl                         - resc 3 cost 6
 
-Polis                 - +1 draw +2 strategy
-Wartime Preparations  - +1 draw +1 strategy +1 tactic +1 resources
-Hellenic Craftsman    - +3 draw
-Scouting Party        - +1 draw +3 tactic
+Organized Deploy      - +1 strt +1 hopl                 - resc 1 cost 3
+Military Mobilization - +1 strt +2 hopl                 - resc 1 cost 5
 
-Democratic Faction    - +3 strategy
+Polis                 - +2 strt +1 draw                 - resc 3 cost 3
+Koinas                - +3 strt +2 draw                 - resc 4 cost 5
 
-The Senate            - +2 draw +2 strategy +1 tactic
-The Five Ephors       - +2 draw +1 strategy +3 tactic
+Hellenic Craftsman    - +3 draw                         - resc 2 cost 5
 
-Battle Plans          - +1 tactic
-Military Training     - +2 tactic
-Military Logistics    - +3 tactic
-Thracian Tactics      - +4 tactic
-Oligarchic Faction    - +5 tactic
+Forage                - +1 tact +1 draw                 - resc 1 cost 2
+Psiloi                - +3 tact +1 draw                 - resc 1 cost 4
+Scouting Party        - +1 tact +1 strt                 - resc 1 cost 2
+Staggered March       - +3 tact +1 strt                 - resc 1 cost 4
+
+Agean Sea             - +1 strt +3 resc                 - resc 0 cost 3
+Ionian Sea            - +1 strt +5 resc                 - resc 0 cost 5
+Hellespont            - +1 strt +7 resc                 - resc 0 cost 7
+
+Oracle of Delphi      - +1 strt +1 tact +3 draw +1 resc - resc 0 cost 5
+Temple of Zeus        - +1 strt +2 tact +2 draw +2 resc - resc 0 cost 5
+Temple of Athena      - +1 strt +3 tact +1 draw +1 resc - resc 0 cost 5
+Temple of Poseidon    - +1 strt +1 tact +1 draw +5 resc - resc 0 cost 5
+
+Political Reforms     - +2 strt                         - resc 1 cost 2
+Democratic Faction    - +3 strt                         - resc 1 cost 5
+
+The Senate            - +3 tact +2 strt                 - resc 1 cost 5
+The Five Ephors       - +5 tact +1 strt                 - resc 1 cost 5
+The Ten Strategoi     - +3 tact +1 strt +1 draw         - resc 1 cost 5
+
+Provisions            - +1 tact                         - resc 1 cost 0
+Supply Cache          - +1 tact                         - resc 4 cost 3
+Persian Support       - +1 tact                         - resc 7 cost 6
+
+Military Training     - +2 tact                         - resc 1 cost 1
+Military Logistics    - +3 tact                         - resc 1 cost 3
+Thracian Tactics      - +4 tact                         - resc 1 cost 5
+Oligarchic Faction    - +5 tact                         - resc 1 cost 7
+
+Village Granary       - +3 resc                         - resc 1 cost 3
+War Spoils            - +7 resc                         - resc 1 cost 6

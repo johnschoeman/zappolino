@@ -23,13 +23,7 @@ test("GameAction.endTurn - It discards, draws a new hand, progress the board and
   const board = Board.parse(boardStr)
   const player = "White"
   const deckWhite = deckFactory.build({
-    hand: [
-      "DeployHoplite",
-      "DeployHoplite",
-      "DeployHoplite",
-      "DeployHoplite",
-      "DeployHoplite",
-    ],
+    hand: ["Hoplite", "Hoplite", "Hoplite", "Hoplite", "Hoplite"],
     draw: [
       "ManeuverForward",
       "ManeuverForward",
@@ -78,11 +72,11 @@ test("GameAction.endTurn - It discards, draws a new hand, progress the board and
     ],
     draw: [],
     disc: [
-      "DeployHoplite",
-      "DeployHoplite",
-      "DeployHoplite",
-      "DeployHoplite",
-      "DeployHoplite",
+      "Hoplite",
+      "Hoplite",
+      "Hoplite",
+      "Hoplite",
+      "Hoplite",
       "ManeuverLeft",
       "ManeuverRight",
     ],
@@ -269,8 +263,8 @@ test("GameAction.selectSupplyPile - It consumes the resource points and adds a c
   const player = "White"
   const deckWhite = deckFactory.build({
     playedCards: [],
-    hand: ["DeployHoplite", "ManeuverLeft"],
-    draw: ["DeployHoplite", "ManeuverForward"],
+    hand: ["Hoplite", "ManeuverLeft"],
+    draw: ["Hoplite", "ManeuverForward"],
     disc: [],
   })
 
@@ -289,8 +283,8 @@ test("GameAction.selectSupplyPile - It consumes the resource points and adds a c
 
   const expectedDeckWhite: Deck.Deck = {
     playedCards: [],
-    hand: ["DeployHoplite", "ManeuverLeft"],
-    draw: ["DeployHoplite", "ManeuverForward"],
+    hand: ["Hoplite", "ManeuverLeft"],
+    draw: ["Hoplite", "ManeuverForward"],
     disc: [supplyCard],
     commitedCards: [],
   }
@@ -310,13 +304,13 @@ test("GameAction.selectSupplyPile - If the supply count is 0, it does nothing", 
   const player = "White"
   const deckWhite = deckFactory.build({
     playedCards: [],
-    hand: ["DeployHoplite", "ManeuverLeft"],
-    draw: ["DeployHoplite", "ManeuverForward"],
+    hand: ["Hoplite", "ManeuverLeft"],
+    draw: ["Hoplite", "ManeuverForward"],
     disc: [],
     commitedCards: [],
   })
 
-  const supply: Supply.Supply = [{ card: "DeployHoplite", count: 0 }]
+  const supply: Supply.Supply = [{ card: "Hoplite", count: 0 }]
 
   const game: Game.Game = gameFactory.build({
     currentPlayer: player,
@@ -328,12 +322,12 @@ test("GameAction.selectSupplyPile - If the supply count is 0, it does nothing", 
 
   const expectedDeckWhite: Deck.Deck = {
     playedCards: [],
-    hand: ["DeployHoplite", "ManeuverLeft"],
-    draw: ["DeployHoplite", "ManeuverForward"],
+    hand: ["Hoplite", "ManeuverLeft"],
+    draw: ["Hoplite", "ManeuverForward"],
     disc: [],
     commitedCards: [],
   }
-  const expectedSupply: Supply.Supply = [{ card: "DeployHoplite", count: 0 }]
+  const expectedSupply: Supply.Supply = [{ card: "Hoplite", count: 0 }]
 
   const expected: Game.Game = gameFactory.build({
     currentPlayer: "White",
@@ -353,8 +347,8 @@ test("GameAction.selectSupplyPile - If the player has doesnt have enough resourc
   const player = "White"
   const deckWhite = deckFactory.build({
     playedCards: [],
-    hand: ["DeployHoplite", "ManeuverLeft"],
-    draw: ["DeployHoplite", "ManeuverForward"],
+    hand: ["Hoplite", "ManeuverLeft"],
+    draw: ["Hoplite", "ManeuverForward"],
     disc: [],
     commitedCards: [],
   })
@@ -373,8 +367,8 @@ test("GameAction.selectSupplyPile - If the player has doesnt have enough resourc
 
   const expectedDeckWhite: Deck.Deck = {
     playedCards: [],
-    hand: ["DeployHoplite", "ManeuverLeft"],
-    draw: ["DeployHoplite", "ManeuverForward"],
+    hand: ["Hoplite", "ManeuverLeft"],
+    draw: ["Hoplite", "ManeuverForward"],
     disc: [],
     commitedCards: [],
   }

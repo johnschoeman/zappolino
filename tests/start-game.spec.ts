@@ -21,7 +21,7 @@ test("starting a game - allows player to select starting hand and supply cards",
   await page.goto("http://localhost:3000")
 
   await resetStartingHandCards(page)
-  await setStartingHandCard("DeployHoplite")(2)(page)
+  await setStartingHandCard("Hoplite")(2)(page)
   await setStartingHandCard("ManeuverForward")(1)(page)
   await setStartingHandCard("ManeuverLeft")(1)(page)
   await setStartingHandCard("ManeuverRight")(0)(page)
@@ -29,12 +29,12 @@ test("starting a game - allows player to select starting hand and supply cards",
   await setStartingHandSize(3)(page)
 
   await resetSupplyPile(page)
-  await checkSupplyPile("DeployHoplite")(page)
+  await checkSupplyPile("Hoplite")(page)
 
   await startGame(page)
 
   await expectToHaveHandSize(3)(page)
-  await expectHandCount("DeployHoplite")(1)(page)
+  await expectHandCount("Hoplite")(1)(page)
   await expectHandCount("ManeuverForward")(1)(page)
   await expectHandCount("ManeuverLeft")(1)(page)
   await expectHandCount("ManeuverRight")(0)(page)
@@ -42,7 +42,7 @@ test("starting a game - allows player to select starting hand and supply cards",
   await expectDrawPileSize(1)(page)
 
   await expectSupplyPileCount(1)(page)
-  await expectSupplyPile("DeployHoplite")(page)
+  await expectSupplyPile("Hoplite")(page)
 
   await expectTurnPointsToBe({
     rescPts: 0,

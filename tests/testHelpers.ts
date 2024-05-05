@@ -5,7 +5,7 @@ import { Card, Cell, Game, Player, PointsPool, Position } from "@app/model"
 // ---- Workflows
 
 export const resetStartingHandCards = async (page: Page): Promise<void> => {
-  await setStartingHandCard("DeployHoplite")(0)(page)
+  await setStartingHandCard("Hoplite")(0)(page)
   await setStartingHandCard("ManeuverForward")(0)(page)
   await setStartingHandCard("ManeuverLeft")(0)(page)
   await setStartingHandCard("ManeuverRight")(0)(page)

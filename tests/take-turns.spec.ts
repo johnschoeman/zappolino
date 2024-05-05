@@ -21,7 +21,7 @@ test("take a single turn - place a piece", async ({ page }) => {
   await page.goto("http://localhost:3000")
 
   await resetStartingHandCards(page)
-  await setStartingHandCard("DeployHoplite")(1)(page)
+  await setStartingHandCard("Hoplite")(1)(page)
   await startGame(page)
 
   await expectCurrentPlayerToBe("White")(page)

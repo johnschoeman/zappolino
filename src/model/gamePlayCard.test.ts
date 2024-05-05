@@ -9,7 +9,7 @@ import * as Game from "./game"
 import * as GamePlayCard from "./gamePlayCard"
 
 test("GamePlayCard.validateHasCardCost - if the player has the points, it returns the game, and error if not", () => {
-  const strategyCard: Card.Card = "DeployHoplite"
+  const strategyCard: Card.Card = "Hoplite"
   const tacticCard: Card.Card = "ManeuverLeft"
 
   const game1 = gameFactory.build({
@@ -384,7 +384,7 @@ test("GamePlayCard.playStrategyCard - it gains the correct points", () => {
     },
   })
 
-  const result1 = GamePlayCard.playStrategyCard("Oracle")(game)
+  const result1 = GamePlayCard.playStrategyCard("OracleOfDelphi")(game)
 
   const expected1: Game.Game = gameFactory.build({
     board,

@@ -9,7 +9,9 @@ test("card renders correctly", async ({ page }) => {
 
   await startGame(page)
 
-  const cardEl = page.getByTestId(`supply-pile-card-${Card.show("Oracle")}`)
+  const cardEl = page.getByTestId(
+    `supply-pile-card-${Card.show("OracleOfDelphi")}`,
+  )
 
   await expect(cardEl).toContainText("+ 1 Draw")
   await expect(cardEl).toContainText("+ 1 Strategy")

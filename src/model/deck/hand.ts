@@ -1,6 +1,7 @@
 import { Array, pipe, Record } from "effect"
 
 import * as Card from "./card"
+import * as Cards from "./cards"
 
 const DEFAULT_HAND_SIZE = 5
 
@@ -9,8 +10,8 @@ const DEFAULT_HAND_SIZE = 5
 export type Hand = Card.Card[]
 
 export const defaultInitialHand: Hand = [
-  "DeployHoplite",
-  "DeployHoplite",
+  "Hoplite",
+  "Hoplite",
   "ManeuverLeft",
   "ManeuverRight",
   "ManeuverForward",
@@ -35,22 +36,10 @@ export const build = (handCount: HandCount): Hand => {
 // ---- HandCount
 
 export type HandCount = Record<Card.Card, number>
-const emptyHandCount: HandCount = {
-  ManeuverLeft: 0,
-  ManeuverRight: 0,
-  ManeuverForward: 0,
-  AssaultLeft: 0,
-  AssaultRight: 0,
-  AssaultForward: 0,
-  Charge: 0,
-  FlankLeft: 0,
-  FlankRight: 0,
-  DeployHoplite: 0,
-  Polis: 0,
-  MilitaryReforms: 0,
-  PoliticalReforms: 0,
-  Oracle: 0,
-}
+const emptyHandCount: HandCount = pipe(
+  Cards.empty,
+  Record.map(() => 0),
+)
 
 type PartialHandCount = Partial<HandCount>
 
@@ -64,7 +53,7 @@ export const handCountFromPartial = (
 }
 
 export const initialHandCount: HandCount = handCountFromPartial({
-  DeployHoplite: 2,
+  Hoplite: 2,
   ManeuverForward: 1,
   ManeuverLeft: 1,
   ManeuverRight: 1,

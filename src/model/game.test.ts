@@ -9,7 +9,7 @@ import * as Player from "./player"
 
 test("Game.commitSelectedCard", () => {
   const deck = deckFactory.build({
-    hand: ["DeployHoplite"],
+    hand: ["Hoplite"],
     commitedCards: [],
   })
   const game: Game.Game = gameFactory.build({
@@ -27,7 +27,7 @@ test("Game.commitSelectedCard", () => {
 
   const expectedDeck = deckFactory.build({
     hand: [],
-    commitedCards: ["DeployHoplite"],
+    commitedCards: ["Hoplite"],
   })
   const expected = gameFactory.build({
     currentPlayer: "White",

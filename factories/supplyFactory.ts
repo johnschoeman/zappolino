@@ -4,7 +4,7 @@ import { Supply } from "../src/model"
 
 export const supplyFactory = Factory.define<Supply.Supply>(() => {
   const supply: Supply.Supply = [
-    { card: "DeployHoplite", count: 8 },
+    { card: "Hoplite", count: 8 },
     { card: "ManeuverLeft", count: 8 },
     { card: "ManeuverRight", count: 8 },
     { card: "ManeuverForward", count: 8 },

@@ -1,6 +1,6 @@
 import { Array, pipe, Record } from "effect"
 
-import { Card } from "./deck"
+import { Card, Cards } from "./deck"
 
 export const SUPPLY_SIZE = 8
 
@@ -37,59 +37,21 @@ export const build = (checkedSupplyPiles: CheckedSupplyPiles): Supply => {
   )
 }
 
-export type CheckedSupplyPiles = Record<Card.Card, boolean>
-
-export const initialCheckedSupplyPiles: CheckedSupplyPiles = {
-  ManeuverLeft: true,
-  ManeuverRight: true,
-  ManeuverForward: true,
-  AssaultLeft: true,
-  AssaultRight: true,
-  AssaultForward: true,
-  Charge: true,
-  FlankLeft: true,
-  FlankRight: true,
-  DeployHoplite: true,
-  Polis: true,
-  MilitaryReforms: true,
-  PoliticalReforms: true,
-  Oracle: true,
-}
+export type CheckedSupplyPiles = Cards.Cards<boolean>
 
 export const allChecked = (): CheckedSupplyPiles => {
-  return {
-    ManeuverLeft: true,
-    ManeuverRight: true,
-    ManeuverForward: true,
-    AssaultLeft: true,
-    AssaultRight: true,
-    AssaultForward: true,
-    Charge: true,
-    FlankLeft: true,
-    FlankRight: true,
-    DeployHoplite: true,
-    Polis: true,
-    MilitaryReforms: true,
-    PoliticalReforms: true,
-    Oracle: true,
-  }
+  return pipe(
+    Cards.empty,
+    Record.map(() => true),
+  )
 }
 
 export const allUnchecked = (): CheckedSupplyPiles => {
-  return {
-    ManeuverLeft: false,
-    ManeuverRight: false,
-    ManeuverForward: false,
-    AssaultLeft: false,
-    AssaultRight: false,
-    AssaultForward: false,
-    Charge: false,
-    FlankLeft: false,
-    FlankRight: false,
-    DeployHoplite: false,
-    Polis: false,
-    MilitaryReforms: false,
-    PoliticalReforms: false,
-    Oracle: false,
-  }
+  const result = pipe(
+    Cards.empty,
+    Record.map(() => false),
+  )
+  return result
 }
+
+export const initialCheckedSupplyPiles: CheckedSupplyPiles = allChecked()
