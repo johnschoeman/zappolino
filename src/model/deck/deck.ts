@@ -161,11 +161,14 @@ export const discardHand = (deck: Deck): Deck => {
 }
 
 const refillDrawPile = (deck: Deck): Deck => {
-  return {
-    ...deck,
-    draw: deck.disc,
-    disc: [],
-  }
+  return pipe(
+    {
+      ...deck,
+      draw: deck.disc,
+      disc: [],
+    },
+    shuffleDraw,
+  )
 }
 
 export const shuffleDraw = (deck: Deck): Deck => {
