@@ -358,7 +358,7 @@ test("GameAction.selectSupplyPile - If the player has doesnt have enough resourc
 
   const game: Game.Game = gameFactory.build({
     currentPlayer: player,
-    turnPoints: { tactPts: 1, strtPts: 1, rescPts: 3 },
+    turnPoints: { tactPts: 1, strtPts: 1, rescPts: 1 },
     deckWhite,
     supply,
   })
@@ -377,7 +377,7 @@ test("GameAction.selectSupplyPile - If the player has doesnt have enough resourc
   const expected: Game.Game = gameFactory.build({
     currentPlayer: "White",
     deckWhite: expectedDeckWhite,
-    turnPoints: { tactPts: 1, strtPts: 1, rescPts: 3 },
+    turnPoints: { tactPts: 1, strtPts: 1, rescPts: 1 },
     supply: expectedSupply,
   })
 

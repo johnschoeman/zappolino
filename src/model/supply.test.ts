@@ -1,14 +1,18 @@
 import { expect, test } from "bun:test"
-import { pipe, Record } from "effect"
+import { pipe } from "effect"
 
 import * as Cards from "./deck/cards"
+import * as SupplySetup from "./gameSetup/supplySetup"
 import * as Supply from "./supply"
 
 test("Supply.build", () => {
-  const checkedSupplyPiles: Supply.CheckedSupplyPiles = pipe(
+  const checkedSupplyPiles: SupplySetup.SupplySetup = pipe(
     Cards.empty,
-    Record.map(() => false),
-    cards => ({ ...cards, ManeuverLeft: true }),
+    Cards.map(() => false),
+    cards => {
+      const tactic = cards.cardsTactic
+      return { ...cards, cardsTactic: { ...tactic, ManeuverLeft: true } }
+    },
   )
 
   const result = Supply.build(checkedSupplyPiles)

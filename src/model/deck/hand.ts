@@ -1,4 +1,6 @@
-import { Array, pipe, Record } from "effect"
+import { Array, pipe } from "effect"
+
+import * as HandSetup from "../gameSetup/handSetup"
 
 import * as Card from "./card"
 import * as Cards from "./cards"
@@ -17,10 +19,10 @@ export const defaultInitialHand: Hand = [
   "ManeuverForward",
 ]
 
-export const build = (handCount: HandCount): Hand => {
+export const build = (handSetup: HandSetup.HandSetup): Hand => {
   return pipe(
-    handCount,
-    Record.toEntries,
+    handSetup,
+    Cards.toEntries,
     Array.reduce<Hand, [Card.Card, number]>([], (acc, [card, count]) => {
       if (count > 0) {
         const nextCards: Hand = Array.replicate(count)(card)
@@ -32,32 +34,6 @@ export const build = (handCount: HandCount): Hand => {
     }),
   )
 }
-
-// ---- HandCount
-
-export type HandCount = Record<Card.Card, number>
-const emptyHandCount: HandCount = pipe(
-  Cards.empty,
-  Record.map(() => 0),
-)
-
-type PartialHandCount = Partial<HandCount>
-
-export const handCountFromPartial = (
-  partialHandCount: PartialHandCount,
-): HandCount => {
-  return {
-    ...emptyHandCount,
-    ...partialHandCount,
-  }
-}
-
-export const initialHandCount: HandCount = handCountFromPartial({
-  Hoplite: 2,
-  ManeuverForward: 1,
-  ManeuverLeft: 1,
-  ManeuverRight: 1,
-})
 
 // ---- HandSize
 

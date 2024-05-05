@@ -1,36 +1,26 @@
 import { createSignal } from "solid-js"
 
-import { GameSetup, Hand, Supply } from "@app/model"
+import * as GameSetup from "@app/model/gameSetup/gameSetup"
+import * as HandSetup from "@app/model/gameSetup/handSetup"
+import * as SupplySetup from "@app/model/gameSetup/supplySetup"
 
 export const [gameSetup, setGameSetup] = createSignal<GameSetup.GameSetup>(
   GameSetup.initial,
 )
 
-export const setHandCount = (handCount: Hand.HandCount): void => {
-  const currentGameSetup = gameSetup()
-  const nextGameSetup = { ...currentGameSetup, handCount }
-  setGameSetup(nextGameSetup)
-}
-
-export const setSupplyPiles = (
-  supplyPiles: Supply.CheckedSupplyPiles,
+export const setHandSetupTactic = (
+  handSetupTactic: HandSetup.HandSetupTactic,
 ): void => {
   const currentGameSetup = gameSetup()
-  const nextGameSetup = { ...currentGameSetup, supplyPiles }
+  const nextGameSetup = { ...currentGameSetup, handSetupTactic }
   setGameSetup(nextGameSetup)
 }
 
-export const checkAllSupplyPiles = (): void => {
-  const supplyPiles = Supply.allChecked()
+export const setHandSetupStrategy = (
+  handSetupStrategy: HandSetup.HandSetupStrategy,
+): void => {
   const currentGameSetup = gameSetup()
-  const nextGameSetup = { ...currentGameSetup, supplyPiles }
-  setGameSetup(nextGameSetup)
-}
-
-export const uncheckAllSupplyPiles = (): void => {
-  const supplyPiles = Supply.allUnchecked()
-  const currentGameSetup = gameSetup()
-  const nextGameSetup = { ...currentGameSetup, supplyPiles }
+  const nextGameSetup = { ...currentGameSetup, handSetupStrategy }
   setGameSetup(nextGameSetup)
 }
 
@@ -40,8 +30,58 @@ export const setHandSize = (handSize: number): void => {
   setGameSetup(nextGameSetup)
 }
 
-export const randomizeSupplyPiles = (): void => {
+export const setSupplySetupTactic = (
+  supplySetupTactic: SupplySetup.SupplySetupTactic,
+): void => {
+  const currentGameSetup = gameSetup()
+  const nextGameSetup = { ...currentGameSetup, supplySetupTactic }
+  setGameSetup(nextGameSetup)
+}
+
+export const checkAllTacticSupplyPiles = (): void => {
+  const supplySetupTactic = SupplySetup.allCheckedTactic()
+  const currentGameSetup = gameSetup()
+  const nextGameSetup = { ...currentGameSetup, supplySetupTactic }
+  setGameSetup(nextGameSetup)
+}
+
+export const uncheckAllTacticSupplyPiles = (): void => {
+  const supplySetupTactic = SupplySetup.allUncheckedTactic()
+  const currentGameSetup = gameSetup()
+  const nextGameSetup = { ...currentGameSetup, supplySetupTactic }
+  setGameSetup(nextGameSetup)
+}
+
+export const randomizeTacticSupplyPiles = (): void => {
   const currentGameSetup = { ...gameSetup() }
-  const nextGameSetup = GameSetup.randomizeSupplyPiles(currentGameSetup)
+  const nextGameSetup = GameSetup.randomizeSupplySetupTactic(currentGameSetup)
+  setGameSetup(nextGameSetup)
+}
+
+export const setSupplySetupStrategy = (
+  supplySetupStrategy: SupplySetup.SupplySetupStrategy,
+): void => {
+  const currentGameSetup = gameSetup()
+  const nextGameSetup = { ...currentGameSetup, supplySetupStrategy }
+  setGameSetup(nextGameSetup)
+}
+
+export const checkAllStrategySupplyPiles = (): void => {
+  const supplySetupStrategy = SupplySetup.allCheckedStrategy()
+  const currentGameSetup = gameSetup()
+  const nextGameSetup = { ...currentGameSetup, supplySetupStrategy }
+  setGameSetup(nextGameSetup)
+}
+
+export const uncheckAllStrategySupplyPiles = (): void => {
+  const supplySetupStrategy = SupplySetup.allUncheckedStrategy()
+  const currentGameSetup = gameSetup()
+  const nextGameSetup = { ...currentGameSetup, supplySetupStrategy }
+  setGameSetup(nextGameSetup)
+}
+
+export const randomizeStrategySupplyPiles = (): void => {
+  const currentGameSetup = { ...gameSetup() }
+  const nextGameSetup = GameSetup.randomizeSupplySetupStrategy(currentGameSetup)
   setGameSetup(nextGameSetup)
 }

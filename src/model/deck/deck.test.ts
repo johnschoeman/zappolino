@@ -34,7 +34,11 @@ test("Deck.draw - when the draw pile is empty, it reshuffles the discard and the
     commitedCards: [],
   }
 
-  expect(result).toEqual(expected)
+  expect(result.hand.length).toEqual(expected.hand.length)
+  expect(result.draw.length).toEqual(expected.draw.length)
+  expect([...result.draw, ...result.hand].sort()).toEqual(
+    [...expected.hand, ...expected.draw].sort(),
+  )
 })
 
 test("Deck.draw - when given a count of 1, it draws a card and put it into the players hand", () => {

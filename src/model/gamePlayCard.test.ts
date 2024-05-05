@@ -390,10 +390,10 @@ test("GamePlayCard.playStrategyCard - it gains the correct points", () => {
     board,
     currentPlayer: player,
     turnPoints: {
-      drawPts: 1,
+      drawPts: 3,
       strtPts: 2,
-      tactPts: 3,
-      rescPts: 2,
+      tactPts: 2,
+      rescPts: 1,
     },
   })
 

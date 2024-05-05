@@ -4,9 +4,10 @@ import * as Card from "./deck/card"
 import * as Cards from "./deck/cards"
 import * as Deck from "./deck/deck"
 import * as Hand from "./deck/hand"
+import * as GameSetup from "./gameSetup/gameSetup"
+import * as SupplySetup from "./gameSetup/supplySetup"
 import * as Game from "./game"
 import * as GameAction from "./gameAction"
-import * as GameSetup from "./gameSetup"
 import * as Player from "./player"
 import * as PointsPool from "./pointsPool"
 import * as Position from "./position"
@@ -26,4 +27,5 @@ export {
   PointsPool,
   Position,
   Supply,
+  SupplySetup,
 }

@@ -1,6 +1,7 @@
 import { Array, pipe, Record } from "effect"
 
-import { Card, Cards } from "./deck"
+import { Card } from "./deck"
+import { SupplySetup } from "./gameSetup"
 
 export const SUPPLY_SIZE = 8
 
@@ -20,9 +21,11 @@ const buildPile = (card: Card.Card): SupplyPile => {
 
 export const initial: Supply = pipe(Card.all, Array.map(buildPile))
 
-export const build = (checkedSupplyPiles: CheckedSupplyPiles): Supply => {
-  return pipe(
-    checkedSupplyPiles,
+export const build = (supplySetup: SupplySetup.SupplySetup): Supply => {
+  const { cardsTactic, cardsStrategy } = supplySetup
+
+  const strategy = pipe(
+    cardsStrategy,
     Record.toEntries,
     Array.reduce<Supply, [Card.Card, boolean]>(
       [],
@@ -35,23 +38,21 @@ export const build = (checkedSupplyPiles: CheckedSupplyPiles): Supply => {
       },
     ),
   )
-}
 
-export type CheckedSupplyPiles = Cards.Cards<boolean>
-
-export const allChecked = (): CheckedSupplyPiles => {
-  return pipe(
-    Cards.empty,
-    Record.map(() => true),
+  const tactics = pipe(
+    cardsTactic,
+    Record.toEntries,
+    Array.reduce<Supply, [Card.Card, boolean]>(
+      [],
+      (acc, [card, isIncluded]) => {
+        if (isIncluded) {
+          return Array.append(buildPile(card))(acc)
+        } else {
+          return acc
+        }
+      },
+    ),
   )
-}
 
-export const allUnchecked = (): CheckedSupplyPiles => {
-  const result = pipe(
-    Cards.empty,
-    Record.map(() => false),
-  )
-  return result
+  return [...tactics, ...strategy]
 }
-
-export const initialCheckedSupplyPiles: CheckedSupplyPiles = allChecked()

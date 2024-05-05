@@ -20,11 +20,22 @@ export const [gameStatus, setGameStatus] =
 export const [game, setGame] = createSignal<Game.Game>(Game.initial)
 
 export const startGame = (): void => {
-  const { handCount, supplyPiles, startingHandSize } =
-    GameSetupState.gameSetup()
-  const initialHand = Hand.build(handCount)
+  const {
+    handSetupTactic,
+    handSetupStrategy,
+    supplySetupTactic,
+    supplySetupStrategy,
+    startingHandSize,
+  } = GameSetupState.gameSetup()
+  const initialHand = Hand.build({
+    cardsTactic: handSetupTactic,
+    cardsStrategy: handSetupStrategy,
+  })
   const initialDeck = Deck.build(initialHand, startingHandSize)
-  const initialSupply = Supply.build(supplyPiles)
+  const initialSupply = Supply.build({
+    cardsStrategy: supplySetupStrategy,
+    cardsTactic: supplySetupTactic,
+  })
 
   const game_ = Game.build(initialDeck, initialSupply, startingHandSize)
 
