@@ -21,6 +21,10 @@
     @apply w-full p-4 text-2xl uppercase btn-base space-x-5;
   }
 
+  .btn-small {
+    @apply p-2 rounded;
+  }
+
   .btn-icon {
     @apply p-4 rounded;
   }

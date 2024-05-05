@@ -39,3 +39,7 @@ export const setHandSize = (handSize: number): void => {
   nextGameSetup.startingHandSize = handSize
   setGameSetup(nextGameSetup)
 }
+
+export const randomizeSupplyPiles = (): void => {
+  return
+}
