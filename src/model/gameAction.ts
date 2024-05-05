@@ -79,6 +79,10 @@ export const selectPlayMat = (game: Game.Game): Game.Game => {
     return game
   }
 
+  if (!Card.isStrategy(card.value)) {
+    return game
+  }
+
   return pipe(
     game,
     GamePlayCard.validateHasCardCost(card.value),
@@ -146,6 +150,10 @@ const selectCellPlayTacticCard =
     )
 
     if (Option.isNone(card)) {
+      return game
+    }
+
+    if (!Card.isTactic(card.value)) {
       return game
     }
 

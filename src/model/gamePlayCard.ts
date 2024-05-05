@@ -57,7 +57,7 @@ type PlayCardError =
 
 export const playSelectPieceCard =
   (pos: Position.Position) =>
-  (card: Card.Card) =>
+  (card: Card.TacticCard) =>
   (game: Game.Game): Either.Either<Game.Game, PlayCardError> => {
     switch (card) {
       case "ManeuverForward":
@@ -78,44 +78,13 @@ export const playSelectPieceCard =
         return playFlankLeft(pos)(game)
       case "FlankRight":
         return playFlankRight(pos)(game)
-      case "Hoplite":
-      case "Polis":
-      case "MilitaryReforms":
-      case "PoliticalReforms":
-      case "Oracle":
-      case "OrganizedDeploy":
-      case "MilitaryMobilization":
-      case "AuxiliaryTroops":
-      case "Phalanx":
-        return Either.left("InvalidPieceSelection")
     }
   }
 
 export const playSelectMatCard =
-  (card: Card.Card) =>
+  (card: Card.StrategyCard) =>
   (game: Game.Game): Either.Either<Game.Game, PlayCardError> => {
-    switch (card) {
-      case "MilitaryReforms":
-      case "PoliticalReforms":
-      case "Oracle":
-      case "Hoplite":
-      case "Polis":
-      case "OrganizedDeploy":
-      case "MilitaryMobilization":
-      case "AuxiliaryTroops":
-      case "Phalanx":
-        return playStrategyCard(card)(game)
-      case "ManeuverForward":
-      case "ManeuverRight":
-      case "ManeuverLeft":
-      case "AssaultForward":
-      case "AssaultLeft":
-      case "AssaultRight":
-      case "FlankLeft":
-      case "FlankRight":
-      case "Charge":
-        return Either.left("InvalidPlayMatSelection")
-    }
+    return playStrategyCard(card)(game)
   }
 
 // ---- Play Card Functions

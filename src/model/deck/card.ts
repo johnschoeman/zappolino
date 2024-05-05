@@ -60,7 +60,7 @@ export type OligarchicFaction = "OligarchicFaction"
 export type VillageGranary = "VillageGranary"
 export type WarSpoils = "WarSpoils"
 
-export type Card =
+export type TacticCard =
   | ManeuverLeft
   | ManeuverRight
   | ManeuverForward
@@ -70,6 +70,8 @@ export type Card =
   | Charge
   | FlankLeft
   | FlankRight
+
+export type StrategyCard =
   | Hoplite
   | AuxiliaryTroops
   | Phalanx
@@ -103,6 +105,8 @@ export type Card =
   | VillageGranary
   | WarSpoils
 
+export type Card = TacticCard | StrategyCard
+
 type StrategyCost = number
 type TacticCost = number
 type ResourceCost = number
@@ -112,7 +116,7 @@ export type PlayValue = PointsPool.PointsPool
 
 type Kind = "Tactic" | "Strategy"
 
-const allTactic: Card[] = [
+const allTactic: TacticCard[] = [
   "ManeuverLeft",
   "ManeuverRight",
   "ManeuverForward",
@@ -124,7 +128,7 @@ const allTactic: Card[] = [
   "FlankRight",
 ]
 
-export const allStrategy: Card[] = [
+export const allStrategy: StrategyCard[] = [
   "Hoplite",
   "AuxiliaryTroops",
   "Phalanx",
@@ -159,7 +163,15 @@ export const allStrategy: Card[] = [
   "WarSpoils",
 ]
 
-export const all: Card[] = [...allStrategy, ...allTactic]
+export const all: Card[] = [...allTactic, ...allStrategy]
+
+export const isTactic = (card: Card): card is TacticCard => {
+  return toKind(card) === "Tactic"
+}
+
+export const isStrategy = (card: Card): card is StrategyCard => {
+  return toKind(card) === "Strategy"
+}
 
 export const show = (card: Card): string => {
   if (isTactic(card)) {
@@ -261,14 +273,6 @@ export const showStrategy = (card: StrategyCard): string => {
     case "WarSpoils":
       return "war-spoils"
   }
-}
-
-export const isTactic = (card: Card): boolean => {
-  return toKind(card) === "Tactic"
-}
-
-export const isStrategy = (card: Card): boolean => {
-  return toKind(card) === "Strategy"
 }
 
 export const toKind = (card: Card): Kind => {
@@ -455,6 +459,9 @@ export const toFlavorText = (card: Card): string => {
 }
 
 export const toDescription = (card: Card): string => {
+  if (isStrategy(card)) {
+    return ""
+  }
   switch (card) {
     case "ManeuverLeft":
       return "Maneuver a hoplite to the left"
@@ -474,56 +481,24 @@ export const toDescription = (card: Card): string => {
       return "Move a hoplite left, taking any opponent piece"
     case "FlankRight":
       return "Move a hoplite right, taking any opponent piece"
-    case "Hoplite":
-    case "Polis":
-    case "MilitaryReforms":
-    case "PoliticalReforms":
-    case "Oracle":
-    case "OrganizedDeploy":
-    case "MilitaryMobilization":
-    case "AuxiliaryTroops":
-    case "Phalanx":
-      return ""
   }
 }
 
 export const toPlayCost = (card: Card): PlayCost => {
-  switch (card) {
-    case "Hoplite":
-    case "Polis":
-    case "MilitaryReforms":
-    case "PoliticalReforms":
-    case "Oracle":
-    case "OrganizedDeploy":
-    case "MilitaryMobilization":
-    case "AuxiliaryTroops":
-    case "Phalanx":
+  switch (toKind(card)) {
+    case "Strategy":
       return [1, 0, 0]
-    case "ManeuverLeft":
-    case "ManeuverRight":
-    case "ManeuverForward":
-    case "AssaultLeft":
-    case "AssaultRight":
-    case "AssaultForward":
-    case "Charge":
-    case "FlankLeft":
-    case "FlankRight":
+    case "Tactic":
       return [0, 1, 0]
   }
 }
 
 export const toPlayValue = (card: Card): PlayValue => {
+  if (isTactic(card)) {
+    return PointsPool.empty
+  }
+
   switch (card) {
-    case "ManeuverLeft":
-    case "ManeuverRight":
-    case "ManeuverForward":
-    case "AssaultLeft":
-    case "AssaultRight":
-    case "AssaultForward":
-    case "Charge":
-    case "FlankLeft":
-    case "FlankRight":
-      return PointsPool.empty
     case "Hoplite":
       return PointsPool.build({ hoplPts: 1 })
     case "AuxiliaryTroops":
